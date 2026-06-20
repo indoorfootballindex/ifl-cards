@@ -343,15 +343,21 @@
   .btn-next:active { transform: translateY(0); }
   .btn-next.collect { background: var(--gold); box-shadow: 0 4px 16px rgba(200,152,10,0.4); }
   .btn-next.collect:hover { background: #dba80c; }
+
+  .seen-strip {
+    display: flex; flex-direction: row; gap: 8px;
+    justify-content: center; align-items: center;
+    flex-wrap: nowrap; margin-top: 1.25rem;
+    padding: 0 1rem; overflow-x: auto;
+  }
   .seen-thumb {
     border-radius: 6px; overflow: hidden; border: 1.5px solid var(--border);
-    opacity: 0.4; transition: opacity 0.2s, border-color 0.2s; background: var(--panel); flex-shrink: 0;
+    opacity: 0.4; transition: opacity 0.2s, border-color 0.2s;
+    background: var(--panel); flex-shrink: 0;
+    width: 44px; height: 61px;
   }
-  .seen-thumb { width: 44px; height: 61px; }
-  .seen-thumb.revealed  { opacity: 0.6; }
+  .seen-thumb.revealed     { opacity: 0.6; }
   .seen-thumb.active-thumb { opacity: 1; border-color: var(--red); }
-  .seen-thumb.rarity-r  { border-color: #9b42d6 !important; }
-  .seen-thumb.rarity-sr { border-color: var(--gold) !important; }
   .seen-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* NEW badge */
@@ -650,7 +656,7 @@ function buildRevealUI() {
   strip.innerHTML = '';
   packCards.forEach((card, i) => {
     const thumb = document.createElement('div');
-    thumb.className = 'seen-thumb ' + (card.landscape ? 'landscape' : 'portrait');
+    thumb.className = 'seen-thumb';
     thumb.id = 'thumb' + i;
     strip.appendChild(thumb);
   });
@@ -711,9 +717,8 @@ function showCard(idx) {
   packCards.forEach((c, i) => {
     const t = document.getElementById('thumb' + i);
     if (!t) return;
-    t.className = ['seen-thumb', c.landscape ? 'landscape' : 'portrait',
-      i === idx ? 'active-thumb' : i < idx ? 'revealed' : ''
-    ].join(' ').trim();
+    t.className = 'seen-thumb' +
+      (i === idx ? ' active-thumb' : i < idx ? ' revealed' : '');
   });
 
   // NEW badge — show if card not already in collection
