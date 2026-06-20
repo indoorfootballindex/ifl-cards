@@ -16,24 +16,6 @@ var PACK_DATA = [
         "landscape": false
       },
       {
-        "file": "CyntellWilliamsGB_u.png",
-        "name": "Cyntell Williams",
-        "team": "Green Bay Blizzard",
-        "league": "IFL",
-        "teamCode": "GB",
-        "rarity": "u",
-        "landscape": true
-      },
-      {
-        "file": "KimoClarkGB_u.png",
-        "name": "Kimo Clark",
-        "team": "Green Bay Blizzard",
-        "league": "IFL",
-        "teamCode": "GB",
-        "rarity": "u",
-        "landscape": true
-      },
-      {
         "file": "CameronHarrelQC_c.png",
         "name": "Cameron Harrell",
         "team": "Quad City",
@@ -67,6 +49,24 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "sr",
+        "landscape": false
+      },
+      {
+        "file": "HarryBallardGB_u.png",
+        "name": "Harry Ballard III",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false
+      },
+      {
+        "file": "boodahlewis_u.png",
+        "name": "Zane Lewis",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
         "landscape": false
       }
     ]

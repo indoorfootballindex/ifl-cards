@@ -1,8 +1,8 @@
 file,name,team,league,teamCode,rarity,landscape
 LowellPatronGB_r.png,Lowell Patron Jr.,Green Bay Blizzard,IFL,GB,r,FALSE
-CyntellWilliamsGB_u.png,Cyntell Williams,Green Bay Blizzard,IFL,GB,u,TRUE
-KimoClarkGB_u.png,Kimo Clark,Green Bay Blizzard,IFL,GB,u,TRUE
 CameronHarrelQC_c.png,Cameron Harrell,Quad City,IFL,QC,c,FALSE
 HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,c,FALSE
 RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,c,FALSE
 AndrewCarterSR.png,Andrew Carter,Green Bay Blizzard,IFL,GB,sr,FALSE
+HarryBallardGB_u.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,u,FALSE
+boodahlewis_u.png,Zane Lewis,Green Bay Blizzard,IFL,GB,u,FALSE
