@@ -1,0 +1,12 @@
+name = "ifl-cards"
+main = "worker/index.js"
+compatibility_date = "2024-01-01"
+
+[site]
+bucket = "."
+include = ["*.html", "*.js", "*.css", "packs/**", "Logos/**"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ifl-cards-db"
+database_id = "a6095d67-6956-4579-98b4-0db821b9785c"

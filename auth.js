@@ -1,5 +1,5 @@
 // auth.js — loaded on every page
-const API = 'https://ifl-cards-api.indoorfootballindex.workers.dev';
+const API = '';
 
 function getToken() {
   try { return localStorage.getItem('ifiToken'); } catch(e) {}
