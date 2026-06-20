@@ -129,5 +129,34 @@ async function savePullToServer(cards) {
   }
 }
 
+// ── MIGRATE local cards to server after login ──
+// Call this right after a successful login if the user had local cards
+async function migrateLocalToServer(token) {
+  let local = [];
+  try {
+    let s = sessionStorage.getItem('ifiCol');
+    if (s) local = JSON.parse(s);
+    else {
+      const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiCol='));
+      if (m) local = JSON.parse(decodeURIComponent(m.split('=')[1]));
+    }
+  } catch(e) {}
+
+  if (!local.length) return;
+
+  try {
+    await fetch(API + '/api/collect', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      body: JSON.stringify({ cards: local })
+    });
+    // clear local after successful migration
+    sessionStorage.removeItem('ifiCol');
+    try { document.cookie = 'ifiCol=; path=/; max-age=0'; } catch(e) {}
+    console.log('Migrated ' + local.length + ' local cards to account');
+
 // Run on every page load
 document.addEventListener('DOMContentLoaded', initNav);

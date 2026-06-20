@@ -139,6 +139,28 @@
 // Change this to your Worker URL after deploying the worker
 const API = 'https://ifl-cards-api.indoorfootballindex.workers.dev';
 
+async function migrateLocalToServer(token) {
+  let local = [];
+  try {
+    let s = sessionStorage.getItem('ifiCol');
+    if (s) local = JSON.parse(s);
+    else {
+      const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiCol='));
+      if (m) local = JSON.parse(decodeURIComponent(m.split('=')[1]));
+    }
+  } catch(e) {}
+  if (!local.length) return;
+  try {
+    await fetch(API + '/api/collect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ cards: local })
+    });
+    sessionStorage.removeItem('ifiCol');
+    try { document.cookie = 'ifiCol=; path=/; max-age=0'; } catch(e) {}
+  } catch(e) {}
+}
+
 function switchTab(tab) {
   document.querySelectorAll('.auth-tab').forEach((t, i) => {
     t.classList.toggle('active', (i === 0) === (tab === 'login'));
@@ -183,6 +205,7 @@ async function doLogin(e) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login failed');
     saveAuth(data.token, data.username, data.email);
+    await migrateLocalToServer(data.token);
     window.location.href = 'index.html';
   } catch(e) {
     showError('loginError', e.message);
@@ -209,6 +232,7 @@ async function doSignup(e) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Signup failed');
     saveAuth(data.token, data.username, data.email);
+    await migrateLocalToServer(data.token);
     window.location.href = 'index.html';
   } catch(e) {
     showError('signupError', e.message);
