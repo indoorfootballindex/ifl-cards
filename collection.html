@@ -432,7 +432,7 @@ async function render() {
 
       const info = document.createElement('div');
       info.className = 'card-info';
-      info.innerHTML = `<div class="card-name">${card.name}</div><div class="card-team">${card.team}</div>`;
+      info.innerHTML = `<div class="card-name">${card.name}${card.position ? ' — ' + card.position : ''}</div><div class="card-team">${card.team}</div>`;
 
       el.appendChild(img);
       el.appendChild(rarBadge);
@@ -472,7 +472,7 @@ function openLB(card) {
   const orient = card.landscape ? 'landscape' : 'portrait';
   document.getElementById('lbImg').src = 'packs/' + card.packId + '/' + card.file;
   document.getElementById('lbImg').alt = card.name;
-  document.getElementById('lbName').textContent = card.name;
+  document.getElementById('lbName').textContent = card.name + (card.position ? ' — ' + card.position : '');
   document.getElementById('lbTeam').textContent = card.team + ' · ' + (card.packName || '');
   const rar = document.getElementById('lbRarity');
   rar.textContent = RARITY_LABELS[card.rarity];

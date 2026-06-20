@@ -13,16 +13,18 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "r",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       },
       {
         "file": "CameronHarrelQC_c.png",
         "name": "Cameron Harrell",
-        "team": "Quad City",
+        "team": "Quad City Steamwheelers",
         "league": "IFL",
         "teamCode": "QC",
         "rarity": "c",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -31,7 +33,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "c",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -40,7 +43,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "c",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       },
       {
         "file": "AndrewCarterSR.png",
@@ -49,7 +53,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "sr",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       },
       {
         "file": "HarryBallardGB_u.png",
@@ -58,7 +63,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "u",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       },
       {
         "file": "boodahlewis_u.png",
@@ -67,7 +73,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "u",
-        "landscape": false
+        "landscape": false,
+        "position": ""
       }
     ]
   },

@@ -710,7 +710,7 @@ function showCard(idx) {
 
   document.getElementById('bigCardImg').src = 'packs/' + currentPack.id + '/' + card.file;
   document.getElementById('bigCardImg').alt = card.name;
-  document.getElementById('bigCardName').textContent = card.name;
+  document.getElementById('bigCardName').textContent = card.name + (card.position ? ' — ' + card.position : '');
   document.getElementById('bigCardTeam').textContent = card.team || '';
 
   // rarity banner — re-trigger animation

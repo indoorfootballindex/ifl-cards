@@ -8,9 +8,10 @@ Run after editing any CSV:
     python build.py
 
 packs/packs.csv columns:     id, name, sub
-packs/<id>/cards.csv columns: file, name, team, league, teamCode, rarity, landscape
+packs/<id>/cards.csv columns: file, name, team, league, teamCode, rarity, landscape, position
   rarity:    c (common) | u (uncommon) | r (rare) | sr (secret rare)
   landscape: true | false
+  position:  QB, WR, RB, DB, etc (optional)
 """
 
 import csv, json, os
@@ -49,6 +50,7 @@ def build():
                 'teamCode':  r.get('teamCode','').strip(),
                 'rarity':    r.get('rarity','c').strip().lower(),
                 'landscape': r.get('landscape','false').strip().lower() == 'true',
+                'position':  r.get('position','').strip(),
             })
         packs.append({'id': pid, 'name': m.get('name',pid).strip(),
                       'sub': m.get('sub','').strip(), 'cards': cards})
