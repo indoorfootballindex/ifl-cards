@@ -387,6 +387,10 @@ async function render() {
   if (filters.league !== 'all') filtered = filtered.filter(c => c.league  === filters.league);
   if (filters.pack   !== 'all') filtered = filtered.filter(c => c.packName === filters.pack);
 
+  // sort by rarity: C → U → R → SR
+  const rarityOrder = { c: 0, u: 1, r: 2, sr: 3 };
+  filtered.sort((a, b) => (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0));
+
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';
 
