@@ -59,6 +59,15 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "c",
         "landscape": false
+      },
+      {
+        "file": "AndrewCarterSR.png",
+        "name": "Andrew Carter",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "sr",
+        "landscape": false
       }
     ]
   },
