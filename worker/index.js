@@ -1,12 +1,20 @@
 // IFL Cards – single Worker for both static assets and API
 // API routes: /api/signup, /api/login, /api/logout, /api/me, /api/collection, /api/collect
 
+const ALLOWED_ORIGINS = [
+  'https://ifl-cards.indoorfootballindex.workers.dev',
+  'http://localhost',
+  'null', // file:// requests show as null origin
+];
+
 function corsHeaders(origin) {
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
-    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin',
   };
 }
 
@@ -60,10 +68,10 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
-    // ── Only handle /api/* routes ──
+    // ── Static assets — pass through to ASSETS binding ──
     if (!path.startsWith('/api/')) {
-      // Pass through to static assets (Pages handles this)
-      return env.ASSETS ? env.ASSETS.fetch(request) : new Response('Not found', { status: 404 });
+      if (env.ASSETS) return env.ASSETS.fetch(request);
+      return new Response('Not found', { status: 404 });
     }
 
     // ── POST /api/signup ──

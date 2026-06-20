@@ -1,0 +1,7 @@
+worker/node_modules
+worker/package.json
+worker/package-lock.json
+.git
+build.py
+wrangler.toml
+*.log
