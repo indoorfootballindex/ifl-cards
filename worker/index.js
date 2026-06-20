@@ -2,9 +2,11 @@
 // API routes: /api/signup, /api/login, /api/logout, /api/me, /api/collection, /api/collect
 
 const ALLOWED_ORIGINS = [
+  'https://cards.indoorfootballindex.com',
+  'http://cards.indoorfootballindex.com',
   'https://ifl-cards.indoorfootballindex.workers.dev',
   'http://localhost',
-  'null', // file:// requests show as null origin
+  'null',
 ];
 
 function corsHeaders(origin) {
