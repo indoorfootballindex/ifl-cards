@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFL Cards – My Collection</title>
+<title>50 Yard Cards – My Collection</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="packs.js"></script>
@@ -12,7 +12,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --black:#0e0e0f; --dark:#161618; --panel:#1c1c1f; --border:#2e2e33;
-    --silver:#8a8a96; --red:#c0201a; --gold:#c8980a;
+    --silver:#8a8a96; --red:var(--green); --gold:#c8980a;
     --muted:#5a5a66; --text:#e8e8ec; --white:#f4f4f6;
     --c-color:#6a6a76; --u-color:#3a7abf; --r-color:#9b42d6; --sr-color:#c8980a;
   }
@@ -23,26 +23,26 @@
     display:flex; align-items:center; padding:0 1.5rem;
     position:sticky; top:0; z-index:100;
   }
-  .nav-logo {
+  .nav-logo { display:flex; align-items:center;
     font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem;
     letter-spacing:0.14em; color:var(--white); text-transform:uppercase;
     margin-right:2rem; padding:1rem 0; text-decoration:none;
   }
-  .nav-logo span { color:var(--red); }
+  .nav-logo span { color:var(--green); }
   .nav-tab {
     padding:1rem 1.1rem; font-size:0.72rem; letter-spacing:0.1em;
     text-transform:uppercase; color:var(--muted); text-decoration:none;
     border-bottom:2px solid transparent; transition:color 0.15s,border-color 0.15s;
   }
   .nav-tab:hover { color:var(--text); }
-  .nav-tab.active { color:var(--white); border-bottom-color:var(--red); }
+  .nav-tab.active { color:var(--white); border-bottom-color:var(--green); }
 
   .page-wrap { max-width:1000px; margin:0 auto; padding:2rem 1.25rem 3rem; }
 
   /* header */
   .coll-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.5rem; }
   .coll-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:2rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--white); }
-  .coll-title span { color:var(--red); }
+  .coll-title span { color:var(--green); }
   .header-right { display:flex; align-items:center; gap:10px; }
   .completion {
     font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem;
@@ -58,7 +58,7 @@
 
   /* progress bar */
   .progress-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-bottom:1.5rem; overflow:hidden; }
-  .progress-bar-fill { height:100%; background:var(--red); border-radius:2px; transition:width 0.4s; }
+  .progress-bar-fill { height:100%; background:var(--green); border-radius:2px; transition:width 0.4s; }
 
   /* stats */
   .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:10px; margin-bottom:1.5rem; }
@@ -82,7 +82,7 @@
     color:var(--muted); cursor:pointer; transition:all 0.12s;
   }
   .filter-btn:hover { border-color:var(--silver); color:var(--text); }
-  .filter-btn.on { background:var(--panel); border-color:var(--red); color:var(--white); }
+  .filter-btn.on { background:var(--panel); border-color:var(--green); color:var(--white); }
   .filter-btn.on-c  { background:rgba(106,106,118,0.2); border-color:var(--c-color);  color:var(--c-color); }
   .filter-btn.on-u  { background:rgba(58,122,191,0.15);  border-color:var(--u-color);  color:var(--u-color); }
   .filter-btn.on-r  { background:rgba(155,66,214,0.15);  border-color:var(--r-color);  color:var(--r-color); }
@@ -140,10 +140,10 @@
   .btn-go {
     display:inline-block; font-family:'Barlow Condensed',sans-serif; font-weight:700;
     font-size:0.82rem; letter-spacing:0.1em; text-transform:uppercase;
-    background:var(--red); color:var(--white); border-radius:5px;
+    background:var(--green); color:var(--white); border-radius:5px;
     padding:0.55rem 1.5rem; text-decoration:none; transition:background 0.12s;
   }
-  .btn-go:hover { background:#d8251e; }
+  .btn-go:hover { background:#7a8f4a; }
 
   /* lightbox */
   .lightbox {
@@ -171,14 +171,14 @@
     font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
     transition:color 0.12s,border-color 0.12s;
   }
-  .lb-close:hover { color:var(--red); border-color:var(--red); }
+  .lb-close:hover { color:var(--green); border-color:var(--green); }
 
   footer { border-top:1px solid var(--border); text-align:center; padding:1.25rem; font-size:0.7rem; color:var(--muted); }
 </style>
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo"><span>IFL</span> Cards</a>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:32px;width:auto;display:block;"></a>
   <a href="index.html"      class="nav-tab">Open Packs</a>
   <a href="collection.html" class="nav-tab active">My Collection</a>
   <a href="browse.html"     class="nav-tab">Browse</a>
@@ -238,7 +238,7 @@
   </div>
 </main>
 
-<footer>Indoor Football Index &copy; 2025 · IFL Cards</footer>
+<footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
 
 <div class="lightbox" id="lightbox" onclick="closeLB(event)">
   <div class="lb-inner portrait" id="lbInner">

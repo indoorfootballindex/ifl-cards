@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFL Cards – Sign In</title>
+<title>50 Yard Cards – Sign In</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --black:#0e0e0f; --dark:#161618; --panel:#1c1c1f; --border:#2e2e33;
-    --red:#c0201a; --gold:#c8980a; --muted:#5a5a66; --text:#e8e8ec; --white:#f4f4f6;
+    --red:var(--green); --gold:#c8980a; --muted:#5a5a66; --text:#e8e8ec; --white:#f4f4f6;
   }
   html, body { background: var(--black); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
 
@@ -18,12 +18,12 @@
     background: var(--dark); border-bottom: 1px solid var(--border);
     display: flex; align-items: center; padding: 0 1.5rem;
   }
-  .nav-logo {
+  .nav-logo { display:flex; align-items:center;
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.2rem;
     letter-spacing: 0.14em; color: var(--white); text-transform: uppercase;
     padding: 1rem 0; text-decoration: none;
   }
-  .nav-logo span { color: var(--red); }
+  .nav-logo span { color: var(--green); }
 
   .auth-wrap {
     flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;
@@ -37,7 +37,7 @@
     text-transform: uppercase; letter-spacing: 0.06em; color: var(--white);
     margin-bottom: 0.25rem;
   }
-  .auth-title span { color: var(--red); }
+  .auth-title span { color: var(--green); }
   .auth-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.75rem; }
 
   /* tabs */
@@ -48,7 +48,7 @@
     border: none; background: transparent; color: var(--muted); cursor: pointer;
     border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.12s;
   }
-  .auth-tab.active { color: var(--white); border-bottom-color: var(--red); }
+  .auth-tab.active { color: var(--white); border-bottom-color: var(--green); }
 
   .auth-form { display: none; flex-direction: column; gap: 1rem; }
   .auth-form.active { display: flex; }
@@ -60,21 +60,21 @@
     font-family: 'Barlow', sans-serif; font-size: 0.9rem;
     transition: border-color 0.12s; outline: none;
   }
-  input:focus { border-color: var(--red); }
+  input:focus { border-color: var(--green); }
 
   .btn-submit {
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1rem;
     letter-spacing: 0.14em; text-transform: uppercase;
-    background: var(--red); color: var(--white); border: none; border-radius: 6px;
+    background: var(--green); color: var(--white); border: none; border-radius: 6px;
     padding: 0.7rem; cursor: pointer; transition: background 0.12s, transform 0.1s;
     margin-top: 0.25rem;
   }
-  .btn-submit:hover { background: #d8251e; transform: translateY(-1px); }
+  .btn-submit:hover { background: #7a8f4a; transform: translateY(-1px); }
   .btn-submit:active { transform: translateY(0); }
   .btn-submit:disabled { background: #2a2a2e; color: var(--muted); cursor: default; transform: none; }
 
   .auth-error {
-    background: rgba(192,32,26,0.15); border: 1px solid rgba(192,32,26,0.4);
+    background: rgba(107,124,63,0.15); border: 1px solid rgba(107,124,63,0.4);
     color: #f08080; font-size: 0.8rem; padding: 0.6rem 0.85rem; border-radius: 6px;
     display: none;
   }
@@ -85,12 +85,12 @@
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo"><span>IFL</span> Cards</a>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:32px;width:auto;display:block;"></a>
 </nav>
 
 <div class="auth-wrap">
   <div class="auth-box">
-    <div class="auth-title">IFL <span>Cards</span></div>
+    <div class="auth-title"><img src="50ydcards.png" alt="50 Yard Cards" style="height:48px;width:auto;margin-bottom:0.5rem;"></div>
     <div class="auth-sub">Sign in to save your collection across devices</div>
 
     <div class="auth-tabs">
@@ -132,7 +132,7 @@
   </div>
 </div>
 
-<footer>Indoor Football Index &copy; 2025 · IFL Cards</footer>
+<footer>50 Yard Cards Indoor Football Index &copy; 2025copy; 2025 · IFL Cards</footer>
 
 <script>
 // ── CONFIG ──
