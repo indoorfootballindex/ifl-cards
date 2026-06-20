@@ -546,8 +546,7 @@ function showCard(idx) {
     const t = document.getElementById('thumb' + i);
     if (!t) return;
     t.className = ['seen-thumb', c.landscape ? 'landscape' : 'portrait',
-      i === idx ? 'active-thumb' : i < idx ? 'revealed' : '',
-      (c.rarity === 'r' || c.rarity === 'sr') ? 'rarity-' + c.rarity : ''
+      i === idx ? 'active-thumb' : i < idx ? 'revealed' : ''
     ].join(' ').trim();
   });
 
