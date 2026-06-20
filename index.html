@@ -566,11 +566,19 @@ function nextCard() {
 }
 
 function collectPack() {
-  const col = loadCollectionLocal();
-  packCards.forEach(c => col.push({ ...c, packId: currentPack.id, packName: currentPack.name }));
-  saveCollectionLocal(col);
-  // also save to server if logged in
-  savePullToServer(packCards.map(c => ({ ...c, packId: currentPack.id, packName: currentPack.name })));
+  try {
+    const col = loadCollectionLocal();
+    packCards.forEach(c => col.push({ ...c, packId: currentPack.id, packName: currentPack.name }));
+    saveCollectionLocal(col);
+  } catch(e) {
+    console.error('Error saving collection locally:', e);
+  }
+  // save to server — non-blocking, won't break the flow if it fails
+  try {
+    savePullToServer(packCards.map(c => ({ ...c, packId: currentPack.id, packName: currentPack.name })));
+  } catch(e) {
+    console.warn('Server save skipped:', e);
+  }
   const sr = packCards.find(c => c.rarity === 'sr');
   showToast(sr ? '🏆 Secret Rare! 5 cards saved.' : '5 cards added to collection');
   showScreen('select');
