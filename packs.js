@@ -14,7 +14,7 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "r",
         "landscape": false,
-        "position": ""
+        "position": "WR"
       },
       {
         "file": "CameronHarrelQC_c.png",
@@ -24,7 +24,7 @@ var PACK_DATA = [
         "teamCode": "QC",
         "rarity": "c",
         "landscape": false,
-        "position": ""
+        "position": "DB"
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -34,7 +34,7 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "c",
         "landscape": false,
-        "position": ""
+        "position": "WR"
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -44,7 +44,7 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "c",
         "landscape": false,
-        "position": ""
+        "position": "DB"
       },
       {
         "file": "AndrewCarterSR.png",
@@ -54,7 +54,7 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "sr",
         "landscape": false,
-        "position": ""
+        "position": "OL"
       },
       {
         "file": "HarryBallardGB_u.png",
@@ -64,7 +64,7 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "u",
         "landscape": false,
-        "position": ""
+        "position": "WR"
       },
       {
         "file": "boodahlewis_u.png",
@@ -74,7 +74,7 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "u",
         "landscape": false,
-        "position": ""
+        "position": "WR"
       }
     ]
   },
