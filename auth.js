@@ -56,11 +56,13 @@ async function savePullToServer(cards) {
   const token = getToken();
   if (!token) return;
   try {
-    // Use text/plain to avoid CORS preflight (simple request)
     await fetch(API + '/api/collect', {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ token, cards })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ cards })
     });
   } catch(e) {
     console.warn('Could not save pull to server:', e.message);

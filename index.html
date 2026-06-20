@@ -633,7 +633,7 @@ function pullPack(pack) {
     return a;
   }
 
-  const slot5 = (byRarity.sr.length && Math.random() < 1/1000)
+  const slot5 = (byRarity.sr.length && Math.random() < 1/250)
     ? pick(byRarity.sr)
     : (pick(byRarity.r) || pick(byRarity.u) || pick(byRarity.c));
 
@@ -767,6 +767,12 @@ function collectPack() {
   } catch(e) {
     console.error('Local save failed:', e);
   }
+
+  // increment packs opened counter
+  try {
+    const opened = parseInt(localStorage.getItem('ifiPacksOpened') || '0') + 1;
+    localStorage.setItem('ifiPacksOpened', opened);
+  } catch(e) {}
 
   // Step 2: show result and go back — always happens
   const sr = packCards.find(c => c.rarity === 'sr');

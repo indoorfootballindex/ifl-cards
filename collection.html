@@ -199,6 +199,7 @@
 
     <div class="stats-row">
       <div class="stat-box"><span class="stat-n total" id="sTotal">0</span><span class="stat-lbl">Collected</span></div>
+      <div class="stat-box"><span class="stat-n" style="color:var(--green)" id="sPacks">0</span><span class="stat-lbl">Packs Opened</span></div>
       <div class="stat-box"><span class="stat-n comm"  id="sC">0</span><span class="stat-lbl">Common</span></div>
       <div class="stat-box"><span class="stat-n unco"  id="sU">0</span><span class="stat-lbl">Uncommon</span></div>
       <div class="stat-box"><span class="stat-n rare"  id="sR">0</span><span class="stat-lbl">Rare</span></div>
@@ -279,6 +280,10 @@ async function fetchCollectionFromServer() {
     });
     if (!res.ok) return;
     const data = await res.json();
+    // save packs opened from server
+    if (data.packs_opened !== undefined) {
+      try { localStorage.setItem('ifiPacksOpened', data.packs_opened); } catch(e) {}
+    }
     const lookup = {};
     if (window.PACK_DATA) {
       window.PACK_DATA.forEach(pack => {
@@ -367,6 +372,7 @@ async function render() {
   document.getElementById('totalCount').textContent  = totalUnique;
   document.getElementById('progressBar').style.width = totalUnique ? ((ownedUnique/totalUnique)*100).toFixed(1) + '%' : '0%';
   document.getElementById('sTotal').textContent = col.length;
+  document.getElementById('sPacks').textContent = Math.floor(col.length / 5);
   document.getElementById('sC').textContent  = col.filter(c => c.rarity === 'c').length;
   document.getElementById('sU').textContent  = col.filter(c => c.rarity === 'u').length;
   document.getElementById('sR').textContent  = col.filter(c => c.rarity === 'r').length;
