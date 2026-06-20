@@ -179,11 +179,9 @@ function hideError(id) {
 }
 
 function saveAuth(token, username, email) {
-  sessionStorage.setItem('ifiToken', token);
-  sessionStorage.setItem('ifiUser', JSON.stringify({ username, email }));
   try {
-    document.cookie = 'ifiToken=' + token + '; path=/; max-age=2592000';
-    document.cookie = 'ifiUser=' + encodeURIComponent(JSON.stringify({ username, email })) + '; path=/; max-age=2592000';
+    localStorage.setItem('ifiToken', token);
+    localStorage.setItem('ifiUser', JSON.stringify({ username, email }));
   } catch(e) {}
 }
 
@@ -241,8 +239,10 @@ async function doSignup(e) {
 }
 
 // If already logged in, redirect
-const existingToken = sessionStorage.getItem('ifiToken');
-if (existingToken) window.location.href = 'index.html';
+try {
+  const existingToken = localStorage.getItem('ifiToken');
+  if (existingToken) window.location.href = 'index.html';
+} catch(e) {}
 </script>
 </body>
 </html>

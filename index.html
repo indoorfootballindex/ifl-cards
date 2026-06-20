@@ -296,15 +296,12 @@ const RARITY_LABELS = { c: 'Common', u: 'Uncommon', r: 'Rare', sr: 'Secret Rare'
 // ── STORAGE ──
 function saveCollectionLocal(col) {
   const str = JSON.stringify(col);
-  sessionStorage.setItem('ifiCol', str);
-  try { document.cookie = 'ifiCol=' + encodeURIComponent(str) + '; path=/; max-age=31536000'; } catch(e) {}
+  try { localStorage.setItem('ifiCol', str); } catch(e) {}
 }
 function loadCollectionLocal() {
-  let s = sessionStorage.getItem('ifiCol');
-  if (s) { try { return JSON.parse(s); } catch(e) {} }
   try {
-    const match = document.cookie.split(';').find(c => c.trim().startsWith('ifiCol='));
-    if (match) return JSON.parse(decodeURIComponent(match.split('=')[1]));
+    const s = localStorage.getItem('ifiCol');
+    if (s) return JSON.parse(s);
   } catch(e) {}
   return [];
 }

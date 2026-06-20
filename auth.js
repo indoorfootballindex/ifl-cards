@@ -2,31 +2,22 @@
 const API = 'https://ifl-cards-api.indoorfootballindex.workers.dev';
 
 function getToken() {
-  let t = sessionStorage.getItem('ifiToken');
-  if (t) return t;
-  try {
-    const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiToken='));
-    if (m) return m.split('=')[1].trim();
-  } catch(e) {}
+  try { return localStorage.getItem('ifiToken'); } catch(e) {}
   return null;
 }
 
 function getUser() {
-  let u = sessionStorage.getItem('ifiUser');
-  if (u) { try { return JSON.parse(u); } catch(e) {} }
   try {
-    const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiUser='));
-    if (m) return JSON.parse(decodeURIComponent(m.split('=')[1]));
+    const u = localStorage.getItem('ifiUser');
+    if (u) return JSON.parse(u);
   } catch(e) {}
   return null;
 }
 
 function clearAuth() {
-  sessionStorage.removeItem('ifiToken');
-  sessionStorage.removeItem('ifiUser');
   try {
-    document.cookie = 'ifiToken=; path=/; max-age=0';
-    document.cookie = 'ifiUser=; path=/; max-age=0';
+    localStorage.removeItem('ifiToken');
+    localStorage.removeItem('ifiUser');
   } catch(e) {}
 }
 
@@ -78,12 +69,8 @@ async function savePullToServer(cards) {
 async function migrateLocalToServer(token) {
   let local = [];
   try {
-    let s = sessionStorage.getItem('ifiCol');
+    const s = localStorage.getItem('ifiCol');
     if (s) local = JSON.parse(s);
-    else {
-      const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiCol='));
-      if (m) local = JSON.parse(decodeURIComponent(m.split('=')[1]));
-    }
   } catch(e) {}
   if (!local.length) return;
   try {
@@ -92,8 +79,7 @@ async function migrateLocalToServer(token) {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ cards: local })
     });
-    sessionStorage.removeItem('ifiCol');
-    try { document.cookie = 'ifiCol=; path=/; max-age=0'; } catch(e) {}
+    localStorage.removeItem('ifiCol');
   } catch(e) {
     console.warn('Migration failed:', e.message);
   }
