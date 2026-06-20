@@ -76,5 +76,11 @@ var PACK_DATA = [
     "name": "AFL All Eras",
     "sub": "Arena Football League \u00b7 All-Time Greats",
     "cards": []
+  },
+  {
+    "id": "AFLLegends",
+    "name": "AFL Legends",
+    "sub": "Arena Football League \u00b7 Legends",
+    "cards": []
   }
 ];
