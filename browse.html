@@ -252,36 +252,40 @@ function enrichCards(apiCards) {
 }
 
 async function getCollection() {
-  let local = [];
   try {
     const s = localStorage.getItem('ifiCol');
-    if (s) local = JSON.parse(s);
+    if (s) return JSON.parse(s);
   } catch(e) {}
+  return [];
+}
+
+async function fetchCollectionFromServer() {
   let token = null;
   try { token = localStorage.getItem('ifiToken'); } catch(e) {}
-  if (token) {
-    try {
-      const res = await fetch('https://api.cards.indoorfootballindex.com/api/collection', {
-        headers: { 'Authorization': 'Bearer ' + token }
+  if (!token) return;
+  try {
+    const res = await fetch('https://api.cards.indoorfootballindex.com/api/collection', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const lookup = {};
+    if (window.PACK_DATA) {
+      window.PACK_DATA.forEach(pack => {
+        (pack.cards||[]).forEach(card => { lookup[card.file] = { ...card, packId: pack.id, packName: pack.name }; });
       });
-      if (res.ok) {
-        const data = await res.json();
-        const lookup = {};
-        if (window.PACK_DATA) {
-          window.PACK_DATA.forEach(pack => {
-            (pack.cards||[]).forEach(card => { lookup[card.file] = { ...card, packId: pack.id, packName: pack.name }; });
-          });
-        }
-        const serverCards = data.cards.map(c => {
-          const base = lookup[c.card_file] || {};
-          return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
-        });
-        try { localStorage.setItem('ifiCol', JSON.stringify(serverCards)); } catch(e) {}
-        return serverCards;
-      }
-    } catch(e) {}
-  }
-  return local;
+    }
+    const serverCards = data.cards.map(c => {
+      const base = lookup[c.card_file] || {};
+      return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
+    });
+    const localStr = localStorage.getItem('ifiCol') || '[]';
+    const serverStr = JSON.stringify(serverCards);
+    if (localStr !== serverStr) {
+      localStorage.setItem('ifiCol', serverStr);
+      render();
+    }
+  } catch(e) {}
 }
 
 const filters = { pack:'all', status:'all' };
@@ -460,6 +464,7 @@ document.addEventListener('keydown', e => { if (e.key==='Escape') closeLB(); });
 
 buildPackFilter();
 render();
+fetchCollectionFromServer();
 </script>
 <script src="auth.js"></script>
 </body>
