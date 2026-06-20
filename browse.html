@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IFL Cards – Browse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<script src="packs.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black:#0e0e0f; --dark:#161618; --panel:#1c1c1f; --border:#2e2e33;
+    --silver:#8a8a96; --red:#c0201a; --gold:#c8980a;
+    --muted:#5a5a66; --text:#e8e8ec; --white:#f4f4f6;
+    --c-color:#6a6a76; --u-color:#3a7abf; --r-color:#9b42d6; --sr-color:#c8980a;
+  }
+  html,body { background:var(--black); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; }
+
+  nav {
+    background:var(--dark); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 1.5rem;
+    position:sticky; top:0; z-index:100;
+  }
+  .nav-logo {
+    font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem;
+    letter-spacing:0.14em; color:var(--white); text-transform:uppercase;
+    margin-right:2rem; padding:1rem 0; text-decoration:none;
+  }
+  .nav-logo span { color:var(--red); }
+  .nav-tab {
+    padding:1rem 1.1rem; font-size:0.72rem; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none;
+    border-bottom:2px solid transparent; transition:color 0.15s,border-color 0.15s;
+  }
+  .nav-tab:hover { color:var(--text); }
+  .nav-tab.active { color:var(--white); border-bottom-color:var(--red); }
+
+  .page-wrap { max-width:1000px; margin:0 auto; padding:2rem 1.25rem 3rem; }
+
+  .page-header { margin-bottom:1.5rem; }
+  .page-eyebrow { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
+  .page-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(1.6rem,4vw,2.4rem); text-transform:uppercase; letter-spacing:0.04em; color:var(--white); line-height:1; }
+  .page-title span { color:var(--red); }
+  .page-completion {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.9rem;
+    color:var(--muted); margin-top:0.4rem; letter-spacing:0.04em;
+  }
+  .page-completion strong { color:var(--white); }
+
+  .progress-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-bottom:1.5rem; overflow:hidden; }
+  .progress-bar-fill { height:100%; background:var(--red); border-radius:2px; transition:width 0.4s; }
+
+  /* filter row */
+  .filter-section { margin-bottom:1.25rem; }
+  .filter-label { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:6px; }
+  .filter-row { display:flex; gap:6px; flex-wrap:wrap; }
+  .filter-btn {
+    font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.68rem;
+    letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px;
+    border-radius:20px; border:1px solid var(--border); background:transparent;
+    color:var(--muted); cursor:pointer; transition:all 0.12s;
+  }
+  .filter-btn:hover { border-color:var(--silver); color:var(--text); }
+  .filter-btn.on { background:var(--panel); border-color:var(--red); color:var(--white); }
+
+  /* card grid */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; align-items:start; }
+
+  .section-label {
+    grid-column:1/-1; font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--muted); padding:6px 0 4px; border-top:1px solid var(--border); margin-top:4px;
+  }
+
+  /* BASE CARD */
+  .browse-card {
+    position:relative; border-radius:10px; overflow:hidden;
+    border:1.5px solid var(--border); background:var(--panel);
+    cursor:default; transition:transform 0.15s, box-shadow 0.15s;
+  }
+  .browse-card.portrait  { aspect-ratio:5/7; }
+  .browse-card.landscape { aspect-ratio:7/5; }
+
+  /* LOCKED card — dark silhouette with team logo */
+  .browse-card.locked {
+    background:#111214;
+    cursor:default;
+  }
+  .locked-bg {
+    position:absolute; inset:0;
+    background:linear-gradient(145deg, #141416 0%, #0e0e10 100%);
+  }
+  .locked-logo {
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .locked-logo img {
+    width:55%; height:55%; object-fit:contain;
+    opacity:0.05; filter:grayscale(99%);
+  }
+  .locked-logo .no-logo {
+    font-family:'Barlow Condensed',sans-serif; font-weight:900;
+    font-size:1.4rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:rgba(255,255,255,0.12);
+  }
+  .locked-overlay {
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+  }
+  .locked-info {
+    position:absolute; bottom:0; left:0; right:0; padding:20px 8px 7px;
+    font-family:'Barlow Condensed',sans-serif; text-align:center;
+  }
+  .locked-team {
+    font-size:0.6rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+    color:rgba(255,255,255,0.3);
+  }
+  .locked-rarity {
+    position:absolute; top:6px; left:6px;
+    font-family:'Barlow Condensed',sans-serif; font-size:0.56rem; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase; padding:2px 6px; border-radius:3px;
+    background:rgba(0,0,0,0.6); color:rgba(255,255,255,0.2);
+  }
+  /* rarity tint on lock border */
+  .browse-card.locked.rarity-r  { border-color:rgba(155,66,214,0.25); }
+  .browse-card.locked.rarity-sr { border-color:rgba(200,152,10,0.25); }
+
+  /* UNLOCKED card */
+  .browse-card.unlocked { cursor:pointer; }
+  .browse-card.unlocked:hover { transform:translateY(-4px) scale(1.02); }
+  .browse-card.unlocked.rarity-r  { border-color:#7a30b0; box-shadow:0 0 10px rgba(155,66,214,0.2); }
+  .browse-card.unlocked.rarity-sr { border-color:var(--gold); box-shadow:0 0 14px rgba(200,152,10,0.35); }
+
+  .unlocked-img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .unlocked-info {
+    position:absolute; bottom:0; left:0; right:0; padding:28px 8px 7px;
+    background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,transparent 100%);
+    font-family:'Barlow Condensed',sans-serif; text-align:center;
+  }
+  .unlocked-name { font-size:0.7rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:#fff; line-height:1.2; }
+  .unlocked-team { font-size:0.56rem; color:rgba(255,255,255,0.45); text-transform:uppercase; margin-top:1px; }
+
+  .rarity-badge {
+    position:absolute; top:6px; left:6px;
+    font-family:'Barlow Condensed',sans-serif; font-size:0.58rem; font-weight:700;
+    letter-spacing:0.06em; text-transform:uppercase; padding:2px 6px; border-radius:3px;
+  }
+  .rarity-badge.c  { background:rgba(0,0,0,0.7); color:var(--c-color); }
+  .rarity-badge.u  { background:rgba(0,0,0,0.7); color:var(--u-color); }
+  .rarity-badge.r  { background:rgba(155,66,214,0.3); color:#c07af0; }
+  .rarity-badge.sr { background:rgba(200,152,10,0.3); color:var(--sr-color); }
+
+  /* lightbox */
+  .lightbox {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.93); z-index:300;
+    align-items:center; justify-content:center; padding:1.5rem; cursor:pointer;
+  }
+  .lightbox.open { display:flex; }
+  .lb-inner { position:relative; cursor:default; }
+  .lb-inner.portrait  { max-width:320px; width:100%; }
+  .lb-inner.landscape { max-width:540px; width:100%; }
+  .lb-inner img { width:100%; border-radius:14px; display:block; box-shadow:0 16px 60px rgba(0,0,0,0.8); }
+  .lb-inner.rarity-r  img { border:2px solid #9b42d6; box-shadow:0 0 40px rgba(155,66,214,0.5); }
+  .lb-inner.rarity-sr img { border:2px solid var(--gold); box-shadow:0 0 50px rgba(200,152,10,0.6); }
+  .lb-info { margin-top:12px; text-align:center; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; }
+  .lb-name { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.3rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--white); }
+  .lb-rarity { font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:3px 10px; border-radius:4px; }
+  .lb-rarity.c  { color:var(--c-color);  border:1px solid var(--c-color); }
+  .lb-rarity.u  { color:var(--u-color);  border:1px solid var(--u-color); }
+  .lb-rarity.r  { color:var(--r-color);  border:1px solid var(--r-color); }
+  .lb-rarity.sr { color:var(--sr-color); border:1px solid var(--sr-color); }
+  .lb-team { font-size:0.78rem; color:var(--muted); }
+  .lb-close {
+    position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--border); color:var(--muted);
+    font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:color 0.12s,border-color 0.12s;
+  }
+  .lb-close:hover { color:var(--red); border-color:var(--red); }
+
+  footer { border-top:1px solid var(--border); text-align:center; padding:1.25rem; font-size:0.7rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo"><span>IFL</span> Cards</a>
+  <a href="index.html"      class="nav-tab">Open Packs</a>
+  <a href="collection.html" class="nav-tab">My Collection</a>
+  <a href="browse.html"     class="nav-tab active">Browse</a>
+</nav>
+
+<main>
+  <div class="page-wrap">
+    <div class="page-header">
+      <div class="page-eyebrow">Indoor Football Index</div>
+      <div class="page-title">Card <span>Checklist</span></div>
+      <div class="page-completion">You own <strong id="ownedCount">0</strong> of <strong id="totalCount">0</strong> cards</div>
+    </div>
+
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+
+    <div class="filter-section">
+      <div class="filter-label">Pack</div>
+      <div class="filter-row" id="packFilters">
+        <button class="filter-btn on" onclick="setFilter('pack','all',this)">All</button>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Status</div>
+      <div class="filter-row">
+        <button class="filter-btn on" onclick="setFilter('status','all',this)">All</button>
+        <button class="filter-btn"    onclick="setFilter('status','unlocked',this)">Unlocked</button>
+        <button class="filter-btn"    onclick="setFilter('status','locked',this)">Locked</button>
+      </div>
+    </div>
+
+    <div class="card-grid" id="browseGrid"></div>
+  </div>
+</main>
+
+<footer>Indoor Football Index &copy; 2025 · IFL Cards</footer>
+
+<div class="lightbox" id="lightbox" onclick="closeLB(event)">
+  <div class="lb-inner portrait" id="lbInner">
+    <button class="lb-close" onclick="closeLB()">&times;</button>
+    <img id="lbImg" src="" alt="">
+    <div class="lb-info">
+      <div class="lb-name" id="lbName"></div>
+      <div class="lb-rarity c" id="lbRarity">Common</div>
+      <div class="lb-team" id="lbTeam"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RARITY_LABELS = { c:'Common', u:'Uncommon', r:'Rare', sr:'Secret Rare' };
+
+function loadCollection() {
+  let s = sessionStorage.getItem('ifiCol');
+  if (s) { try { return JSON.parse(s); } catch(e) {} }
+  try {
+    const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiCol='));
+    if (m) return JSON.parse(decodeURIComponent(m.split('=')[1]));
+  } catch(e) {}
+  return [];
+}
+
+const filters = { pack:'all', status:'all' };
+
+function getAllCards() {
+  if (!window.PACK_DATA) return [];
+  const all = [];
+  window.PACK_DATA.forEach(pack => {
+    (pack.cards||[]).forEach(card => all.push({ ...card, packId:pack.id, packName:pack.name }));
+  });
+  return all;
+}
+
+function buildPackFilter() {
+  const packs = window.PACK_DATA || [];
+  const row = document.getElementById('packFilters');
+  row.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn' + (filters.pack === 'all' ? ' on' : '');
+  allBtn.textContent = 'All';
+  allBtn.onclick = () => setFilter('pack','all',allBtn);
+  row.appendChild(allBtn);
+  packs.forEach(pack => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (filters.pack === pack.id ? ' on' : '');
+    btn.textContent = pack.name;
+    btn.onclick = () => setFilter('pack', pack.id, btn);
+    row.appendChild(btn);
+  });
+}
+
+function render() {
+  const col = loadCollection();
+  const ownedFiles = new Set(col.map(c => c.file));
+  const all = getAllCards();
+
+  // unique cards (dedupe by file)
+  const seen = new Set();
+  const unique = [];
+  all.forEach(c => { if (!seen.has(c.file)) { seen.add(c.file); unique.push(c); } });
+
+  const total  = unique.length;
+  const owned  = unique.filter(c => ownedFiles.has(c.file)).length;
+  document.getElementById('ownedCount').textContent = owned;
+  document.getElementById('totalCount').textContent  = total;
+  document.getElementById('progressBar').style.width = total ? ((owned/total)*100).toFixed(1)+'%' : '0%';
+
+  // apply filters
+  let filtered = unique;
+  if (filters.pack !== 'all')   filtered = filtered.filter(c => c.packId === filters.pack);
+  if (filters.status === 'unlocked') filtered = filtered.filter(c =>  ownedFiles.has(c.file));
+  if (filters.status === 'locked')   filtered = filtered.filter(c => !ownedFiles.has(c.file));
+
+  const grid = document.getElementById('browseGrid');
+  grid.innerHTML = '';
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--muted);font-size:0.9rem;">No cards match these filters.</div>';
+    return;
+  }
+
+  // group by pack
+  const byPack = {};
+  filtered.forEach(c => {
+    const k = c.packName || 'Unknown';
+    if (!byPack[k]) byPack[k] = [];
+    byPack[k].push(c);
+  });
+
+  let first = true;
+  Object.entries(byPack).forEach(([packName, cards]) => {
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    if (first) label.style.cssText = 'border-top:none;margin-top:0;';
+    label.textContent = packName;
+    grid.appendChild(label);
+    first = false;
+
+    cards.forEach(card => {
+      const isOwned = ownedFiles.has(card.file);
+      const orient  = card.landscape ? 'landscape' : 'portrait';
+      const el = document.createElement('div');
+      el.className = ['browse-card', orient, isOwned ? 'unlocked' : 'locked', 'rarity-' + card.rarity].join(' ');
+
+      if (isOwned) {
+        // UNLOCKED — show full card
+        el.onclick = () => openLB(card);
+
+        const img = document.createElement('img');
+        img.className = 'unlocked-img';
+        img.src = 'packs/' + card.packId + '/' + card.file;
+        img.alt = card.name;
+        img.loading = 'lazy';
+
+        const badge = document.createElement('div');
+        badge.className = 'rarity-badge ' + card.rarity;
+        badge.textContent = card.rarity.toUpperCase();
+
+        const info = document.createElement('div');
+        info.className = 'unlocked-info';
+        info.innerHTML = `<div class="unlocked-name">${card.name}</div><div class="unlocked-team">${card.team}</div>`;
+
+        el.appendChild(img);
+        el.appendChild(badge);
+        el.appendChild(info);
+      } else {
+        // LOCKED — silhouette with team logo
+        const bg = document.createElement('div');
+        bg.className = 'locked-bg';
+
+        const logoWrap = document.createElement('div');
+        logoWrap.className = 'locked-logo';
+
+        // try to load team logo from Logos/<team>.png
+        const logoImg = document.createElement('img');
+        const teamFileName = (card.team || '').replace(/\//g, '-');
+        logoImg.src = 'Logos/' + teamFileName + '.png';
+        logoImg.alt = '';
+        logoImg.onerror = function() {
+          // fallback: show team code text
+          logoWrap.innerHTML = '<div class="no-logo">' + (card.teamCode || card.team || '?') + '</div>';
+        };
+        logoWrap.appendChild(logoImg);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'locked-overlay';
+
+        const rarityLock = document.createElement('div');
+        rarityLock.className = 'locked-rarity';
+        rarityLock.textContent = card.rarity.toUpperCase();
+
+        const info = document.createElement('div');
+        info.className = 'locked-info';
+        info.innerHTML = `<div class="locked-team">${card.team}</div>`;
+
+        el.appendChild(bg);
+        el.appendChild(logoWrap);
+        el.appendChild(overlay);
+        el.appendChild(rarityLock);
+        el.appendChild(info);
+      }
+
+      grid.appendChild(el);
+    });
+  });
+}
+
+function setFilter(key, val, btn) {
+  filters[key] = val;
+  const rowId = { pack:'packFilters', status:null }[key];
+  if (rowId) {
+    document.getElementById(rowId).querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn' + (b===btn?' on':''));
+  } else {
+    btn.closest('.filter-row').querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn' + (b===btn?' on':''));
+  }
+  render();
+}
+
+function openLB(card) {
+  const orient = card.landscape ? 'landscape' : 'portrait';
+  document.getElementById('lbImg').src = 'packs/' + card.packId + '/' + card.file;
+  document.getElementById('lbImg').alt = card.name;
+  document.getElementById('lbName').textContent = card.name;
+  document.getElementById('lbTeam').textContent = card.team + ' · ' + (card.packName||'');
+  const rar = document.getElementById('lbRarity');
+  rar.textContent = RARITY_LABELS[card.rarity];
+  rar.className = 'lb-rarity ' + card.rarity;
+  document.getElementById('lbInner').className = 'lb-inner ' + orient + ' rarity-' + card.rarity;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLB(e) {
+  if (!e || e.target===document.getElementById('lightbox') || e.currentTarget.tagName==='BUTTON')
+    document.getElementById('lightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeLB(); });
+
+buildPackFilter();
+render();
+</script>
+</body>
+</html>
