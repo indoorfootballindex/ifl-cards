@@ -25,7 +25,7 @@
     display: flex; align-items: center; padding: 0 1.5rem;
     position: sticky; top: 0; z-index: 100;
   }
-  .nav-logo { display:flex; align-items:center;
+  .nav-logo { display:flex; align-items:center; height:60px;
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.2rem;
     letter-spacing: 0.14em; color: var(--white); text-transform: uppercase;
     margin-right: 2rem; padding: 1rem 0; text-decoration: none;
@@ -392,7 +392,7 @@
 <body>
 
 <nav>
-  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:32px;width:auto;display:block;"></a>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:44px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
   <a href="index.html" class="nav-tab active">Open Packs</a>
   <a href="collection.html" class="nav-tab">My Collection</a>
   <a href="browse.html" class="nav-tab">Browse</a>
@@ -412,7 +412,7 @@
 <!-- PACK OPEN -->
 <div class="screen" id="screen-open">
   <div class="pack-open-screen">
-    <div class="pack-img-wrap" id="packWrap">
+    <div class="pack-img-wrap" id="packWrap" onclick="startOpen()" style="cursor:pointer;">
       <img src="" alt="Pack" id="packImg">
       <div class="pack-top"   id="packTop">   <img src="" alt="" id="packImgTop"></div>
       <div class="pack-bottom" id="packBottom"><img src="" alt="" id="packImgBottom"></div>
@@ -608,6 +608,7 @@ function selectPack(id) {
 
 function startOpen() {
   if (!currentPack || !currentPack.cards.length) return;
+  if (document.getElementById('openBtn').disabled) return;
   document.getElementById('openBtn').disabled = true;
   document.getElementById('packWrap').classList.add('ripping');
   setTimeout(() => {
