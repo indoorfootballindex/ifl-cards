@@ -251,7 +251,8 @@
     box-shadow: 0 8px 40px rgba(0,0,0,0.6);
     transform-style: preserve-3d;
   }
-  .big-card { width: min(240px, 68vw); aspect-ratio: 5/7; }
+  .big-card.portrait  { width: min(240px, 68vw); aspect-ratio: 5/7; }
+  .big-card.landscape { width: min(380px, 88vw); aspect-ratio: 7/5; }
   .big-card.team-gb { border-color: #2d7a3a; }
   .big-card.team-qc { border-color: #aa2222; }
   .big-card.rarity-r  { border-color: #9b42d6; }
@@ -683,8 +684,7 @@ function showCard(idx) {
   // flip class — last card gets dramatic flip
   const flipClass = isLast ? 'flip-last' : 'flip-normal';
   const bc = document.getElementById('bigCard');
-  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');
-  bc.style.animation = 'none';
+  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');  bc.style.animation = 'none';
   void bc.offsetWidth;
   bc.style.animation = '';
 
