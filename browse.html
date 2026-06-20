@@ -252,23 +252,9 @@ function enrichCards(apiCards) {
 }
 
 async function getCollection() {
-  const token = getToken();
-  if (token) {
-    try {
-      const res = await fetch(API + '/api/collection', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return enrichCards(data.cards);
-      }
-    } catch(e) {}
-  }
-  let s = sessionStorage.getItem('ifiCol');
-  if (s) { try { return JSON.parse(s); } catch(e) {} }
   try {
-    const m = document.cookie.split(';').find(c => c.trim().startsWith('ifiCol='));
-    if (m) return JSON.parse(decodeURIComponent(m.split('=')[1]));
+    const s = localStorage.getItem('ifiCol');
+    if (s) return JSON.parse(s);
   } catch(e) {}
   return [];
 }

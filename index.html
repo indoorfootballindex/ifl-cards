@@ -563,22 +563,46 @@ function nextCard() {
 }
 
 function collectPack() {
+  // Step 1: save locally — this must always work
   try {
     const col = loadCollectionLocal();
-    packCards.forEach(c => col.push({ ...c, packId: currentPack.id, packName: currentPack.name }));
-    saveCollectionLocal(col);
+    packCards.forEach(c => col.push({
+      file: c.file,
+      name: c.name,
+      team: c.team,
+      league: c.league || '',
+      teamCode: c.teamCode || '',
+      rarity: c.rarity,
+      landscape: c.landscape || false,
+      packId: currentPack.id,
+      packName: currentPack.name
+    }));
+    localStorage.setItem('ifiCol', JSON.stringify(col));
   } catch(e) {
-    console.error('Error saving collection locally:', e);
+    console.error('Local save failed:', e);
   }
-  // save to server — non-blocking, won't break the flow if it fails
-  try {
-    savePullToServer(packCards.map(c => ({ ...c, packId: currentPack.id, packName: currentPack.name })));
-  } catch(e) {
-    console.warn('Server save skipped:', e);
-  }
+
+  // Step 2: show result and go back — always happens
   const sr = packCards.find(c => c.rarity === 'sr');
-  showToast(sr ? '🏆 Secret Rare! 5 cards saved.' : '5 cards added to collection');
+  showToast(sr ? '🏆 Secret Rare! Cards saved.' : '5 cards added to collection');
   showScreen('select');
+
+  // Step 3: try server save in background — failure doesn't matter
+  try {
+    if (typeof savePullToServer === 'function') {
+      savePullToServer(packCards.map(c => ({
+        file: c.file,
+        name: c.name,
+        team: c.team,
+        league: c.league || '',
+        teamCode: c.teamCode || '',
+        rarity: c.rarity,
+        landscape: c.landscape || false,
+        packId: currentPack.id,
+        packName: currentPack.name
+      })));
+    }
+  } catch(e) {}
 }
 
 function showToast(msg) {
