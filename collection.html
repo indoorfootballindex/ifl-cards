@@ -479,8 +479,10 @@ function closeLB(e) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
 
-render();
-fetchCollectionFromServer();
+(async () => {
+  try { await render(); } catch(e) { console.error('render error:', e); }
+  try { await fetchCollectionFromServer(); } catch(e) { console.error('fetch error:', e); }
+})();
 </script>
 <script src="auth.js"></script>
 </body>
