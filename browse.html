@@ -252,11 +252,35 @@ function enrichCards(apiCards) {
 }
 
 async function getCollection() {
+  let local = [];
   try {
     const s = localStorage.getItem('ifiCol');
-    if (s) return JSON.parse(s);
+    if (s) local = JSON.parse(s);
   } catch(e) {}
-  return [];
+  try {
+    const token = getToken();
+    if (token) {
+      const res = await fetch('https://api.cards.indoorfootballindex.com/api/collection', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const lookup = {};
+        if (window.PACK_DATA) {
+          window.PACK_DATA.forEach(pack => {
+            (pack.cards||[]).forEach(card => { lookup[card.file] = { ...card, packId: pack.id, packName: pack.name }; });
+          });
+        }
+        const serverCards = data.cards.map(c => {
+          const base = lookup[c.card_file] || {};
+          return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
+        });
+        try { localStorage.setItem('ifiCol', JSON.stringify(serverCards)); } catch(e) {}
+        return serverCards;
+      }
+    }
+  } catch(e) {}
+  return local;
 }
 
 const filters = { pack:'all', status:'all' };
