@@ -376,6 +376,7 @@
     from { transform: scale(0) rotate(-10deg); opacity: 0; }
     to   { transform: scale(1) rotate(0deg);  opacity: 1; }
   }
+  .toast {
     position: fixed; bottom: 2rem; left: 50%;
     transform: translateX(-50%) translateY(4rem);
     background: var(--panel); border: 1px solid var(--green);
@@ -385,6 +386,29 @@
     transition: transform 0.3s, opacity 0.3s; z-index: 200; pointer-events: none;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* CARD LIGHTBOX */
+  .card-lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92); z-index: 400;
+    align-items: center; justify-content: center;
+    padding: 1.5rem; cursor: pointer;
+  }
+  .card-lightbox.open { display: flex; }
+  .card-lb-inner { position: relative; cursor: default; }
+  .card-lb-inner.portrait  { max-width: 340px; width: 100%; }
+  .card-lb-inner.landscape { max-width: 560px; width: 100%; }
+  .card-lb-inner img { width: 100%; border-radius: 14px; display: block; box-shadow: 0 16px 60px rgba(0,0,0,0.8); }
+  .card-lb-close {
+    position: absolute; top: -14px; right: -14px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted); font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.12s, border-color 0.12s; line-height: 1;
+    flex-shrink: 0;
+  }
+  .card-lb-close:hover { color: var(--green); border-color: var(--green); }
 
   footer { border-top: 1px solid var(--border); text-align: center; padding: 1.25rem; font-size: 0.7rem; color: var(--muted); }
 </style>
@@ -620,10 +644,20 @@ function startOpen() {
   }, 680);
 }
 
-// ── CHEAT KEY ──
-let cheatSR = false;
-document.addEventListener('keydown', e => { if (e.key === '0') cheatSR = true; });
-document.addEventListener('keyup',   e => { if (e.key === '0') cheatSR = false; });
+function openCardLB(src, orient) {
+  document.getElementById('cardLbImg').src = src;
+  document.getElementById('cardLbInner').className = 'card-lb-inner ' + orient;
+  document.getElementById('cardLightbox').classList.add('open');
+}
+function closeCardLB(e) {
+  if (!e || e.target === document.getElementById('cardLightbox') || e.currentTarget.tagName === 'BUTTON')
+    document.getElementById('cardLightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('cardLightbox').classList.remove('open');
+  if (e.key === '0') cheatSR = true;
+});
+document.addEventListener('keyup', e => { if (e.key === '0') cheatSR = false; });
 
 // ── PULL LOGIC ──
 // Slots 1-3: commons | Slot 4: uncommon | Slot 5: SR (1/1000) or rare
@@ -690,7 +724,9 @@ function showCard(idx) {
   // flip class — last card gets dramatic flip
   const flipClass = isLast ? 'flip-last' : 'flip-normal';
   const bc = document.getElementById('bigCard');
-  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');  bc.style.animation = 'none';
+  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');
+  bc.style.cursor = 'zoom-in';
+  bc.onclick = () => openCardLB('packs/' + currentPack.id + '/' + card.file, orient);  bc.style.animation = 'none';
   void bc.offsetWidth;
   bc.style.animation = '';
 
@@ -812,6 +848,13 @@ function showToast(msg) {
 // ── INIT ──
 loadPacks();
 </script>
+<div class="card-lightbox" id="cardLightbox" onclick="closeCardLB(event)">
+  <div class="card-lb-inner portrait" id="cardLbInner">
+    <button class="card-lb-close" onclick="closeCardLB()">&times;</button>
+    <img id="cardLbImg" src="" alt="">
+  </div>
+</div>
+
 <script src="auth.js"></script>
 </body>
 </html>
