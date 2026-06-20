@@ -158,5 +158,5 @@ async function migrateLocalToServer(token) {
     try { document.cookie = 'ifiCol=; path=/; max-age=0'; } catch(e) {}
     console.log('Migrated ' + local.length + ' local cards to account');
 
-// Run on every page load
-document.addEventListener('DOMContentLoaded', initNav);
+// Run immediately — auth.js loads at end of body so DOM is already ready
+initNav();
