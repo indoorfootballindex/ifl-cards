@@ -110,23 +110,87 @@
   .pack-open-screen {
     min-height: calc(100vh - 57px); display: flex; flex-direction: column;
     align-items: center; justify-content: center; padding: 2rem 1rem;
+    overflow: hidden;
   }
+
+  /* Pack wrapper — clips into top/bottom halves for tear effect */
   .pack-img-wrap {
     width: min(260px, 68vw); cursor: pointer; user-select: none;
+    position: relative;
   }
-  .pack-img-wrap img {
+
+  /* The two halves sit on top of each other normally */
+  .pack-half-top, .pack-half-bottom {
+    width: 100%; overflow: hidden; display: block;
+    position: relative;
+  }
+  .pack-half-top    { height: 42%; border-radius: 10px 10px 0 0; }
+  .pack-half-bottom { height: 58%; border-radius: 0 0 10px 10px; }
+
+  .pack-half-top img, .pack-half-bottom img {
     width: 100%; display: block; object-fit: contain;
     filter: drop-shadow(0 8px 32px rgba(192,32,26,0.25));
-    transition: transform 0.2s, filter 0.2s;
   }
-  .pack-img-wrap:hover img { transform: scale(1.025) translateY(-4px); filter: drop-shadow(0 14px 40px rgba(192,32,26,0.4)); }
-  .pack-img-wrap.ripping img { animation: packRip 0.6s forwards; }
-  @keyframes packRip {
-    0%   { transform: scale(1) rotate(0); opacity: 1; }
-    30%  { transform: scale(1.06) rotate(-2deg); }
-    60%  { transform: scale(0.9) rotate(4deg); opacity: 0.7; }
-    100% { transform: scale(0.3) translateY(-100px) rotate(-12deg); opacity: 0; }
+  .pack-half-top img    { transform-origin: top center; }
+  .pack-half-bottom img { transform-origin: bottom center; }
+
+  /* foil shimmer on hover */
+  .pack-half-top::after, .pack-half-bottom::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
   }
+  .pack-img-wrap:hover .pack-half-top::after,
+  .pack-img-wrap:hover .pack-half-bottom::after { opacity: 1; }
+
+  /* Shake on hover */
+  .pack-img-wrap:hover .pack-half-top img,
+  .pack-img-wrap:hover .pack-half-bottom img {
+    animation: packShake 0.4s ease-in-out;
+  }
+  @keyframes packShake {
+    0%,100% { transform: rotate(0deg); }
+    20% { transform: rotate(-1.5deg); }
+    40% { transform: rotate(1.5deg); }
+    60% { transform: rotate(-1deg); }
+    80% { transform: rotate(0.8deg); }
+  }
+
+  /* Tear animation — top flies up, bottom drops down */
+  .pack-img-wrap.ripping .pack-half-top {
+    animation: tearTop 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  .pack-img-wrap.ripping .pack-half-bottom {
+    animation: tearBottom 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  /* Particle flash at tear line */
+  .pack-img-wrap.ripping::after {
+    content: '';
+    position: absolute;
+    top: 42%; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, #fff, var(--red), #fff, transparent);
+    animation: tearFlash 0.3s ease-out forwards;
+    z-index: 10;
+  }
+  @keyframes tearTop {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    20%  { transform: translateY(-8px) rotate(-1deg); }
+    100% { transform: translateY(-140%) rotate(-8deg); opacity: 0; }
+  }
+  @keyframes tearBottom {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    20%  { transform: translateY(8px) rotate(1deg); }
+    100% { transform: translateY(140%) rotate(5deg); opacity: 0; }
+  }
+  @keyframes tearFlash {
+    0%   { opacity: 0; transform: scaleX(0); }
+    40%  { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0; transform: scaleX(1.2); }
+  }
+
   .pack-open-meta { text-align: center; margin: 1.5rem 0 1.75rem; }
   .pack-open-meta-name {
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
@@ -156,6 +220,7 @@
   .reveal-screen {
     min-height: calc(100vh - 57px); display: flex; flex-direction: column;
     align-items: center; justify-content: center; padding: 1.5rem 1rem;
+    position: relative; overflow: hidden;
   }
   .pip-row { display: flex; gap: 9px; margin-bottom: 1.25rem; }
   .pip { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
@@ -166,26 +231,98 @@
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
     font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
     padding: 4px 16px; border-radius: 4px; margin-bottom: 10px; display: inline-block;
+    animation: bannerIn 0.3s ease backwards;
   }
+  @keyframes bannerIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
   .rarity-banner.c  { background: rgba(106,106,118,0.2); color: var(--c-color);  border: 1px solid rgba(106,106,118,0.3); }
   .rarity-banner.u  { background: rgba(58,122,191,0.15);  color: var(--u-color);  border: 1px solid rgba(58,122,191,0.3);  }
   .rarity-banner.r  { background: rgba(155,66,214,0.2);   color: var(--r-color);  border: 1px solid rgba(155,66,214,0.4);  }
   .rarity-banner.sr { background: rgba(200,152,10,0.2);   color: var(--sr-color); border: 1px solid rgba(200,152,10,0.5); animation: srPulse 1.5s ease-in-out infinite; }
   @keyframes srPulse { 0%,100% { box-shadow: 0 0 6px rgba(200,152,10,0.3); } 50% { box-shadow: 0 0 18px rgba(200,152,10,0.7); } }
 
+  /* Card flip wrapper — 3D perspective */
+  .card-flip-outer {
+    perspective: 900px;
+    margin-bottom: 1.25rem;
+  }
+
   .big-card {
     border-radius: 12px; overflow: hidden; border: 2px solid var(--border); position: relative;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.6); animation: cardReveal 0.5s cubic-bezier(0.22,1,0.36,1);
-    margin-bottom: 1.25rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    transform-style: preserve-3d;
   }
   .big-card.portrait  { width: min(240px, 68vw); aspect-ratio: 5/7; }
   .big-card.landscape { width: min(400px, 88vw); aspect-ratio: 7/5; }
-  .big-card.team-gb { border-color: #2d7a3a; box-shadow: 0 8px 40px rgba(45,122,58,0.3); }
-  .big-card.team-qc { border-color: #aa2222; box-shadow: 0 8px 40px rgba(170,34,34,0.3); }
-  .big-card.rarity-r  { border-color: #9b42d6; box-shadow: 0 8px 40px rgba(155,66,214,0.35); }
-  .big-card.rarity-sr { border-color: var(--gold); animation: cardReveal 0.5s cubic-bezier(0.22,1,0.36,1), srCardPulse 2s ease-in-out 0.5s infinite; }
+  .big-card.team-gb { border-color: #2d7a3a; }
+  .big-card.team-qc { border-color: #aa2222; }
+  .big-card.rarity-r  { border-color: #9b42d6; }
+  .big-card.rarity-sr { border-color: var(--gold); }
+
+  /* Normal card flip */
+  .big-card.flip-normal {
+    animation: flipNormal 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+  @keyframes flipNormal {
+    0%   { transform: rotateY(-90deg) scale(0.88); opacity: 0;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+    60%  { opacity: 1; }
+    100% { transform: rotateY(0deg) scale(1); opacity: 1;
+           box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+  }
+
+  /* Last card — slow dramatic flip with bounce */
+  .big-card.flip-last {
+    animation: flipLast 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  @keyframes flipLast {
+    0%   { transform: rotateY(-180deg) scale(0.7); opacity: 0;
+           box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    40%  { opacity: 1; }
+    70%  { transform: rotateY(12deg) scale(1.04); }
+    85%  { transform: rotateY(-5deg) scale(1.01); }
+    100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+  }
+
+  /* Rare last card — purple burst */
+  .big-card.flip-last.rarity-r {
+    animation: flipLastRare 1.1s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  @keyframes flipLastRare {
+    0%   { transform: rotateY(-180deg) scale(0.7); opacity: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    40%  { opacity: 1; }
+    70%  { transform: rotateY(12deg) scale(1.06); box-shadow: 0 0 60px rgba(155,66,214,0.8); }
+    85%  { transform: rotateY(-5deg) scale(1.02); }
+    100% { transform: rotateY(0deg) scale(1); box-shadow: 0 8px 40px rgba(155,66,214,0.4); }
+  }
+
+  /* Secret rare — gold explosion */
+  .big-card.flip-last.rarity-sr {
+    animation: flipLastSR 1.4s cubic-bezier(0.16,1,0.3,1) forwards, srCardPulse 2s ease-in-out 1.4s infinite;
+  }
+  @keyframes flipLastSR {
+    0%   { transform: rotateY(-180deg) scale(0.6); opacity: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    30%  { opacity: 1; }
+    60%  { transform: rotateY(20deg) scale(1.1); box-shadow: 0 0 80px rgba(200,152,10,1); }
+    80%  { transform: rotateY(-8deg) scale(1.04); }
+    100% { transform: rotateY(0deg) scale(1); box-shadow: 0 0 0 2px var(--gold), 0 8px 60px rgba(200,152,10,0.6); }
+  }
   @keyframes srCardPulse { 0%,100% { box-shadow: 0 0 0 1px var(--gold), 0 8px 50px rgba(200,152,10,0.5); } 50% { box-shadow: 0 0 0 2px var(--gold), 0 8px 60px rgba(200,152,10,0.8); } }
-  @keyframes cardReveal { from { transform: rotateY(-90deg) scale(0.85); opacity: 0; } to { transform: rotateY(0deg) scale(1); opacity: 1; } }
+
+  /* Screen flash on last card */
+  .reveal-screen::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 50;
+    opacity: 0;
+  }
+  .reveal-screen.flash-white::before {
+    background: rgba(255,255,255,0.15);
+    animation: screenFlash 0.4s ease-out forwards;
+  }
+  .reveal-screen.flash-gold::before {
+    background: rgba(200,152,10,0.25);
+    animation: screenFlash 0.6s ease-out forwards;
+  }
+  @keyframes screenFlash { 0% { opacity:1; } 100% { opacity:0; } }
 
   .big-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .big-card-label {
@@ -207,8 +344,6 @@
   .btn-next:active { transform: translateY(0); }
   .btn-next.collect { background: var(--gold); box-shadow: 0 4px 16px rgba(200,152,10,0.4); }
   .btn-next.collect:hover { background: #dba80c; }
-
-  .seen-strip { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; padding: 0 1rem; }
   .seen-thumb {
     border-radius: 6px; overflow: hidden; border: 1.5px solid var(--border);
     opacity: 0.4; transition: opacity 0.2s, border-color 0.2s; background: var(--panel); flex-shrink: 0;
@@ -221,7 +356,7 @@
   .seen-thumb.rarity-sr { border-color: var(--gold) !important; }
   .seen-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .toast {
+  .seen-strip { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; padding: 0 1rem; }
     position: fixed; bottom: 2rem; left: 50%;
     transform: translateX(-50%) translateY(4rem);
     background: var(--panel); border: 1px solid var(--red);
@@ -259,7 +394,12 @@
 <div class="screen" id="screen-open">
   <div class="pack-open-screen">
     <div class="pack-img-wrap" id="packWrap">
-      <img src="" alt="Pack" id="packImg">
+      <div class="pack-half-top" id="packTop">
+        <img src="" alt="Pack" id="packImgTop">
+      </div>
+      <div class="pack-half-bottom" id="packBottom">
+        <img src="" alt="Pack" id="packImgBottom">
+      </div>
     </div>
     <div class="pack-open-meta">
       <div class="pack-open-meta-name" id="packOpenName"></div>
@@ -275,11 +415,13 @@
   <div class="reveal-screen">
     <div class="pip-row" id="pipRow"></div>
     <div class="rarity-banner c" id="rarityBanner">Common</div>
-    <div class="big-card portrait" id="bigCard">
-      <img id="bigCardImg" src="" alt="">
-      <div class="big-card-label">
-        <div class="big-card-name" id="bigCardName"></div>
-        <div class="big-card-team" id="bigCardTeam"></div>
+    <div class="card-flip-outer">
+      <div class="big-card portrait" id="bigCard">
+        <img id="bigCardImg" src="" alt="">
+        <div class="big-card-label">
+          <div class="big-card-name" id="bigCardName"></div>
+          <div class="big-card-team" id="bigCardTeam"></div>
+        </div>
       </div>
     </div>
     <button class="btn-next" id="nextBtn" onclick="nextCard()">Next Card →</button>
@@ -432,20 +574,21 @@ function selectPack(id) {
   currentPack = PACK_DEFS.find(p => p.id === id);
   if (!currentPack) return;
 
-  const packImg = document.getElementById('packImg');
-  packImg.src = 'packs/' + id + '/pack.png';
-  packImg.onerror = function() { this.style.display = 'none'; };
-  packImg.onload  = function() { this.style.display = ''; };
+  const src = 'packs/' + id + '/pack.png';
+  const topImg    = document.getElementById('packImgTop');
+  const bottomImg = document.getElementById('packImgBottom');
+  topImg.src = src;
+  bottomImg.src = src;
 
-  // Format name: split on camelCase or spaces for display
+  // reset clip positions
+  document.getElementById('packTop').style.cssText    = '';
+  document.getElementById('packBottom').style.cssText = '';
+
   document.getElementById('packOpenName').textContent = currentPack.name;
-  document.getElementById('packOpenSub').textContent = currentPack.sub || '5 cards per pack · guaranteed rare or better';
+  document.getElementById('packOpenSub').textContent  = currentPack.sub || '5 cards per pack · guaranteed rare or better';
 
   const wrap = document.getElementById('packWrap');
   wrap.classList.remove('ripping');
-  packImg.style.animation = 'none';
-  void packImg.offsetWidth;
-  packImg.style.animation = '';
 
   document.getElementById('openBtn').disabled = false;
   document.getElementById('openBtn').textContent = 'Open Pack';
@@ -462,7 +605,7 @@ function startOpen() {
     buildRevealUI();
     showCard(0);
     showScreen('reveal');
-  }, 580);
+  }, 680);
 }
 
 // ── PULL LOGIC ──
@@ -511,30 +654,49 @@ function buildRevealUI() {
 
 function showCard(idx) {
   const card = packCards[idx];
-  const orient = card.landscape ? 'landscape' : 'portrait';
+  const orient  = card.landscape ? 'landscape' : 'portrait';
+  const isLast  = idx >= packCards.length - 1;
 
   document.getElementById('bigCardImg').src = 'packs/' + currentPack.id + '/' + card.file;
   document.getElementById('bigCardImg').alt = card.name;
   document.getElementById('bigCardName').textContent = card.name;
   document.getElementById('bigCardTeam').textContent = card.team || '';
 
+  // rarity banner — re-trigger animation
   const banner = document.getElementById('rarityBanner');
   banner.textContent = RARITY_LABELS[card.rarity] || card.rarity;
   banner.className = 'rarity-banner ' + card.rarity;
+  banner.style.animation = 'none';
+  void banner.offsetWidth;
+  banner.style.animation = '';
 
+  // flip class — last card gets dramatic flip
+  const flipClass = isLast ? 'flip-last' : 'flip-normal';
   const bc = document.getElementById('bigCard');
-  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity].join(' ');
+  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');
   bc.style.animation = 'none';
   void bc.offsetWidth;
-  bc.style.animation = card.rarity === 'sr'
-    ? 'cardReveal 0.5s cubic-bezier(0.22,1,0.36,1), srCardPulse 2s ease-in-out 0.5s infinite'
-    : 'cardReveal 0.5s cubic-bezier(0.22,1,0.36,1)';
+  bc.style.animation = '';
 
+  // screen flash on last card
+  if (isLast) {
+    const screen = document.querySelector('.reveal-screen');
+    const flashClass = card.rarity === 'sr' ? 'flash-gold' : card.rarity === 'r' ? 'flash-white' : '';
+    if (flashClass) {
+      screen.classList.remove('flash-white', 'flash-gold');
+      void screen.offsetWidth;
+      screen.classList.add(flashClass);
+      setTimeout(() => screen.classList.remove(flashClass), 700);
+    }
+  }
+
+  // pips
   packCards.forEach((_, i) => {
     document.getElementById('pip' + i).className =
       'pip' + (i < idx ? ' revealed' : i === idx ? ' current' : '');
   });
 
+  // seen strip
   const thumb = document.getElementById('thumb' + idx);
   if (thumb && !thumb.querySelector('img')) {
     const ti = document.createElement('img');
@@ -550,8 +712,8 @@ function showCard(idx) {
     ].join(' ').trim();
   });
 
+  // button
   const btn = document.getElementById('nextBtn');
-  const isLast = idx >= packCards.length - 1;
   btn.textContent = isLast ? '✓ Add All to Collection' : 'Next Card →';
   btn.className   = isLast ? 'btn-next collect' : 'btn-next';
 }
