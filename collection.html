@@ -11,10 +11,11 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --black:#0e0e0f; --dark:#161618; --panel:#1c1c1f; --border:#2e2e33;
-    --silver:#8a8a96; --red:var(--green); --gold:#c8980a;
-    --muted:#5a5a66; --text:#e8e8ec; --white:#f4f4f6;
-    --c-color:#6a6a76; --u-color:#3a7abf; --r-color:#9b42d6; --sr-color:#c8980a;
+    --black:  #0a0d0a; --dark: #111410; --panel: #181c16;
+    --border: #2a2e24; --silver: #8a9a80;
+    --green:  #6b7c3f; --gold: #c8980a;
+    --muted:  #5a6650; --text: #e8ece4; --white: #f0f0ee;
+    --c-color: #6a6a76; --u-color: #3a7abf; --r-color: #9b42d6; --sr-color: #c8980a;
   }
   html,body { background:var(--black); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; }
 
@@ -23,7 +24,7 @@
     display:flex; align-items:center; padding:0 1.5rem;
     position:sticky; top:0; z-index:100;
   }
-  .nav-logo { display:flex; align-items:center; height:60px;
+  .nav-logo { display:flex; align-items:center; height:80px;
     font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem;
     letter-spacing:0.14em; color:var(--white); text-transform:uppercase;
     margin-right:2rem; padding:1rem 0; text-decoration:none;
@@ -166,7 +167,7 @@
   .lb-rarity.sr { color:var(--sr-color); border:1px solid var(--sr-color); }
   .lb-team { font-size:0.78rem; color:var(--muted); }
   .lb-close {
-    position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
+    position:absolute; top:-14px; right:-14px; width:32px; height:88px; border-radius:50%;
     background:var(--panel); border:1px solid var(--border); color:var(--muted);
     font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
     transition:color 0.12s,border-color 0.12s;
@@ -178,7 +179,7 @@
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:44px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
   <a href="index.html"      class="nav-tab">Open Packs</a>
   <a href="collection.html" class="nav-tab active">My Collection</a>
   <a href="browse.html"     class="nav-tab">Browse</a>
