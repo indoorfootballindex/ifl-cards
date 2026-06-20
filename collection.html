@@ -280,6 +280,10 @@ async function fetchCollectionFromServer() {
     });
     if (!res.ok) return;
     const data = await res.json();
+    // save packs opened from server
+    if (data.packs_opened !== undefined) {
+      try { localStorage.setItem('ifiPacksOpened', data.packs_opened); } catch(e) {}
+    }
     const lookup = {};
     if (window.PACK_DATA) {
       window.PACK_DATA.forEach(pack => {
