@@ -87,6 +87,3 @@ async function migrateLocalToServer(token) {
 
 // Run immediately — auth.js is at end of body so DOM is ready
 initNav();
-
-// Trigger render on collection and browse pages after auth is ready
-if (typeof render === 'function') render();

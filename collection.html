@@ -258,26 +258,26 @@ const RARITY_LABELS = { c:'Common', u:'Uncommon', r:'Rare', sr:'Secret Rare' };
 // active filters
 const filters = { rarity:'all', team:'all', league:'all', pack:'all' };
 
-// getCollection — shows local instantly, syncs from server in background
+// getCollection — local first, then server if logged in
 async function getCollection() {
-  // Read local first for instant display
+  // Read local first
   let local = [];
   try {
     const s = localStorage.getItem('ifiCol');
     if (s) local = JSON.parse(s);
   } catch(e) {}
 
-  // If logged in, fetch from server and merge
-  try {
-    const token = getToken();
-    if (token) {
+  // Get token directly — don't depend on auth.js
+  let token = null;
+  try { token = localStorage.getItem('ifiToken'); } catch(e) {}
+
+  if (token) {
+    try {
       const res = await fetch('https://api.cards.indoorfootballindex.com/api/collection', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       if (res.ok) {
         const data = await res.json();
-        // Server cards come back as {card_file, pack_id, pack_name}
-        // Enrich with full metadata from PACK_DATA
         const lookup = {};
         if (window.PACK_DATA) {
           window.PACK_DATA.forEach(pack => {
@@ -290,12 +290,11 @@ async function getCollection() {
           const base = lookup[c.card_file] || {};
           return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
         });
-        // Save server version to local so it stays in sync
         try { localStorage.setItem('ifiCol', JSON.stringify(serverCards)); } catch(e) {}
         return serverCards;
       }
-    }
-  } catch(e) {}
+    } catch(e) {}
+  }
 
   return local;
 }
@@ -480,7 +479,8 @@ function closeLB(e) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
 
-// render() called by auth.js after it loads
-
+render();
+</script>
+<script src="auth.js"></script>
 </body>
 </html>

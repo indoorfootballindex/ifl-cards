@@ -257,9 +257,10 @@ async function getCollection() {
     const s = localStorage.getItem('ifiCol');
     if (s) local = JSON.parse(s);
   } catch(e) {}
-  try {
-    const token = getToken();
-    if (token) {
+  let token = null;
+  try { token = localStorage.getItem('ifiToken'); } catch(e) {}
+  if (token) {
+    try {
       const res = await fetch('https://api.cards.indoorfootballindex.com/api/collection', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
@@ -278,8 +279,8 @@ async function getCollection() {
         try { localStorage.setItem('ifiCol', JSON.stringify(serverCards)); } catch(e) {}
         return serverCards;
       }
-    }
-  } catch(e) {}
+    } catch(e) {}
+  }
   return local;
 }
 
@@ -458,7 +459,7 @@ function closeLB(e) {
 document.addEventListener('keydown', e => { if (e.key==='Escape') closeLB(); });
 
 buildPackFilter();
-// render() called by auth.js after it loads
+render();
 </script>
 <script src="auth.js"></script>
 </body>
