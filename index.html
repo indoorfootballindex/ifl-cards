@@ -493,6 +493,7 @@ let PACK_DEFS = [];
 let currentPack = null;
 let packCards = [];
 let cardIndex = 0;
+let cheatSR = false;
 
 // ── SCREEN ──
 function showScreen(name) {
@@ -658,8 +659,6 @@ document.addEventListener('keydown', e => {
   if (e.key === '0') cheatSR = true;
 });
 document.addEventListener('keyup', e => { if (e.key === '0') cheatSR = false; });
-
-// ── PULL LOGIC ──
 // Slots 1-3: commons | Slot 4: uncommon | Slot 5: SR (1/1000) or rare
 function pullPack(pack) {
   const byRarity = { c: [], u: [], r: [], sr: [] };
