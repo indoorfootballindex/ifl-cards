@@ -290,12 +290,8 @@ async function fetchCollectionFromServer() {
       const base = lookup[c.card_file] || {};
       return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
     });
-    const localStr = localStorage.getItem('ifiCol') || '[]';
-    const serverStr = JSON.stringify(serverCards);
-    if (localStr !== serverStr) {
-      localStorage.setItem('ifiCol', serverStr);
-      render(); // re-render with fresh server data
-    }
+    localStorage.setItem('ifiCol', JSON.stringify(serverCards));
+    render(); // always re-render with server data
   } catch(e) {}
 }
 

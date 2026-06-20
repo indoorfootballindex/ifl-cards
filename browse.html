@@ -279,12 +279,8 @@ async function fetchCollectionFromServer() {
       const base = lookup[c.card_file] || {};
       return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
     });
-    const localStr = localStorage.getItem('ifiCol') || '[]';
-    const serverStr = JSON.stringify(serverCards);
-    if (localStr !== serverStr) {
-      localStorage.setItem('ifiCol', serverStr);
-      render();
-    }
+    localStorage.setItem('ifiCol', JSON.stringify(serverCards));
+    render();
   } catch(e) {}
 }
 
