@@ -113,82 +113,82 @@
     overflow: hidden;
   }
 
-  /* Pack wrapper — clips into top/bottom halves for tear effect */
   .pack-img-wrap {
     width: min(260px, 68vw); cursor: pointer; user-select: none;
     position: relative;
   }
 
-  /* The two halves sit on top of each other normally */
-  .pack-half-top, .pack-half-bottom {
-    width: 100%; overflow: hidden; display: block;
-    position: relative;
-  }
-  .pack-half-top    { height: 42%; border-radius: 10px 10px 0 0; }
-  .pack-half-bottom { height: 58%; border-radius: 0 0 10px 10px; }
-
-  .pack-half-top img, .pack-half-bottom img {
+  /* Single image, two overlay divs for the tear effect */
+  .pack-img-wrap img {
     width: 100%; display: block; object-fit: contain;
     filter: drop-shadow(0 8px 32px rgba(192,32,26,0.25));
+    transition: filter 0.2s;
   }
-  .pack-half-top img    { transform-origin: top center; }
-  .pack-half-bottom img { transform-origin: bottom center; }
 
-  /* foil shimmer on hover */
-  .pack-half-top::after, .pack-half-bottom::after {
+  /* Foil shimmer overlay */
+  .pack-img-wrap::before {
     content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s;
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.07) 50%, transparent 70%);
+    opacity: 0; transition: opacity 0.3s; border-radius: 8px;
   }
-  .pack-img-wrap:hover .pack-half-top::after,
-  .pack-img-wrap:hover .pack-half-bottom::after { opacity: 1; }
+  .pack-img-wrap:hover::before { opacity: 1; }
 
   /* Shake on hover */
-  .pack-img-wrap:hover .pack-half-top img,
-  .pack-img-wrap:hover .pack-half-bottom img {
-    animation: packShake 0.4s ease-in-out;
+  .pack-img-wrap:hover img {
+    animation: packShake 0.45s ease-in-out;
+    filter: drop-shadow(0 12px 36px rgba(192,32,26,0.45));
   }
   @keyframes packShake {
-    0%,100% { transform: rotate(0deg); }
-    20% { transform: rotate(-1.5deg); }
-    40% { transform: rotate(1.5deg); }
-    60% { transform: rotate(-1deg); }
-    80% { transform: rotate(0.8deg); }
+    0%,100% { transform: rotate(0deg) translateY(0); }
+    20%      { transform: rotate(-1.5deg) translateY(-2px); }
+    40%      { transform: rotate(1.5deg) translateY(0); }
+    60%      { transform: rotate(-1deg) translateY(-1px); }
+    80%      { transform: rotate(0.8deg) translateY(0); }
   }
 
-  /* Tear animation — top flies up, bottom drops down */
-  .pack-img-wrap.ripping .pack-half-top {
-    animation: tearTop 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  /* Tear — top half flies up, bottom drops down using pseudo clip */
+  .pack-top, .pack-bottom {
+    position: absolute; left: 0; right: 0; overflow: hidden; pointer-events: none;
   }
-  .pack-img-wrap.ripping .pack-half-bottom {
-    animation: tearBottom 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  .pack-top    { top: 0; height: 42%; }
+  .pack-bottom { top: 42%; bottom: 0; }
+  .pack-top img, .pack-bottom img {
+    width: 100%; display: block; object-fit: contain; position: absolute; left: 0;
   }
-  /* Particle flash at tear line */
+  .pack-top    img { top: 0; }
+  .pack-bottom img { bottom: 0; }
+
+  /* Before ripping — hide split halves, show main image */
+  .pack-top, .pack-bottom { opacity: 0; }
+  .pack-img-wrap > img { opacity: 1; }
+
+  /* Ripping — hide main image, show and animate halves */
+  .pack-img-wrap.ripping > img { opacity: 0; }
+  .pack-img-wrap.ripping .pack-top    { opacity: 1; animation: tearTop 0.75s cubic-bezier(0.4,0,0.2,1) forwards; }
+  .pack-img-wrap.ripping .pack-bottom { opacity: 1; animation: tearBottom 0.75s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+  /* Flash line at tear point */
   .pack-img-wrap.ripping::after {
     content: '';
-    position: absolute;
-    top: 42%; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, transparent, #fff, var(--red), #fff, transparent);
-    animation: tearFlash 0.3s ease-out forwards;
-    z-index: 10;
+    position: absolute; top: 42%; left: 0; right: 0; height: 2px; z-index: 10;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 30%, var(--red) 50%, rgba(255,255,255,0.9) 70%, transparent 100%);
+    animation: tearFlash 0.35s ease-out forwards;
   }
   @keyframes tearTop {
-    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-    20%  { transform: translateY(-8px) rotate(-1deg); }
-    100% { transform: translateY(-140%) rotate(-8deg); opacity: 0; }
+    0%   { transform: translateY(0) rotate(0); opacity: 1; }
+    15%  { transform: translateY(-6px) rotate(-0.5deg); }
+    100% { transform: translateY(-130%) rotate(-6deg); opacity: 0; }
   }
   @keyframes tearBottom {
-    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-    20%  { transform: translateY(8px) rotate(1deg); }
-    100% { transform: translateY(140%) rotate(5deg); opacity: 0; }
+    0%   { transform: translateY(0) rotate(0); opacity: 1; }
+    15%  { transform: translateY(6px) rotate(0.5deg); }
+    100% { transform: translateY(130%) rotate(4deg); opacity: 0; }
   }
   @keyframes tearFlash {
-    0%   { opacity: 0; transform: scaleX(0); }
-    40%  { opacity: 1; transform: scaleX(1); }
-    100% { opacity: 0; transform: scaleX(1.2); }
+    0%   { opacity: 0; transform: scaleX(0.2); }
+    35%  { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0; }
   }
 
   .pack-open-meta { text-align: center; margin: 1.5rem 0 1.75rem; }
@@ -356,7 +356,21 @@
   .seen-thumb.rarity-sr { border-color: var(--gold) !important; }
   .seen-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .seen-strip { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1.25rem; padding: 0 1rem; }
+  /* NEW badge */
+  .new-badge {
+    position: absolute; top: 8px; right: 8px; z-index: 10;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--red); color: #fff;
+    padding: 3px 9px; border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(192,32,26,0.6);
+    animation: newBadgePop 0.4s cubic-bezier(0.34,1.56,0.64,1) backwards;
+    animation-delay: 0.35s;
+  }
+  @keyframes newBadgePop {
+    from { transform: scale(0) rotate(-10deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+  }
     position: fixed; bottom: 2rem; left: 50%;
     transform: translateX(-50%) translateY(4rem);
     background: var(--panel); border: 1px solid var(--red);
@@ -394,12 +408,9 @@
 <div class="screen" id="screen-open">
   <div class="pack-open-screen">
     <div class="pack-img-wrap" id="packWrap">
-      <div class="pack-half-top" id="packTop">
-        <img src="" alt="Pack" id="packImgTop">
-      </div>
-      <div class="pack-half-bottom" id="packBottom">
-        <img src="" alt="Pack" id="packImgBottom">
-      </div>
+      <img src="" alt="Pack" id="packImg">
+      <div class="pack-top"   id="packTop">   <img src="" alt="" id="packImgTop"></div>
+      <div class="pack-bottom" id="packBottom"><img src="" alt="" id="packImgBottom"></div>
     </div>
     <div class="pack-open-meta">
       <div class="pack-open-meta-name" id="packOpenName"></div>
@@ -575,14 +586,9 @@ function selectPack(id) {
   if (!currentPack) return;
 
   const src = 'packs/' + id + '/pack.png';
-  const topImg    = document.getElementById('packImgTop');
-  const bottomImg = document.getElementById('packImgBottom');
-  topImg.src = src;
-  bottomImg.src = src;
-
-  // reset clip positions
-  document.getElementById('packTop').style.cssText    = '';
-  document.getElementById('packBottom').style.cssText = '';
+  document.getElementById('packImg').src       = src;
+  document.getElementById('packImgTop').src    = src;
+  document.getElementById('packImgBottom').src = src;
 
   document.getElementById('packOpenName').textContent = currentPack.name;
   document.getElementById('packOpenSub').textContent  = currentPack.sub || '5 cards per pack · guaranteed rare or better';
@@ -711,6 +717,21 @@ function showCard(idx) {
       i === idx ? 'active-thumb' : i < idx ? 'revealed' : ''
     ].join(' ').trim();
   });
+
+  // NEW badge — show if card not already in collection
+  const existingBadge = document.getElementById('newBadge');
+  if (existingBadge) existingBadge.remove();
+  try {
+    const col = loadCollectionLocal();
+    const alreadyOwned = col.some(c => c.file === card.file);
+    if (!alreadyOwned) {
+      const badge = document.createElement('div');
+      badge.className = 'new-badge';
+      badge.id = 'newBadge';
+      badge.textContent = 'NEW';
+      document.getElementById('bigCard').appendChild(badge);
+    }
+  } catch(e) {}
 
   // button
   const btn = document.getElementById('nextBtn');
