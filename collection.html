@@ -326,7 +326,7 @@ function getAllCards() {
 
 function getTotalUnique() {
   const seen = new Set();
-  getAllCards().forEach(c => seen.add(c.file));
+  getAllCards().forEach(c => seen.add(c.file + '|' + c.rarity));
   return seen.size;
 }
 
