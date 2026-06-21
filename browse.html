@@ -279,12 +279,13 @@ async function fetchCollectionFromServer() {
     const lookup = {};
     if (window.PACK_DATA) {
       window.PACK_DATA.forEach(pack => {
-        (pack.cards||[]).forEach(card => { lookup[card.file] = { ...card, packId: pack.id, packName: pack.name }; });
+        (pack.cards||[]).forEach(card => { lookup[card.file + '|' + card.rarity] = { ...card, packId: pack.id, packName: pack.name }; });
       });
     }
     const serverCards = data.cards.map(c => {
-      const base = lookup[c.card_file] || {};
-      return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
+      const rarity = c.card_rarity || 'c';
+      const base = lookup[c.card_file + '|' + rarity] || {};
+      return { ...base, file: c.card_file, rarity, packId: c.pack_id, packName: c.pack_name };
     });
     localStorage.setItem('ifiCol', JSON.stringify(serverCards));
     render();

@@ -139,7 +139,7 @@ export default {
       const user = await getUserFromToken(getToken(request), env.DB);
       if (!user) return err('Not logged in', 401, origin);
       const { results } = await env.DB.prepare(
-        'SELECT card_file, pack_id, pack_name, pulled_at FROM collections WHERE user_id = ? ORDER BY pulled_at DESC'
+        'SELECT card_file, pack_id, pack_name, card_rarity, pulled_at FROM collections WHERE user_id = ? ORDER BY pulled_at DESC'
       ).bind(user.user_id).all();
       const userData = await env.DB.prepare(
         'SELECT packs_opened FROM users WHERE id = ?'
@@ -157,10 +157,10 @@ export default {
       const cards = body.cards;
       if (!cards || !Array.isArray(cards)) return err('Invalid cards data', 400, origin);
       const stmt = env.DB.prepare(
-        'INSERT INTO collections (user_id, card_file, pack_id, pack_name) VALUES (?, ?, ?, ?)'
+        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
       );
       await env.DB.batch(
-        cards.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name))
+        cards.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name, c.rarity || 'c'))
       );
       await env.DB.prepare(
         'UPDATE users SET packs_opened = packs_opened + 1 WHERE id = ?'
