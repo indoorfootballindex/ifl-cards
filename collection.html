@@ -107,6 +107,12 @@
   }
   .coll-card:hover { transform:translateY(-4px) scale(1.02); }
   .coll-card img { width:100%; display:block; }
+
+  /* Rarity overlay */
+  .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; border-radius:8px; pointer-events:none; }
+  .rarity-overlay.u { background-image:url("packs/overlays/uncommon.png"); opacity:1; mix-blend-mode:hue; }
+  .rarity-overlay.r { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
+  .rarity-overlay.sr { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
   .coll-card.portrait  img { aspect-ratio:5/7; object-fit:cover; }
   .coll-card.landscape img { aspect-ratio:7/5; object-fit:cover; }
   .coll-card.rarity-r  { border-color:#7a30b0 !important; box-shadow:0 0 10px rgba(155,66,214,0.2); }
@@ -441,6 +447,13 @@ async function render() {
       el.appendChild(img);
       el.appendChild(rarBadge);
       el.appendChild(info);
+
+      // rarity overlay
+      if (card.rarity === 'u' || card.rarity === 'r' || card.rarity === 'sr') {
+        const ov = document.createElement('div');
+        ov.className = 'rarity-overlay ' + card.rarity;
+        el.appendChild(ov);
+      }
 
       const cnt = dupeCounts[card.file] || 0;
       if (cnt > 1) {

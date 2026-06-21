@@ -326,6 +326,15 @@
   @keyframes screenFlash { 0% { opacity:1; } 100% { opacity:0; } }
 
   .big-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Rarity overlay — hue blend matches Photoshop Hue blend mode at 100% */
+  .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; border-radius:10px; pointer-events:none; }
+  .rarity-overlay.u  { background-image:url('packs/overlays/uncommon.png'); opacity:1; mix-blend-mode:hue; }
+  .rarity-overlay.r  { background-image:url('packs/overlays/rare.png');     opacity:1; mix-blend-mode:hue; }
+  .rarity-overlay.sr { background-image:url('packs/overlays/rare.png');     opacity:1; mix-blend-mode:hue; }
+
+  /* Glow on the card border by rarity */
+  .big-card.rarity-u { box-shadow: 0 0 20px rgba(58,122,191,0.5), 0 8px 40px rgba(0,0,0,0.6); }
   .big-card-label {
     position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 12px 10px;
     background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
@@ -762,6 +771,17 @@ function showCard(idx) {
     t.className = 'seen-thumb' +
       (i === idx ? ' active-thumb' : i < idx ? ' revealed' : '');
   });
+
+  // remove old overlay if any
+  const oldOverlay = document.getElementById('bigCard').querySelector('.rarity-overlay');
+  if (oldOverlay) oldOverlay.remove();
+
+  // add overlay for u/r/sr
+  if (card.rarity === 'u' || card.rarity === 'r' || card.rarity === 'sr') {
+    const overlay = document.createElement('div');
+    overlay.className = 'rarity-overlay ' + card.rarity;
+    document.getElementById('bigCard').appendChild(overlay);
+  }
 
   // NEW badge — show if card not already in collection
   const existingBadge = document.getElementById('newBadge');
