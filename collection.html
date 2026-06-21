@@ -112,7 +112,7 @@
   .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; border-radius:8px; pointer-events:none; }
   .rarity-overlay.u { background-image:url("packs/overlays/uncommon.png"); opacity:1; mix-blend-mode:hue; }
   .rarity-overlay.r { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
-  .rarity-overlay.sr { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
+  
   .coll-card.portrait  img { aspect-ratio:5/7; object-fit:cover; }
   .coll-card.landscape img { aspect-ratio:7/5; object-fit:cover; }
   .coll-card.rarity-r  { border-color:#7a30b0 !important; box-shadow:0 0 10px rgba(155,66,214,0.2); }
@@ -362,14 +362,20 @@ function buildFilters(col) {
 async function render() {
   const col = await getCollection();
 
-  // count dupes
+  // count dupes — key is file+rarity since variants share filenames
   const dupeCounts = {};
-  col.forEach(c => { dupeCounts[c.file] = (dupeCounts[c.file] || 0) + 1; });
+  col.forEach(c => {
+    const key = c.file + '|' + c.rarity;
+    dupeCounts[key] = (dupeCounts[key] || 0) + 1;
+  });
 
-  // unique owned
+  // unique owned — dedupe by file+rarity
   const seen = new Set();
   const unique = [];
-  col.forEach(c => { if (!seen.has(c.file)) { seen.add(c.file); unique.push(c); } });
+  col.forEach(c => {
+    const key = c.file + '|' + c.rarity;
+    if (!seen.has(key)) { seen.add(key); unique.push(c); }
+  });
 
   // totals
   const totalUnique = getTotalUnique();
@@ -449,13 +455,13 @@ async function render() {
       el.appendChild(info);
 
       // rarity overlay
-      if (card.rarity === 'u' || card.rarity === 'r' || card.rarity === 'sr') {
+      if (card.rarity === 'u' || card.rarity === 'r') {
         const ov = document.createElement('div');
         ov.className = 'rarity-overlay ' + card.rarity;
         el.appendChild(ov);
       }
 
-      const cnt = dupeCounts[card.file] || 0;
+      const cnt = dupeCounts[card.file + '|' + card.rarity] || 0;
       if (cnt > 1) {
         const db = document.createElement('div');
         db.className = 'dupe-badge';

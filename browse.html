@@ -141,7 +141,7 @@
   .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; border-radius:8px; pointer-events:none; }
   .rarity-overlay.u { background-image:url("packs/overlays/uncommon.png"); opacity:1; mix-blend-mode:hue; }
   .rarity-overlay.r { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
-  .rarity-overlay.sr { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
+  
 
   .unlocked-info {
     position:absolute; bottom:0; left:0; right:0; padding:28px 8px 7px;
@@ -322,16 +322,19 @@ function buildPackFilter() {
 
 async function render() {
   const col = await getCollection();
-  const ownedFiles = new Set(col.map(c => c.file));
+  const ownedFiles = new Set(col.map(c => c.file + '|' + c.rarity));
   const all = getAllCards();
 
   // unique cards (dedupe by file)
   const seen = new Set();
   const unique = [];
-  all.forEach(c => { if (!seen.has(c.file)) { seen.add(c.file); unique.push(c); } });
+  all.forEach(c => {
+    const key = c.file + '|' + c.rarity;
+    if (!seen.has(key)) { seen.add(key); unique.push(c); }
+  });
 
   const total  = unique.length;
-  const owned  = unique.filter(c => ownedFiles.has(c.file)).length;
+  const owned  = unique.filter(c => ownedFiles.has(c.file + '|' + c.rarity)).length;
   document.getElementById('ownedCount').textContent = owned;
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('progressBar').style.width = total ? ((owned/total)*100).toFixed(1)+'%' : '0%';
@@ -339,8 +342,8 @@ async function render() {
   // apply filters
   let filtered = unique;
   if (filters.pack !== 'all')   filtered = filtered.filter(c => c.packId === filters.pack);
-  if (filters.status === 'unlocked') filtered = filtered.filter(c =>  ownedFiles.has(c.file));
-  if (filters.status === 'locked')   filtered = filtered.filter(c => !ownedFiles.has(c.file));
+  if (filters.status === 'unlocked') filtered = filtered.filter(c =>  ownedFiles.has(c.file + '|' + c.rarity));
+  if (filters.status === 'locked')   filtered = filtered.filter(c => !ownedFiles.has(c.file + '|' + c.rarity));
 
   const grid = document.getElementById('browseGrid');
   grid.innerHTML = '';
@@ -396,7 +399,7 @@ async function render() {
         el.appendChild(info);
 
         // rarity overlay
-        if (card.rarity === 'u' || card.rarity === 'r' || card.rarity === 'sr') {
+        if (card.rarity === 'u' || card.rarity === 'r') {
           const ov = document.createElement('div');
           ov.className = 'rarity-overlay ' + card.rarity;
           el.appendChild(ov);
