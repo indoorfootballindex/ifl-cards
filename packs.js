@@ -75,6 +75,66 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR"
+      },
+      {
+        "file": "CameronHarrelQC_c.png",
+        "name": "Cameron Harrell",
+        "team": "Quad City Steamwheelers",
+        "league": "IFL",
+        "teamCode": "QC",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DB"
+      },
+      {
+        "file": "CameronHarrelQC_c.png",
+        "name": "Cameron Harrell",
+        "team": "Quad City Steamwheelers",
+        "league": "IFL",
+        "teamCode": "QC",
+        "rarity": "r",
+        "landscape": false,
+        "position": "DB"
+      },
+      {
+        "file": "HarryBallardGB_c.png",
+        "name": "Harry Ballard III",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "HarryBallardGB_c.png",
+        "name": "Harry Ballard III",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "RaymondBooneGB_c.png",
+        "name": "Raymond Boone",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DB"
+      },
+      {
+        "file": "RaymondBooneGB_c.png",
+        "name": "Raymond Boone",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "r",
+        "landscape": false,
+        "position": "DB"
       }
     ]
   },
