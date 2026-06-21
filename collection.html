@@ -252,6 +252,7 @@
   <div class="lb-inner portrait" id="lbInner">
     <button class="lb-close" onclick="closeLB()">&times;</button>
     <img id="lbImg" src="" alt="">
+    <div class="rarity-overlay" id="lbOverlay" style="display:none;border-radius:14px;"></div>
     <div class="lb-info">
       <div class="lb-name" id="lbName"></div>
       <div class="lb-rarity c" id="lbRarity">Common</div>
@@ -506,6 +507,19 @@ function openLB(card) {
   rar.textContent = RARITY_LABELS[card.rarity];
   rar.className = 'lb-rarity ' + card.rarity;
   document.getElementById('lbInner').className = 'lb-inner ' + orient + ' rarity-' + card.rarity;
+
+  // overlay — only if common variant exists
+  const lbOverlay = document.getElementById('lbOverlay');
+  const packCards = (window.PACK_DATA || []).find(p => p.id === card.packId)?.cards || [];
+  const hasCommon = packCards.some(c => c.file === card.file && c.rarity === 'c');
+  if ((card.rarity === 'u' || card.rarity === 'r') && hasCommon) {
+    lbOverlay.className = 'rarity-overlay ' + card.rarity;
+    lbOverlay.style.display = '';
+    lbOverlay.style.borderRadius = '14px';
+  } else {
+    lbOverlay.style.display = 'none';
+  }
+
   document.getElementById('lightbox').classList.add('open');
 }
 function closeLB(e) {
