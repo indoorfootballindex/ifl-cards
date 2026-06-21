@@ -455,11 +455,15 @@ async function render() {
       el.appendChild(rarBadge);
       el.appendChild(info);
 
-      // rarity overlay
+      // rarity overlay — only if a common variant exists in the same pack
       if (card.rarity === 'u' || card.rarity === 'r') {
-        const ov = document.createElement('div');
-        ov.className = 'rarity-overlay ' + card.rarity;
-        el.appendChild(ov);
+        const packCards = (window.PACK_DATA || []).find(p => p.id === card.packId)?.cards || [];
+        const hasCommon = packCards.some(c => c.file === card.file && c.rarity === 'c');
+        if (hasCommon) {
+          const ov = document.createElement('div');
+          ov.className = 'rarity-overlay ' + card.rarity;
+          el.appendChild(ov);
+        }
       }
 
       const cnt = dupeCounts[card.file + '|' + card.rarity] || 0;

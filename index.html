@@ -776,11 +776,14 @@ function showCard(idx) {
   const oldOverlay = document.getElementById('bigCard').querySelector('.rarity-overlay');
   if (oldOverlay) oldOverlay.remove();
 
-  // add overlay for u/r only (sr has its own gold treatment)
+  // build overlay flag — check if a common version of this card exists
   if (card.rarity === 'u' || card.rarity === 'r') {
-    const overlay = document.createElement('div');
-    overlay.className = 'rarity-overlay ' + card.rarity;
-    document.getElementById('bigCard').appendChild(overlay);
+    const hasCommonVariant = currentPack.cards.some(c => c.file === card.file && c.rarity === 'c');
+    if (hasCommonVariant) {
+      const overlay = document.createElement('div');
+      overlay.className = 'rarity-overlay ' + card.rarity;
+      document.getElementById('bigCard').appendChild(overlay);
+    }
   }
 
   // NEW badge — show if card not already in collection
@@ -788,7 +791,7 @@ function showCard(idx) {
   if (existingBadge) existingBadge.remove();
   try {
     const col = loadCollectionLocal();
-    const alreadyOwned = col.some(c => c.file === card.file);
+    const alreadyOwned = col.some(c => c.file === card.file && c.rarity === card.rarity);
     if (!alreadyOwned) {
       const badge = document.createElement('div');
       badge.className = 'new-badge';
