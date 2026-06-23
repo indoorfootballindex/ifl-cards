@@ -505,8 +505,7 @@ const RARITY_LABELS = { c: 'Common', u: 'Uncommon', r: 'Rare', sr: 'Secret Rare'
 const API = 'https://api.cards.indoorfootballindex.com';
 
 // ── PACK LIMIT STATE ──
-let packsRemaining = null; // null = unknown/guest
-const GUEST_PACK_KEY = 'ifiGuestPackUsed';
+let packsRemaining = null;
 
 // ── STORAGE ──
 function saveCollectionLocal(col) {
@@ -537,14 +536,8 @@ function showScreen(name) {
 // ── PACK LIMIT ──
 async function fetchPackLimit() {
   try {
-    const token = typeof getToken === 'function' ? getToken() : localStorage.getItem('ifiToken');
-    if (!token) {
-      // Guest: check if they've used their 1 free pack today
-      const used = localStorage.getItem(GUEST_PACK_KEY);
-      packsRemaining = used ? 0 : 1;
-      updatePacksBadge();
-      return;
-    }
+    const token = localStorage.getItem('ifiToken');
+    if (!token) { packsRemaining = 0; return; }
     const res = await fetch(API + '/api/packs', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
@@ -561,7 +554,6 @@ function updatePacksBadge() {
   const count = document.getElementById('packsCount');
   if (!badge || !count) return;
   const token = localStorage.getItem('ifiToken');
-  // Only show badge for logged-in users
   if (!token) { badge.style.display = 'none'; return; }
   badge.style.display = 'flex';
   if (packsRemaining === null) { count.textContent = '–'; return; }
@@ -572,22 +564,13 @@ function updatePacksBadge() {
 
 async function consumePack() {
   const token = localStorage.getItem('ifiToken');
-  if (!token) {
-    // Guest: mark their one free pack as used
-    localStorage.setItem(GUEST_PACK_KEY, '1');
-    packsRemaining = 0;
-    return true;
-  }
+  if (!token) return false;
   try {
     const res = await fetch(API + '/api/packs/consume', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token }
     });
-    if (res.status === 403) {
-      packsRemaining = 0;
-      updatePacksBadge();
-      return false;
-    }
+    if (res.status === 403) { packsRemaining = 0; updatePacksBadge(); return false; }
     if (res.ok) {
       const data = await res.json();
       packsRemaining = data.packs_remaining;
@@ -595,7 +578,7 @@ async function consumePack() {
       return true;
     }
   } catch(e) {}
-  return false; // fail closed
+  return false;
 }
 
 // ── PACK DATA (LOCAL) ──
@@ -657,6 +640,19 @@ async function loadPacks() {
 function buildPackGrid() {
   const grid = document.getElementById('packGrid');
   grid.innerHTML = '';
+
+  // Gate: must be signed in
+  const token = localStorage.getItem('ifiToken');
+  if (!token) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--white);margin-bottom:0.5rem;">Sign In to Open Packs</div>
+        <div style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">Create a free account to get 5 packs a day.</div>
+        <a href="login.html" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;letter-spacing:0.14em;text-transform:uppercase;background:var(--green);color:var(--white);border-radius:6px;padding:0.7rem 2rem;text-decoration:none;">Sign In / Create Account</a>
+      </div>`;
+    return;
+  }
+
   if (!PACK_DEFS.length) {
     grid.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;">No packs found in packs.json.</div>';
     return;
@@ -732,18 +728,11 @@ async function startOpen() {
   if (!currentPack || !currentPack.cards.length) return;
   if (document.getElementById('openBtn').disabled) return;
 
-  // Check limit
   if (packsRemaining === 0) {
-    const token = localStorage.getItem('ifiToken');
-    if (token) {
-      showToast('No packs left today — come back tomorrow!');
-    } else {
-      showToast('Sign in for 5 packs a day!');
-    }
+    showToast('No packs left today — come back tomorrow!');
     return;
   }
 
-  // Consume a pack slot
   const ok = await consumePack();
   if (!ok) {
     showToast('No packs left today — come back tomorrow!');
@@ -919,41 +908,23 @@ function nextCard() {
 }
 
 function collectPack() {
-  const token = localStorage.getItem('ifiToken');
-
-  // Save locally first — always
+  // Save locally
   try {
     const col = loadCollectionLocal();
     packCards.forEach(c => col.push({
-      file: c.file,
-      name: c.name,
-      team: c.team,
-      league: c.league || '',
-      teamCode: c.teamCode || '',
-      rarity: c.rarity,
-      landscape: c.landscape || false,
-      packId: currentPack.id,
-      packName: currentPack.name
+      file: c.file, name: c.name, team: c.team,
+      league: c.league || '', teamCode: c.teamCode || '',
+      rarity: c.rarity, landscape: c.landscape || false,
+      packId: currentPack.id, packName: currentPack.name
     }));
     localStorage.setItem('ifiCol', JSON.stringify(col));
-  } catch(e) {
-    console.error('Local save failed:', e);
-  }
+  } catch(e) { console.error('Local save failed:', e); }
 
-  // Increment local packs opened counter
   try {
     const opened = parseInt(localStorage.getItem('ifiPacksOpened') || '0') + 1;
     localStorage.setItem('ifiPacksOpened', opened);
   } catch(e) {}
 
-  // Guest — redirect to login so cards migrate on sign-in
-  if (!token) {
-    showToast('Sign in to save your cards across devices!');
-    setTimeout(() => { window.location.href = 'login.html'; }, 1800);
-    return;
-  }
-
-  // Logged-in — show result, go back, save in background
   const sr = packCards.find(c => c.rarity === 'sr');
   showToast(sr ? '🏆 Secret Rare! Cards saved.' : '5 cards added to collection');
   showScreen('select');
@@ -961,15 +932,10 @@ function collectPack() {
   try {
     if (typeof savePullToServer === 'function') {
       savePullToServer(packCards.map(c => ({
-        file: c.file,
-        name: c.name,
-        team: c.team,
-        league: c.league || '',
-        teamCode: c.teamCode || '',
-        rarity: c.rarity,
-        landscape: c.landscape || false,
-        packId: currentPack.id,
-        packName: currentPack.name
+        file: c.file, name: c.name, team: c.team,
+        league: c.league || '', teamCode: c.teamCode || '',
+        rarity: c.rarity, landscape: c.landscape || false,
+        packId: currentPack.id, packName: currentPack.name
       })));
     }
   } catch(e) {}

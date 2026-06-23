@@ -85,8 +85,8 @@ export default {
       const hash = await hashPassword(password);
       try {
         const result = await env.DB.prepare(
-          'INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)'
-        ).bind(email.toLowerCase(), username, hash).run();
+          'INSERT INTO users (email, username, password_hash, packs_remaining, last_pack_reset) VALUES (?, ?, ?, 5, ?)'
+        ).bind(email.toLowerCase(), username, hash, new Date().toISOString().slice(0, 10)).run();
         const userId = result.meta.last_row_id;
         const token = generateToken();
         const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -145,6 +145,63 @@ export default {
         'SELECT packs_opened FROM users WHERE id = ?'
       ).bind(user.user_id).first();
       return json({ cards: results, packs_opened: userData?.packs_opened || 0 }, 200, origin);
+    }
+
+    // ── GET /api/packs ──
+    // Returns packs_remaining for logged-in users, resets daily.
+    if (path === '/api/packs' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return json({ packs_remaining: null, guest: true }, 200, origin);
+
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD UTC
+      const row = await env.DB.prepare(
+        'SELECT packs_remaining, last_pack_reset FROM users WHERE id = ?'
+      ).bind(user.user_id).first();
+
+      let remaining = row?.packs_remaining ?? 5;
+      const lastReset = row?.last_pack_reset || '';
+
+      if (lastReset !== today) {
+        remaining = 5;
+        await env.DB.prepare(
+          'UPDATE users SET packs_remaining = 5, last_pack_reset = ? WHERE id = ?'
+        ).bind(today, user.user_id).run();
+      }
+
+      return json({ packs_remaining: remaining, reset_date: today }, 200, origin);
+    }
+
+    // ── POST /api/packs/consume ──
+    // Call this when a user opens a pack. Decrements packs_remaining by 1.
+    if (path === '/api/packs/consume' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+
+      const today = new Date().toISOString().slice(0, 10);
+      const row = await env.DB.prepare(
+        'SELECT packs_remaining, last_pack_reset FROM users WHERE id = ?'
+      ).bind(user.user_id).first();
+
+      let remaining = row?.packs_remaining ?? 5;
+      const lastReset = row?.last_pack_reset || '';
+
+      // Reset if new day
+      if (lastReset !== today) {
+        remaining = 5;
+        await env.DB.prepare(
+          'UPDATE users SET packs_remaining = 5, last_pack_reset = ? WHERE id = ?'
+        ).bind(today, user.user_id).run();
+      }
+
+      if (remaining <= 0) {
+        return err('No packs remaining today', 403, origin);
+      }
+
+      await env.DB.prepare(
+        'UPDATE users SET packs_remaining = packs_remaining - 1 WHERE id = ?'
+      ).bind(user.user_id).run();
+
+      return json({ ok: true, packs_remaining: remaining - 1 }, 200, origin);
     }
 
     // ── POST /api/collect ──
