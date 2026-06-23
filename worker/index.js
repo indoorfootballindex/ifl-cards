@@ -139,23 +139,32 @@ export default {
       const user = await getUserFromToken(getToken(request), env.DB);
       if (!user) return err('Not logged in', 401, origin);
       const { results } = await env.DB.prepare(
-        'SELECT card_file, pack_id, pack_name, pulled_at FROM collections WHERE user_id = ? ORDER BY pulled_at DESC'
+        'SELECT card_file, pack_id, pack_name, card_rarity, pulled_at FROM collections WHERE user_id = ? ORDER BY pulled_at DESC'
       ).bind(user.user_id).all();
-      return json({ cards: results }, 200, origin);
+      const userData = await env.DB.prepare(
+        'SELECT packs_opened FROM users WHERE id = ?'
+      ).bind(user.user_id).first();
+      return json({ cards: results, packs_opened: userData?.packs_opened || 0 }, 200, origin);
     }
 
     // ── POST /api/collect ──
     if (path === '/api/collect' && request.method === 'POST') {
       const user = await getUserFromToken(getToken(request), env.DB);
       if (!user) return err('Not logged in', 401, origin);
-      const { cards } = await request.json();
+      const text = await request.text();
+      let body;
+      try { body = JSON.parse(text); } catch(e) { return err('Invalid JSON', 400, origin); }
+      const cards = body.cards;
       if (!cards || !Array.isArray(cards)) return err('Invalid cards data', 400, origin);
       const stmt = env.DB.prepare(
-        'INSERT INTO collections (user_id, card_file, pack_id, pack_name) VALUES (?, ?, ?, ?)'
+        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
       );
       await env.DB.batch(
-        cards.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name))
+        cards.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name, c.rarity || 'c'))
       );
+      await env.DB.prepare(
+        'UPDATE users SET packs_opened = packs_opened + 1 WHERE id = ?'
+      ).bind(user.user_id).run();
       return json({ ok: true, saved: cards.length }, 200, origin);
     }
 

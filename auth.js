@@ -33,7 +33,7 @@ function initNav() {
       '<button onclick="logout()" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;background:transparent;border:1px solid #2e2e33;color:#5a5a66;border-radius:4px;padding:4px 12px;cursor:pointer;">Sign Out</button>';
   } else {
     badge.innerHTML =
-      '<a href="login.html" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;background:#c0201a;color:#f4f4f6;border-radius:4px;padding:5px 14px;text-decoration:none;">Sign In</a>';
+      '<a href="login.html" style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;background:#6b7c3f;color:#f0f0ee;border-radius:4px;padding:5px 14px;text-decoration:none;">Sign In</a>';
   }
   nav.appendChild(badge);
 }
@@ -58,7 +58,10 @@ async function savePullToServer(cards) {
   try {
     await fetch(API + '/api/collect', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
       body: JSON.stringify({ cards })
     });
   } catch(e) {

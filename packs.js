@@ -13,34 +13,18 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "r",
-        "landscape": false
-      },
-      {
-        "file": "CyntellWilliamsGB_u.png",
-        "name": "Cyntell Williams",
-        "team": "Green Bay Blizzard",
-        "league": "IFL",
-        "teamCode": "GB",
-        "rarity": "u",
-        "landscape": true
-      },
-      {
-        "file": "KimoClarkGB_u.png",
-        "name": "Kimo Clark",
-        "team": "Green Bay Blizzard",
-        "league": "IFL",
-        "teamCode": "GB",
-        "rarity": "u",
-        "landscape": true
+        "landscape": false,
+        "position": "WR"
       },
       {
         "file": "CameronHarrelQC_c.png",
         "name": "Cameron Harrell",
-        "team": "Quad City",
+        "team": "Quad City Steamwheelers",
         "league": "IFL",
         "teamCode": "QC",
         "rarity": "c",
-        "landscape": false
+        "landscape": false,
+        "position": "DB"
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -49,7 +33,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "c",
-        "landscape": false
+        "landscape": false,
+        "position": "WR"
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -58,7 +43,8 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "c",
-        "landscape": false
+        "landscape": false,
+        "position": "DB"
       },
       {
         "file": "AndrewCarterSR.png",
@@ -67,7 +53,88 @@ var PACK_DATA = [
         "league": "IFL",
         "teamCode": "GB",
         "rarity": "sr",
-        "landscape": false
+        "landscape": false,
+        "position": "OL"
+      },
+      {
+        "file": "HarryBallardGB_u.png",
+        "name": "Harry Ballard III",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "boodahlewis_u.png",
+        "name": "Zane Lewis",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "CameronHarrelQC_c.png",
+        "name": "Cameron Harrell",
+        "team": "Quad City Steamwheelers",
+        "league": "IFL",
+        "teamCode": "QC",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DB"
+      },
+      {
+        "file": "CameronHarrelQC_c.png",
+        "name": "Cameron Harrell",
+        "team": "Quad City Steamwheelers",
+        "league": "IFL",
+        "teamCode": "QC",
+        "rarity": "r",
+        "landscape": false,
+        "position": "DB"
+      },
+      {
+        "file": "HarryBallardGB_c.png",
+        "name": "Harry Ballard III",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "HarryBallardGB_c.png",
+        "name": "Harry Ballard III",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "RaymondBooneGB_c.png",
+        "name": "Raymond Boone",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DB"
+      },
+      {
+        "file": "RaymondBooneGB_c.png",
+        "name": "Raymond Boone",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "r",
+        "landscape": false,
+        "position": "DB"
       }
     ]
   },
@@ -75,6 +142,12 @@ var PACK_DATA = [
     "id": "AFLAllEras",
     "name": "AFL All Eras",
     "sub": "Arena Football League \u00b7 All-Time Greats",
+    "cards": []
+  },
+  {
+    "id": "AFLLegends",
+    "name": "AFL Legends",
+    "sub": "Arena Football League \u00b7 Legends",
     "cards": []
   }
 ];

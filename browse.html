@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IFL Cards – Browse</title>
+<title>50 Yard Cards – Browse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="packs.js"></script>
@@ -11,10 +12,11 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --black:#0e0e0f; --dark:#161618; --panel:#1c1c1f; --border:#2e2e33;
-    --silver:#8a8a96; --red:#c0201a; --gold:#c8980a;
-    --muted:#5a5a66; --text:#e8e8ec; --white:#f4f4f6;
-    --c-color:#6a6a76; --u-color:#3a7abf; --r-color:#9b42d6; --sr-color:#c8980a;
+    --black:  #0a0d0a; --dark: #111410; --panel: #181c16;
+    --border: #2a2e24; --silver: #8a9a80;
+    --green:  #6b7c3f; --gold: #c8980a;
+    --muted:  #5a6650; --text: #e8ece4; --white: #f0f0ee;
+    --c-color: #6a6a76; --u-color: #3a7abf; --r-color: #9b42d6; --sr-color: #c8980a;
   }
   html,body { background:var(--black); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; }
 
@@ -23,26 +25,26 @@
     display:flex; align-items:center; padding:0 1.5rem;
     position:sticky; top:0; z-index:100;
   }
-  .nav-logo {
+  .nav-logo { display:flex; align-items:center; height:80px;
     font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem;
     letter-spacing:0.14em; color:var(--white); text-transform:uppercase;
     margin-right:2rem; padding:1rem 0; text-decoration:none;
   }
-  .nav-logo span { color:var(--red); }
+  .nav-logo span { color:var(--green); }
   .nav-tab {
     padding:1rem 1.1rem; font-size:0.72rem; letter-spacing:0.1em;
     text-transform:uppercase; color:var(--muted); text-decoration:none;
     border-bottom:2px solid transparent; transition:color 0.15s,border-color 0.15s;
   }
   .nav-tab:hover { color:var(--text); }
-  .nav-tab.active { color:var(--white); border-bottom-color:var(--red); }
+  .nav-tab.active { color:var(--white); border-bottom-color:var(--green); }
 
   .page-wrap { max-width:1000px; margin:0 auto; padding:2rem 1.25rem 3rem; }
 
   .page-header { margin-bottom:1.5rem; }
   .page-eyebrow { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
   .page-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(1.6rem,4vw,2.4rem); text-transform:uppercase; letter-spacing:0.04em; color:var(--white); line-height:1; }
-  .page-title span { color:var(--red); }
+  .page-title span { color:var(--green); }
   .page-completion {
     font-family:'Barlow Condensed',sans-serif; font-size:0.9rem;
     color:var(--muted); margin-top:0.4rem; letter-spacing:0.04em;
@@ -50,7 +52,7 @@
   .page-completion strong { color:var(--white); }
 
   .progress-bar-wrap { height:4px; background:var(--border); border-radius:2px; margin-bottom:1.5rem; overflow:hidden; }
-  .progress-bar-fill { height:100%; background:var(--red); border-radius:2px; transition:width 0.4s; }
+  .progress-bar-fill { height:100%; background:var(--green); border-radius:2px; transition:width 0.4s; }
 
   /* filter row */
   .filter-section { margin-bottom:1.25rem; }
@@ -63,7 +65,7 @@
     color:var(--muted); cursor:pointer; transition:all 0.12s;
   }
   .filter-btn:hover { border-color:var(--silver); color:var(--text); }
-  .filter-btn.on { background:var(--panel); border-color:var(--red); color:var(--white); }
+  .filter-btn.on { background:var(--panel); border-color:var(--green); color:var(--white); }
 
   /* card grid */
   .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; align-items:start; }
@@ -135,6 +137,12 @@
 
   .unlocked-img { width:100%; height:100%; object-fit:cover; display:block; }
 
+  /* Rarity overlay */
+  .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; border-radius:8px; pointer-events:none; }
+  .rarity-overlay.u { background-image:url("packs/overlays/uncommon.png"); opacity:1; mix-blend-mode:hue; }
+  .rarity-overlay.r { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
+  
+
   .unlocked-info {
     position:absolute; bottom:0; left:0; right:0; padding:28px 8px 7px;
     background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,transparent 100%);
@@ -173,20 +181,19 @@
   .lb-rarity.r  { color:var(--r-color);  border:1px solid var(--r-color); }
   .lb-rarity.sr { color:var(--sr-color); border:1px solid var(--sr-color); }
   .lb-team { font-size:0.78rem; color:var(--muted); }
-  .lb-close {
-    position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
+  .lb-close { flex-shrink:0; position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
     background:var(--panel); border:1px solid var(--border); color:var(--muted);
     font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
     transition:color 0.12s,border-color 0.12s;
   }
-  .lb-close:hover { color:var(--red); border-color:var(--red); }
+  .lb-close:hover { color:var(--green); border-color:var(--green); }
 
   footer { border-top:1px solid var(--border); text-align:center; padding:1.25rem; font-size:0.7rem; color:var(--muted); }
 </style>
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo"><span>IFL</span> Cards</a>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
   <a href="index.html"      class="nav-tab">Open Packs</a>
   <a href="collection.html" class="nav-tab">My Collection</a>
   <a href="browse.html"     class="nav-tab active">Browse</a>
@@ -195,7 +202,7 @@
 <main>
   <div class="page-wrap">
     <div class="page-header">
-      <div class="page-eyebrow">Indoor Football Index</div>
+      <div class="page-eyebrow">50 Yard Cards</div>
       <div class="page-title">Card <span>Checklist</span></div>
       <div class="page-completion">You own <strong id="ownedCount">0</strong> of <strong id="totalCount">0</strong> cards</div>
     </div>
@@ -221,12 +228,13 @@
   </div>
 </main>
 
-<footer>Indoor Football Index &copy; 2025 · IFL Cards</footer>
+<footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
 
 <div class="lightbox" id="lightbox" onclick="closeLB(event)">
   <div class="lb-inner portrait" id="lbInner">
     <button class="lb-close" onclick="closeLB()">&times;</button>
     <img id="lbImg" src="" alt="">
+    <div class="rarity-overlay" id="lbOverlay" style="display:none;border-radius:14px;"></div>
     <div class="lb-info">
       <div class="lb-name" id="lbName"></div>
       <div class="lb-rarity c" id="lbRarity">Common</div>
@@ -272,12 +280,13 @@ async function fetchCollectionFromServer() {
     const lookup = {};
     if (window.PACK_DATA) {
       window.PACK_DATA.forEach(pack => {
-        (pack.cards||[]).forEach(card => { lookup[card.file] = { ...card, packId: pack.id, packName: pack.name }; });
+        (pack.cards||[]).forEach(card => { lookup[card.file + '|' + card.rarity] = { ...card, packId: pack.id, packName: pack.name }; });
       });
     }
     const serverCards = data.cards.map(c => {
-      const base = lookup[c.card_file] || {};
-      return { ...base, file: c.card_file, packId: c.pack_id, packName: c.pack_name };
+      const rarity = c.card_rarity || 'c';
+      const base = lookup[c.card_file + '|' + rarity] || {};
+      return { ...base, file: c.card_file, rarity, packId: c.pack_id, packName: c.pack_name };
     });
     localStorage.setItem('ifiCol', JSON.stringify(serverCards));
     render();
@@ -315,16 +324,19 @@ function buildPackFilter() {
 
 async function render() {
   const col = await getCollection();
-  const ownedFiles = new Set(col.map(c => c.file));
+  const ownedFiles = new Set(col.map(c => c.file + '|' + c.rarity));
   const all = getAllCards();
 
   // unique cards (dedupe by file)
   const seen = new Set();
   const unique = [];
-  all.forEach(c => { if (!seen.has(c.file)) { seen.add(c.file); unique.push(c); } });
+  all.forEach(c => {
+    const key = c.file + '|' + c.rarity;
+    if (!seen.has(key)) { seen.add(key); unique.push(c); }
+  });
 
   const total  = unique.length;
-  const owned  = unique.filter(c => ownedFiles.has(c.file)).length;
+  const owned  = unique.filter(c => ownedFiles.has(c.file + '|' + c.rarity)).length;
   document.getElementById('ownedCount').textContent = owned;
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('progressBar').style.width = total ? ((owned/total)*100).toFixed(1)+'%' : '0%';
@@ -332,8 +344,8 @@ async function render() {
   // apply filters
   let filtered = unique;
   if (filters.pack !== 'all')   filtered = filtered.filter(c => c.packId === filters.pack);
-  if (filters.status === 'unlocked') filtered = filtered.filter(c =>  ownedFiles.has(c.file));
-  if (filters.status === 'locked')   filtered = filtered.filter(c => !ownedFiles.has(c.file));
+  if (filters.status === 'unlocked') filtered = filtered.filter(c =>  ownedFiles.has(c.file + '|' + c.rarity));
+  if (filters.status === 'locked')   filtered = filtered.filter(c => !ownedFiles.has(c.file + '|' + c.rarity));
 
   const grid = document.getElementById('browseGrid');
   grid.innerHTML = '';
@@ -382,11 +394,22 @@ async function render() {
 
         const info = document.createElement('div');
         info.className = 'unlocked-info';
-        info.innerHTML = `<div class="unlocked-name">${card.name}</div><div class="unlocked-team">${card.team}</div>`;
+        info.innerHTML = `<div class="unlocked-name">${card.name}${card.position ? ' — ' + card.position : ''}</div><div class="unlocked-team">${card.team}</div>`;
 
         el.appendChild(img);
         el.appendChild(badge);
         el.appendChild(info);
+
+        // rarity overlay — only if a common variant exists in the same pack
+        if (card.rarity === 'u' || card.rarity === 'r') {
+          const packCards = (window.PACK_DATA || []).find(p => p.id === card.packId)?.cards || [];
+          const hasCommon = packCards.some(c => c.file === card.file && c.rarity === 'c');
+          if (hasCommon) {
+            const ov = document.createElement('div');
+            ov.className = 'rarity-overlay ' + card.rarity;
+            el.appendChild(ov);
+          }
+        }
       } else {
         // LOCKED — silhouette with team logo
         const bg = document.createElement('div');
@@ -444,12 +467,25 @@ function openLB(card) {
   const orient = card.landscape ? 'landscape' : 'portrait';
   document.getElementById('lbImg').src = 'packs/' + card.packId + '/' + card.file;
   document.getElementById('lbImg').alt = card.name;
-  document.getElementById('lbName').textContent = card.name;
+  document.getElementById('lbName').textContent = card.name + (card.position ? ' — ' + card.position : '');
   document.getElementById('lbTeam').textContent = card.team + ' · ' + (card.packName||'');
   const rar = document.getElementById('lbRarity');
   rar.textContent = RARITY_LABELS[card.rarity];
   rar.className = 'lb-rarity ' + card.rarity;
   document.getElementById('lbInner').className = 'lb-inner ' + orient + ' rarity-' + card.rarity;
+
+  // overlay — only if common variant exists
+  const lbOverlay = document.getElementById('lbOverlay');
+  const packCards = (window.PACK_DATA || []).find(p => p.id === card.packId)?.cards || [];
+  const hasCommon = packCards.some(c => c.file === card.file && c.rarity === 'c');
+  if ((card.rarity === 'u' || card.rarity === 'r') && hasCommon) {
+    lbOverlay.className = 'rarity-overlay ' + card.rarity;
+    lbOverlay.style.display = '';
+    lbOverlay.style.borderRadius = '14px';
+  } else {
+    lbOverlay.style.display = 'none';
+  }
+
   document.getElementById('lightbox').classList.add('open');
 }
 function closeLB(e) {
