@@ -419,6 +419,22 @@
   }
   .card-lb-close:hover { color: var(--green); border-color: var(--green); }
 
+  .packs-badge {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .packs-badge-count {
+    font-weight: 700; font-size: 0.85rem; color: var(--white);
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 10px; min-width: 28px; text-align: center;
+  }
+  .packs-badge-count.low  { color: var(--gold); border-color: rgba(200,152,10,0.4); }
+  .packs-badge-count.none { color: #f08080; border-color: rgba(240,128,128,0.4); }
+  .no-packs-msg {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem;
+    letter-spacing: 0.06em; color: #f08080; text-align: center; margin-top: 0.5rem;
+  }
   footer { border-top: 1px solid var(--border); text-align: center; padding: 1.25rem; font-size: 0.7rem; color: var(--muted); }
 </style>
 </head>
@@ -429,6 +445,9 @@
   <a href="index.html" class="nav-tab active">Open Packs</a>
   <a href="collection.html" class="nav-tab">My Collection</a>
   <a href="browse.html" class="nav-tab">Browse</a>
+  <div class="packs-badge" id="packsBadge" style="margin-left:auto;display:none;">
+    Packs Today: <span class="packs-badge-count" id="packsCount">–</span>
+  </div>
 </nav>
 
 <!-- PACK SELECT -->
@@ -483,6 +502,11 @@
 
 <script>
 const RARITY_LABELS = { c: 'Common', u: 'Uncommon', r: 'Rare', sr: 'Secret Rare' };
+const API = 'https://api.cards.indoorfootballindex.com';
+
+// ── PACK LIMIT STATE ──
+let packsRemaining = null; // null = unknown/guest
+const GUEST_PACK_KEY = 'ifiGuestPackUsed';
 
 // ── STORAGE ──
 function saveCollectionLocal(col) {
@@ -508,6 +532,70 @@ let cheatSR = false;
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
+}
+
+// ── PACK LIMIT ──
+async function fetchPackLimit() {
+  try {
+    const token = typeof getToken === 'function' ? getToken() : localStorage.getItem('ifiToken');
+    if (!token) {
+      // Guest: check if they've used their 1 free pack today
+      const used = localStorage.getItem(GUEST_PACK_KEY);
+      packsRemaining = used ? 0 : 1;
+      updatePacksBadge();
+      return;
+    }
+    const res = await fetch(API + '/api/packs', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      packsRemaining = data.packs_remaining;
+      updatePacksBadge();
+    }
+  } catch(e) {}
+}
+
+function updatePacksBadge() {
+  const badge = document.getElementById('packsBadge');
+  const count = document.getElementById('packsCount');
+  if (!badge || !count) return;
+  const token = localStorage.getItem('ifiToken');
+  // Only show badge for logged-in users
+  if (!token) { badge.style.display = 'none'; return; }
+  badge.style.display = 'flex';
+  if (packsRemaining === null) { count.textContent = '–'; return; }
+  count.textContent = packsRemaining;
+  count.className = 'packs-badge-count' +
+    (packsRemaining === 0 ? ' none' : packsRemaining <= 2 ? ' low' : '');
+}
+
+async function consumePack() {
+  const token = localStorage.getItem('ifiToken');
+  if (!token) {
+    // Guest: mark their one free pack as used
+    localStorage.setItem(GUEST_PACK_KEY, '1');
+    packsRemaining = 0;
+    return true;
+  }
+  try {
+    const res = await fetch(API + '/api/packs/consume', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.status === 403) {
+      packsRemaining = 0;
+      updatePacksBadge();
+      return false;
+    }
+    if (res.ok) {
+      const data = await res.json();
+      packsRemaining = data.packs_remaining;
+      updatePacksBadge();
+      return true;
+    }
+  } catch(e) {}
+  return false; // fail closed
 }
 
 // ── PACK DATA (LOCAL) ──
@@ -640,9 +728,28 @@ function selectPack(id) {
   showScreen('open');
 }
 
-function startOpen() {
+async function startOpen() {
   if (!currentPack || !currentPack.cards.length) return;
   if (document.getElementById('openBtn').disabled) return;
+
+  // Check limit
+  if (packsRemaining === 0) {
+    const token = localStorage.getItem('ifiToken');
+    if (token) {
+      showToast('No packs left today — come back tomorrow!');
+    } else {
+      showToast('Sign in for 5 packs a day!');
+    }
+    return;
+  }
+
+  // Consume a pack slot
+  const ok = await consumePack();
+  if (!ok) {
+    showToast('No packs left today — come back tomorrow!');
+    return;
+  }
+
   document.getElementById('openBtn').disabled = true;
   document.getElementById('packWrap').classList.add('ripping');
   setTimeout(() => {
@@ -812,7 +919,9 @@ function nextCard() {
 }
 
 function collectPack() {
-  // Step 1: save locally — this must always work
+  const token = localStorage.getItem('ifiToken');
+
+  // Save locally first — always
   try {
     const col = loadCollectionLocal();
     packCards.forEach(c => col.push({
@@ -831,18 +940,24 @@ function collectPack() {
     console.error('Local save failed:', e);
   }
 
-  // increment packs opened counter
+  // Increment local packs opened counter
   try {
     const opened = parseInt(localStorage.getItem('ifiPacksOpened') || '0') + 1;
     localStorage.setItem('ifiPacksOpened', opened);
   } catch(e) {}
 
-  // Step 2: show result and go back — always happens
+  // Guest — redirect to login so cards migrate on sign-in
+  if (!token) {
+    showToast('Sign in to save your cards across devices!');
+    setTimeout(() => { window.location.href = 'login.html'; }, 1800);
+    return;
+  }
+
+  // Logged-in — show result, go back, save in background
   const sr = packCards.find(c => c.rarity === 'sr');
   showToast(sr ? '🏆 Secret Rare! Cards saved.' : '5 cards added to collection');
   showScreen('select');
 
-  // Step 3: try server save in background — failure doesn't matter
   try {
     if (typeof savePullToServer === 'function') {
       savePullToServer(packCards.map(c => ({
@@ -869,6 +984,7 @@ function showToast(msg) {
 
 // ── INIT ──
 loadPacks();
+fetchPackLimit();
 </script>
 <div class="card-lightbox" id="cardLightbox" onclick="closeCardLB(event)">
   <div class="card-lb-inner portrait" id="cardLbInner">
