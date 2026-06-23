@@ -373,7 +373,7 @@ async function render() {
     first = false;
 
     cards.forEach(card => {
-      const isOwned = ownedFiles.has(card.file);
+      const isOwned = ownedFiles.has(card.file + '|' + card.rarity);
       const orient  = card.landscape ? 'landscape' : 'portrait';
       const el = document.createElement('div');
       el.className = ['browse-card', orient, isOwned ? 'unlocked' : 'locked', 'rarity-' + card.rarity].join(' ');
