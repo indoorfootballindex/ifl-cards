@@ -228,6 +228,46 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot"
+      },
+      {
+        "file": "AaronGarcia_c.png",
+        "name": "Aaron Garcia",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB"
+      },
+      {
+        "file": "MikeWashington_c.png",
+        "name": "Mike Washington",
+        "team": "Pittsburgh Power",
+        "league": "AFL",
+        "teamCode": "PIT",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "AaronGarcia_c.png",
+        "name": "Aaron Garcia",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB"
+      },
+      {
+        "file": "MikeWashington_c.png",
+        "name": "Mike Washington",
+        "team": "Pittsburgh Power",
+        "league": "AFL",
+        "teamCode": "PIT",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR"
       }
     ]
   }
