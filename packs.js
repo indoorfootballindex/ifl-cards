@@ -142,7 +142,88 @@ var PACK_DATA = [
     "id": "AFLAllEras",
     "name": "AFL All Eras",
     "sub": "Arena Football League \u00b7 All-Time Greats",
-    "cards": []
+    "cards": [
+      {
+        "file": "AaronGarcia_c.png",
+        "name": "Aaron Garcia",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB"
+      },
+      {
+        "file": "MikeWashington_c.png",
+        "name": "Mike Washington",
+        "team": "Pittsburgh Power",
+        "league": "AFL",
+        "teamCode": "PIT",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "Bones_u.png",
+        "name": "Bones - Mascot",
+        "team": "New Orleans VooDoo",
+        "league": "AFL",
+        "teamCode": "NOV",
+        "rarity": "u",
+        "landscape": false,
+        "position": "Mascot"
+      },
+      {
+        "file": "Stryker_u.png",
+        "name": "Stryker - Mascot",
+        "team": "Arizona Rattlers",
+        "league": "AFL",
+        "teamCode": "ARZ",
+        "rarity": "u",
+        "landscape": false,
+        "position": "Mascot"
+      },
+      {
+        "file": "Aaron_Garcia_r.png",
+        "name": "Aaron Garcia - MVP",
+        "team": "Jacksonville Sharks",
+        "league": "AFL",
+        "teamCode": "JAX",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB"
+      },
+      {
+        "file": "BobMcMillen_r.png",
+        "name": "Bob McMillen - COVER ART",
+        "team": "Chicago Rush",
+        "league": "AFL",
+        "teamCode": "CHI",
+        "rarity": "r",
+        "landscape": false,
+        "position": "FB/LB"
+      },
+      {
+        "file": "MikeWashington_r.png",
+        "name": "Mike \"The Joystick\" Washington",
+        "team": "Pittsburgh Power",
+        "league": "AFL",
+        "teamCode": "POW",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR"
+      },
+      {
+        "file": "SoulMan_u.png",
+        "name": "Soul Man",
+        "team": "Philadelphia Soul",
+        "league": "AFL",
+        "teamCode": "PHI",
+        "rarity": "u",
+        "landscape": false,
+        "position": "Mascot"
+      }
+    ]
   },
   {
     "id": "AFLLegends",
