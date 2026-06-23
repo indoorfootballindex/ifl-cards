@@ -84,9 +84,10 @@ export default {
       if (username.length < 3) return err('Username must be at least 3 characters', 400, origin);
       const hash = await hashPassword(password);
       try {
+        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
         const result = await env.DB.prepare(
           'INSERT INTO users (email, username, password_hash, packs_remaining, last_pack_reset) VALUES (?, ?, ?, 5, ?)'
-        ).bind(email.toLowerCase(), username, hash, new Date().toISOString().slice(0, 10)).run();
+        ).bind(email.toLowerCase(), username, hash, yesterday).run();
         const userId = result.meta.last_row_id;
         const token = generateToken();
         const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();

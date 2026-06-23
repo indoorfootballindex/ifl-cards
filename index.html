@@ -543,10 +543,15 @@ async function fetchPackLimit() {
     });
     if (res.ok) {
       const data = await res.json();
+      console.log('Pack limit:', data);
       packsRemaining = data.packs_remaining;
       updatePacksBadge();
+    } else {
+      console.warn('fetchPackLimit failed:', res.status);
     }
-  } catch(e) {}
+  } catch(e) {
+    console.warn('fetchPackLimit error:', e.message);
+  }
 }
 
 function updatePacksBadge() {
@@ -570,15 +575,25 @@ async function consumePack() {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token }
     });
-    if (res.status === 403) { packsRemaining = 0; updatePacksBadge(); return false; }
+    if (res.status === 403) {
+      const data = await res.json().catch(() => ({}));
+      console.warn('Pack consume 403:', data);
+      packsRemaining = 0; updatePacksBadge(); return false;
+    }
     if (res.ok) {
       const data = await res.json();
       packsRemaining = data.packs_remaining;
       updatePacksBadge();
       return true;
     }
-  } catch(e) {}
-  return false;
+    // Non-403 error (500, etc) — fail open so server issues don't block users
+    console.warn('Pack consume error:', res.status);
+    return true;
+  } catch(e) {
+    // Network error — fail open
+    console.warn('Pack consume network error:', e.message);
+    return true;
+  }
 }
 
 // ── PACK DATA (LOCAL) ──
