@@ -142,6 +142,12 @@ var PACK_DATA = [
     "id": "AFLAllEras",
     "name": "AFL All Eras",
     "sub": "Arena Football League \u00b7 All-Time Greats",
+    "cards": []
+  },
+  {
+    "id": "AFLLegends",
+    "name": "AFL Legends",
+    "sub": "Arena Football League \u00b7 Legends",
     "cards": [
       {
         "file": "AaronGarcia_c.png",
@@ -224,11 +230,5 @@ var PACK_DATA = [
         "position": "Mascot"
       }
     ]
-  },
-  {
-    "id": "AFLLegends",
-    "name": "AFL Legends",
-    "sub": "Arena Football League \u00b7 Legends",
-    "cards": []
   }
 ];
