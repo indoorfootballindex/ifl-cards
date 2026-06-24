@@ -302,7 +302,8 @@ async function loadExclusivePacks() {
         const cr = await fetch('exclusive_packs/' + p.id + '/cards.csv');
         if (!cr.ok) return null;
         const cards = parseCSV(await cr.text()).map(c => ({
-          file: c.file, rarity: (c.rarity || 'c').toLowerCase()
+          file: c.file, rarity: (c.rarity || 'c').toLowerCase(),
+          order: parseInt(c.order) || 9999
         }));
         return { id: p.id, name: p.name, cards };
       } catch(e) { return null; }
@@ -480,9 +481,13 @@ async function render() {
   if (filters.league !== 'all') filtered = filtered.filter(c => c.league  === filters.league);
   if (filters.pack   !== 'all') filtered = filtered.filter(c => c.packName === filters.pack);
 
-  // sort by rarity: C → U → R → SR
+  // sort by rarity: C → U → R → SR, then by card order within rarity
   const rarityOrder = { c: 0, u: 1, r: 2, sr: 3 };
-  filtered.sort((a, b) => (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0));
+  filtered.sort((a, b) => {
+    const rd = (rarityOrder[a.rarity] || 0) - (rarityOrder[b.rarity] || 0);
+    if (rd !== 0) return rd;
+    return (a.order ?? 9999) - (b.order ?? 9999);
+  });
 
   const grid = document.getElementById('cardGrid');
   grid.innerHTML = '';

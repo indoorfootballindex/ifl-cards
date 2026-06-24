@@ -278,7 +278,8 @@ async function loadExclusivePacks() {
           file: c.file, name: c.name, team: c.team, league: c.league,
           teamCode: c.teamCode, rarity: (c.rarity || 'c').toLowerCase(),
           landscape: c.landscape === 'TRUE' || c.landscape === 'true',
-          position: c.position || ''
+          position: c.position || '',
+          order: parseInt(c.order) || 9999
         }));
         return { id: p.id, name: p.name, sub: p.sub, cards };
       } catch(e) { return null; }
@@ -428,6 +429,7 @@ async function render() {
   if (filters.pack !== 'all')   filtered = filtered.filter(c => c.packId === filters.pack);
   if (filters.status === 'unlocked') filtered = filtered.filter(c =>  ownedFiles.has(c.file + '|' + c.rarity));
   if (filters.status === 'locked')   filtered = filtered.filter(c => !ownedFiles.has(c.file + '|' + c.rarity));
+  filtered.sort((a, b) => (a.order ?? 9999) - (b.order ?? 9999));
 
   const grid = document.getElementById('browseGrid');
   grid.innerHTML = '';
