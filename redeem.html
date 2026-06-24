@@ -50,6 +50,10 @@
   .redeem-card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:2rem; }
   .redeem-label { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); display:block; margin-bottom:6px; }
   .code-input-wrap { display:flex; gap:10px; margin-bottom:1rem; }
+  @media (max-width: 600px) {
+    .code-input-wrap { flex-direction:column; }
+    .btn-redeem { width:100%; }
+  }
   .code-input {
     flex:1; background:var(--dark); border:1.5px solid var(--border);
     border-radius:6px; padding:0.7rem 1rem; color:var(--white);
