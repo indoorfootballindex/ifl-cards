@@ -139,8 +139,12 @@
 
   /* Rarity overlay */
   .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; border-radius:8px; pointer-events:none; }
-  .rarity-overlay.u { background-image:url("packs/overlays/uncommon.png"); opacity:1; mix-blend-mode:hue; }
-  .rarity-overlay.r { background-image:url("packs/overlays/rare.png"); opacity:1; mix-blend-mode:hue; }
+  .filter-btn .complete-badge {
+    display: inline-block; margin-left: 6px;
+    font-size: 0.6rem; letter-spacing: 0.08em;
+    color: var(--gold); vertical-align: middle;
+    opacity: 0.9;
+  }
   
 
   .unlocked-info { display:none; /* hidden — text on artwork */ 
@@ -367,6 +371,20 @@ function getAllExclusiveCards() {
 
 function buildPackFilter(col) {
   const packs = [...(window.PACK_DATA || []), ...EXCLUSIVE_PACK_DATA];
+  const ownedFiles = new Set((col || []).map(c => c.file + '|' + c.rarity));
+
+  // Calculate completion per pack
+  function isPackComplete(pack) {
+    const seen = new Set();
+    const packCards = (pack.cards || []);
+    packCards.forEach(c => seen.add(c.file + '|' + (c.rarity || 'c')));
+    if (!seen.size) return false;
+    for (const key of seen) {
+      if (!ownedFiles.has(key)) return false;
+    }
+    return true;
+  }
+
   const row = document.getElementById('packFilters');
   row.innerHTML = '';
   const allBtn = document.createElement('button');
@@ -377,7 +395,8 @@ function buildPackFilter(col) {
   packs.forEach(pack => {
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (filters.pack === pack.id ? ' on' : '');
-    btn.textContent = pack.name;
+    const complete = isPackComplete(pack);
+    btn.innerHTML = pack.name + (complete ? '<span class="complete-badge">✦ COMPLETE</span>' : '');
     btn.onclick = () => setFilter('pack', pack.id, btn);
     row.appendChild(btn);
   });

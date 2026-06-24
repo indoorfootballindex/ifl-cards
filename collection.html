@@ -89,6 +89,10 @@
   .filter-btn.on-u  { background:rgba(58,122,191,0.15);  border-color:var(--u-color);  color:var(--u-color); }
   .filter-btn.on-r  { background:rgba(155,66,214,0.15);  border-color:var(--r-color);  color:var(--r-color); }
   .filter-btn.on-sr { background:rgba(200,152,10,0.15);  border-color:var(--sr-color); color:var(--sr-color); }
+  .filter-btn .complete-badge {
+    display: inline-block; margin-left: 6px; font-size: 0.6rem;
+    letter-spacing: 0.08em; color: var(--gold); vertical-align: middle; opacity: 0.9;
+  }
 
   /* card grid */
   .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; align-items:start; }
@@ -277,6 +281,36 @@ function cardImgSrc(packId, file) {
     : 'packs/' + packId + '/' + file;
 }
 
+function parseCSV(text) {
+  text = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).filter(l => l.trim()).map(l => {
+    const vals = l.split(',').map(v => v.trim());
+    return Object.fromEntries(headers.map((h, i) => [h, vals[i] || '']));
+  });
+}
+
+let EXCLUSIVE_PACK_DATA = [];
+async function loadExclusivePacks() {
+  try {
+    const res = await fetch('exclusive_packs/exclusive_packs.csv');
+    if (!res.ok) return;
+    const packs = parseCSV(await res.text());
+    const results = await Promise.all(packs.map(async p => {
+      try {
+        const cr = await fetch('exclusive_packs/' + p.id + '/cards.csv');
+        if (!cr.ok) return null;
+        const cards = parseCSV(await cr.text()).map(c => ({
+          file: c.file, rarity: (c.rarity || 'c').toLowerCase()
+        }));
+        return { id: p.id, name: p.name, cards };
+      } catch(e) { return null; }
+    }));
+    EXCLUSIVE_PACK_DATA = results.filter(Boolean);
+  } catch(e) {}
+}
+
 function getCollectionLocal() {
   try {
     const s = localStorage.getItem('ifiCol');
@@ -374,7 +408,34 @@ function buildFilters(col) {
   const pRow = document.getElementById('packFilters');
   pRow.innerHTML = '';
   makeBtn(pRow, 'all', 'All', 'pack');
-  packs.forEach(p => makeBtn(pRow, p, p, 'pack'));
+
+  // Build pack completion map
+  const ownedKeys = new Set(col.map(c => c.packId + '|' + c.file + '|' + c.rarity));
+  const allPacks = [
+    ...(window.PACK_DATA || []).map(p => ({ id: p.id, name: p.name, cards: p.cards || [] })),
+    ...EXCLUSIVE_PACK_DATA
+  ];
+  // Only show packs that appear in collection
+  const colPackIds = new Set(col.map(c => c.packId));
+  const colPackNames = new Set(col.map(c => c.packName).filter(Boolean));
+
+  allPacks.forEach(pack => {
+    if (!colPackIds.has(pack.id) && !colPackNames.has(pack.name)) return;
+    // dedupe pack cards
+    const seen = new Set();
+    const packCards = (pack.cards || []).filter(c => {
+      const k = c.file + '|' + (c.rarity || 'c');
+      if (seen.has(k)) return false; seen.add(k); return true;
+    });
+    const complete = packCards.length > 0 && packCards.every(c =>
+      ownedKeys.has(pack.id + '|' + c.file + '|' + (c.rarity || 'c'))
+    );
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (filters.pack === pack.name ? ' on' : '');
+    btn.innerHTML = pack.name + (complete ? '<span class="complete-badge">✦ COMPLETE</span>' : '');
+    btn.onclick = () => setFilter('pack', pack.name, btn);
+    pRow.appendChild(btn);
+  });
 }
 
 async function render() {
@@ -547,6 +608,7 @@ function closeLB(e) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
 
 (async () => {
+  try { await loadExclusivePacks(); } catch(e) {}
   try { await render(); } catch(e) { console.error('render error:', e); }
   try { await fetchCollectionFromServer(); } catch(e) { console.error('fetch error:', e); }
 })();
