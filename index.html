@@ -990,25 +990,6 @@ function showToast(msg) {
 // ── INIT ──
 loadPacks();
 fetchPackLimit();
-
-// ── HAMBURGER (index.html has its own since auth.js conflicts with packsBadge) ──
-(function() {
-  const burger = document.getElementById('navHamburger');
-  if (!burger) return;
-  const menu = document.getElementById('authMobileMenu');
-  if (!menu) return; // auth.js builds the menu, just wire up this button
-  burger.addEventListener('click', () => {
-    burger.classList.toggle('open');
-    menu.classList.toggle('open');
-  });
-  document.addEventListener('click', e => {
-    const nav = document.querySelector('nav');
-    if (!nav.contains(e.target) && !menu.contains(e.target)) {
-      burger.classList.remove('open');
-      menu.classList.remove('open');
-    }
-  });
-})();
 </script>
 <div class="card-lightbox" id="cardLightbox" onclick="closeCardLB(event)">
   <div class="card-lb-inner portrait" id="cardLbInner">

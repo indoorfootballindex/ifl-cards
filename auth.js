@@ -152,7 +152,8 @@ function initNav() {
 
   document.body.appendChild(menu);
 
-  burger.addEventListener('click', () => {
+  burger.addEventListener('click', (e) => {
+    e.stopPropagation();
     burger.classList.toggle('open');
     menu.classList.toggle('open');
   });
