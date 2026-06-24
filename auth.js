@@ -227,3 +227,49 @@ async function migrateLocalToServer(token) {
 
 // Run immediately — auth.js is at end of body so DOM is ready
 initNav();
+
+// Show soft sync banner for guests (not on login page, not if dismissed this session)
+(function() {
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+  if (page === 'login.html') return;
+  const token = localStorage.getItem('ifiToken');
+  if (token) return;
+  if (sessionStorage.getItem('ifiSyncDismissed')) return;
+  // Don't add banner if index.html already has one
+  if (document.getElementById('syncBanner')) return;
+
+  // Inject banner CSS if not already present
+  if (!document.getElementById('sync-banner-style')) {
+    const s = document.createElement('style');
+    s.id = 'sync-banner-style';
+    s.textContent = `
+      .sync-banner {
+        position:fixed; bottom:0; left:0; right:0; z-index:300;
+        background:#181c16; border-top:1px solid #6b7c3f;
+        padding:0.75rem 1.25rem; display:flex; align-items:center;
+        gap:1rem; flex-wrap:wrap; justify-content:space-between;
+        transform:translateY(100%); transition:transform 0.3s ease;
+      }
+      .sync-banner.show { transform:translateY(0); }
+      .sync-banner-text { font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; letter-spacing:0.06em; text-transform:uppercase; color:#5a6650; }
+      .sync-banner-text strong { color:#f0f0ee; }
+      .sync-banner-btns { display:flex; gap:8px; align-items:center; }
+      .sync-banner-btns a { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; background:#6b7c3f; color:#f0f0ee; border-radius:4px; padding:5px 14px; text-decoration:none; }
+      .sync-banner-btns button { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; background:none; border:none; color:#5a6650; cursor:pointer; padding:5px; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  const banner = document.createElement('div');
+  banner.className = 'sync-banner';
+  banner.id = 'syncBanner';
+  banner.innerHTML = `
+    <div class="sync-banner-text"><strong>Playing as guest.</strong> Sign in to save your collection across devices.</div>
+    <div class="sync-banner-btns">
+      <a href="login.html">Sign In / Create Account</a>
+      <button onclick="sessionStorage.setItem('ifiSyncDismissed','1');this.closest('.sync-banner').classList.remove('show');">Not now</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+  setTimeout(() => banner.classList.add('show'), 2000);
+})();

@@ -464,6 +464,20 @@
     letter-spacing: 0.06em; color: #f08080; text-align: center; margin-top: 0.5rem;
   }
   footer { border-top: 1px solid var(--border); text-align: center; padding: 1.25rem; font-size: 0.7rem; color: var(--muted); }
+
+  .sync-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 300;
+    background: var(--panel); border-top: 1px solid var(--green);
+    padding: 0.75rem 1.25rem; display: flex; align-items: center;
+    gap: 1rem; flex-wrap: wrap; justify-content: space-between;
+    transform: translateY(100%); transition: transform 0.3s ease;
+  }
+  .sync-banner.show { transform: translateY(0); }
+  .sync-banner-text { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .sync-banner-text strong { color: var(--white); }
+  .sync-banner-btns { display: flex; gap: 8px; align-items: center; }
+  .sync-banner-btns a { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; background: var(--green); color: var(--white); border-radius: 4px; padding: 5px 14px; text-decoration: none; }
+  .sync-banner-btns button { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: none; color: var(--muted); cursor: pointer; padding: 5px; }
 </style>
 </head>
 <body>
@@ -541,6 +555,13 @@
 
 <footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
 <div class="toast" id="toast"></div>
+<div class="sync-banner" id="syncBanner">
+  <div class="sync-banner-text"><strong>Your cards are saved locally.</strong> Sign in to sync across devices.</div>
+  <div class="sync-banner-btns">
+    <a href="login.html">Sign In / Create Account</a>
+    <button onclick="dismissSyncBanner()">Not now</button>
+  </div>
+</div>
 
 <script>
 const RARITY_LABELS = { c: 'Common', u: 'Uncommon', r: 'Rare', sr: 'Secret Rare' };
@@ -577,9 +598,21 @@ function showScreen(name) {
 
 // ── PACK LIMIT ──
 async function fetchPackLimit() {
+  const token = localStorage.getItem('ifiToken');
+  if (!token) {
+    // Guest: track daily limit in localStorage
+    const today = new Date().toISOString().slice(0, 10);
+    let guestData = {};
+    try { guestData = JSON.parse(localStorage.getItem('ifiGuestPacks') || '{}'); } catch(e) {}
+    if (guestData.date !== today) {
+      guestData = { date: today, remaining: 5 };
+      localStorage.setItem('ifiGuestPacks', JSON.stringify(guestData));
+    }
+    packsRemaining = guestData.remaining ?? 5;
+    updatePacksBadge();
+    return;
+  }
   try {
-    const token = localStorage.getItem('ifiToken');
-    if (!token) { packsRemaining = 0; return; }
     const res = await fetch(API + '/api/packs', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
@@ -611,7 +644,19 @@ function updatePacksBadge() {
 
 async function consumePack() {
   const token = localStorage.getItem('ifiToken');
-  if (!token) return false;
+  if (!token) {
+    // Guest: decrement local counter
+    const today = new Date().toISOString().slice(0, 10);
+    let guestData = {};
+    try { guestData = JSON.parse(localStorage.getItem('ifiGuestPacks') || '{}'); } catch(e) {}
+    if (guestData.date !== today) guestData = { date: today, remaining: 5 };
+    if ((guestData.remaining ?? 5) <= 0) { packsRemaining = 0; updatePacksBadge(); return false; }
+    guestData.remaining = (guestData.remaining ?? 5) - 1;
+    localStorage.setItem('ifiGuestPacks', JSON.stringify(guestData));
+    packsRemaining = guestData.remaining;
+    updatePacksBadge();
+    return true;
+  }
   try {
     const res = await fetch(API + '/api/packs/consume', {
       method: 'POST',
@@ -628,11 +673,9 @@ async function consumePack() {
       updatePacksBadge();
       return true;
     }
-    // Non-403 error (500, etc) — fail open so server issues don't block users
     console.warn('Pack consume error:', res.status);
     return true;
   } catch(e) {
-    // Network error — fail open
     console.warn('Pack consume network error:', e.message);
     return true;
   }
@@ -697,18 +740,6 @@ async function loadPacks() {
 function buildPackGrid() {
   const grid = document.getElementById('packGrid');
   grid.innerHTML = '';
-
-  // Gate: must be signed in
-  const token = localStorage.getItem('ifiToken');
-  if (!token) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.6rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--white);margin-bottom:0.5rem;">Sign In to Open Packs</div>
-        <div style="font-size:0.85rem;color:var(--muted);margin-bottom:1.5rem;">Create a free account to get 5 packs a day.</div>
-        <a href="login.html" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1rem;letter-spacing:0.14em;text-transform:uppercase;background:var(--green);color:var(--white);border-radius:6px;padding:0.7rem 2rem;text-decoration:none;">Sign In / Create Account</a>
-      </div>`;
-    return;
-  }
 
   if (!PACK_DEFS.length) {
     grid.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;">No packs found in packs.json.</div>';
@@ -1003,8 +1034,22 @@ function collectPack() {
           packId: currentPack.id, packName: currentPack.name
         })) })
       }).then(r => console.log('collect:', r.status)).catch(e => console.warn('collect error:', e.message));
+    } else {
+      setTimeout(() => showSyncBanner(), 800);
     }
   } catch(e) { console.warn('collect error:', e); }
+}
+
+function showSyncBanner() {
+  // Only show for guests, max once per session
+  if (localStorage.getItem('ifiToken')) return;
+  if (sessionStorage.getItem('ifiSyncDismissed')) return;
+  document.getElementById('syncBanner').classList.add('show');
+}
+
+function dismissSyncBanner() {
+  document.getElementById('syncBanner').classList.remove('show');
+  sessionStorage.setItem('ifiSyncDismissed', '1');
 }
 
 function showToast(msg) {

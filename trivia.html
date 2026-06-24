@@ -268,31 +268,44 @@ function shuffle(arr) {
 
 async function init() {
   const token = getToken();
-  if (!token) {
-    document.getElementById('loginGate').style.display = 'block';
-    return;
-  }
+  document.getElementById('loginGate').style.display = 'none';
   document.getElementById('triviaMain').style.display = 'block';
 
-  // Load questions CSV and trivia status in parallel
-  const [csvText, statusRes, packsRes] = await Promise.all([
-    fetch('Trivia/questions.csv').then(r => r.text()),
-    fetch(TRIVIA_API + '/api/trivia/status', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
-    fetch(TRIVIA_API + '/api/packs', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
-  ]);
+  const today = new Date().toISOString().slice(0, 10);
 
-  console.log('CSV raw:', JSON.stringify(csvText.slice(0, 200)));
-  console.log('Trivia status:', JSON.stringify(statusRes));
-  console.log('Packs:', JSON.stringify(packsRes));
-
+  // Load questions CSV
+  const csvText = await fetch('Trivia/questions.csv').then(r => r.text());
   allQuestions = parseCSV(csvText);
-  console.log('Parsed questions:', allQuestions.length, allQuestions[0]);
-  triviaEarned = statusRes.trivia_packs_earned ?? 0;
-  totalPacks = packsRes.packs_remaining ?? 0;
-  const answeredIds = new Set((statusRes.answered_today || []).map(String));
 
-  // Filter out already-answered questions
-  queue = shuffle(allQuestions.filter(q => !answeredIds.has(String(q.id))));
+  if (token) {
+    // Logged in — get status from server
+    try {
+      const [statusRes, packsRes] = await Promise.all([
+        fetch(TRIVIA_API + '/api/trivia/status', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+        fetch(TRIVIA_API + '/api/packs', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+      ]);
+      triviaEarned = statusRes.trivia_packs_earned ?? 0;
+      totalPacks = packsRes.packs_remaining ?? 0;
+      const answeredIds = new Set((statusRes.answered_today || []).map(String));
+      queue = shuffle(allQuestions.filter(q => !answeredIds.has(String(q.id))));
+    } catch(e) {
+      triviaEarned = 0; totalPacks = 0; queue = shuffle(allQuestions);
+    }
+  } else {
+    // Guest — track in localStorage
+    let guestTrivia = {};
+    try { guestTrivia = JSON.parse(localStorage.getItem('ifiGuestTrivia') || '{}'); } catch(e) {}
+    if (guestTrivia.date !== today) guestTrivia = { date: today, earned: 0, answered: [] };
+    triviaEarned = guestTrivia.earned ?? 0;
+
+    let guestPacks = {};
+    try { guestPacks = JSON.parse(localStorage.getItem('ifiGuestPacks') || '{}'); } catch(e) {}
+    if (guestPacks.date !== today) guestPacks = { date: today, remaining: 5 };
+    totalPacks = guestPacks.remaining ?? 5;
+
+    const answeredIds = new Set((guestTrivia.answered || []).map(String));
+    queue = shuffle(allQuestions.filter(q => !answeredIds.has(String(q.id))));
+  }
 
   updateStatus();
 
@@ -377,24 +390,56 @@ async function selectAnswer(choiceKey, btn, shuffled) {
     });
   }
 
-  // Submit to server
+  // Submit answer — server if logged in, localStorage if guest
   let packGranted = false;
   let reason = '';
-  try {
-    const res = await fetch(TRIVIA_API + '/api/trivia/answer', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ question_id: parseInt(current.id), correct: isCorrect })
-    });
-    const data = await res.json();
-    packGranted = data.pack_granted;
-    reason = data.reason || '';
-    if (packGranted) {
-      triviaEarned = data.trivia_packs_earned;
-      totalPacks++;
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (token) {
+    try {
+      const res = await fetch(TRIVIA_API + '/api/trivia/answer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ question_id: parseInt(current.id), correct: isCorrect })
+      });
+      const data = await res.json();
+      packGranted = data.pack_granted;
+      reason = data.reason || '';
+      if (packGranted) {
+        triviaEarned = data.trivia_packs_earned;
+        totalPacks++;
+      }
+    } catch(e) {
+      console.warn('Trivia answer error:', e.message);
     }
-  } catch(e) {
-    console.warn('Trivia answer error:', e.message);
+  } else {
+    // Guest: track locally
+    let guestTrivia = {};
+    try { guestTrivia = JSON.parse(localStorage.getItem('ifiGuestTrivia') || '{}'); } catch(e) {}
+    if (guestTrivia.date !== today) guestTrivia = { date: today, earned: 0, answered: [] };
+
+    // Mark question answered
+    if (!guestTrivia.answered.includes(String(current.id))) {
+      guestTrivia.answered.push(String(current.id));
+    }
+
+    if (isCorrect && (guestTrivia.earned ?? 0) < 5) {
+      guestTrivia.earned = (guestTrivia.earned ?? 0) + 1;
+      triviaEarned = guestTrivia.earned;
+
+      // Add pack to guest daily limit
+      let guestPacks = {};
+      try { guestPacks = JSON.parse(localStorage.getItem('ifiGuestPacks') || '{}'); } catch(e) {}
+      if (guestPacks.date !== today) guestPacks = { date: today, remaining: 5 };
+      guestPacks.remaining = (guestPacks.remaining ?? 5) + 1;
+      localStorage.setItem('ifiGuestPacks', JSON.stringify(guestPacks));
+      totalPacks = guestPacks.remaining;
+      packGranted = true;
+    } else if (isCorrect) {
+      reason = 'trivia_limit';
+    }
+
+    localStorage.setItem('ifiGuestTrivia', JSON.stringify(guestTrivia));
   }
 
   // Show result

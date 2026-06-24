@@ -395,7 +395,6 @@ function closeCardLB() { document.getElementById('cardLightbox').classList.remov
 // ── REDEEM ──
 async function submitCode() {
   const token = getToken();
-  if (!token) return;
   const code = document.getElementById('codeInput').value.trim().toUpperCase();
   if (!code) { showMsg('Please enter a code.', 'error'); return; }
 
@@ -407,12 +406,17 @@ async function submitCode() {
   let lat = null, lng = null;
   try {
     const pos = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
+      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000, enableHighAccuracy: true });
     });
     lat = pos.coords.latitude;
     lng = pos.coords.longitude;
-  } catch(e) {
-    // Location unavailable or denied — server will reject if code requires it
+  } catch(e) {}
+
+  // Guests need a token to redeem — prompt to sign in
+  if (!token) {
+    showMsg('You need an account to redeem codes. <a href="login.html" style="color:var(--green)">Sign in or create one free</a>.', 'error');
+    btn.disabled = false; btn.textContent = 'Redeem';
+    return;
   }
 
   try {
@@ -629,7 +633,6 @@ function finishReveal() {
   showToast(sr ? '🏆 Secret Rare pulled!' : 'Cards added to your collection!');
   showScreen('redeem');
 }
-
 // ── HISTORY ──
 async function loadHistory() {
   const token = getToken();
@@ -664,18 +667,8 @@ document.getElementById('codeInput').addEventListener('input', e => {
 // ── INIT ──
 function init() {
   const token = getToken();
-  if (!token) {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    if (code) {
-      try { localStorage.setItem('ifiPendingCode', code); } catch(e) {}
-      window.location.href = 'login.html';
-      return;
-    }
-    document.getElementById('loginGate').style.display = 'block';
-    return;
-  }
 
+  document.getElementById('loginGate').style.display = 'none';
   document.getElementById('redeemMain').style.display = 'block';
 
   // Pre-fill from URL
@@ -692,7 +685,7 @@ function init() {
     }
   } catch(e) {}
 
-  loadHistory();
+  if (token) loadHistory();
 }
 
 init();

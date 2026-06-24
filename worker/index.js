@@ -360,10 +360,13 @@ export default {
 
       // Geo check if code has location
       if (codeRow.geo_lat && codeRow.geo_lng) {
-        if (lat === undefined || lat === null || lng === undefined || lng === null) {
-          return err('Location required to redeem this code', 403, origin);
+        const userLat = typeof lat === 'number' ? lat : parseFloat(lat);
+        const userLng = typeof lng === 'number' ? lng : parseFloat(lng);
+        if (!lat || !lng || isNaN(userLat) || isNaN(userLng)) {
+          return err('Location required to redeem this code. Please enable location access and try again.', 403, origin);
         }
-        const dist = haversineMeters(lat, lng, codeRow.geo_lat, codeRow.geo_lng);
+        const dist = haversineMeters(userLat, userLng, codeRow.geo_lat, codeRow.geo_lng);
+        console.log(`Geo check: user=(${userLat},${userLng}) venue=(${codeRow.geo_lat},${codeRow.geo_lng}) dist=${dist}m`);
         const ONE_MILE = 1609;
         if (dist > ONE_MILE) {
           return err('You must be at ' + (codeRow.geo_name || 'the venue') + ' to redeem this code', 403, origin);
