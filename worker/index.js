@@ -320,6 +320,121 @@ export default {
       return json({ ok: true, correct: true, pack_granted: true, trivia_packs_earned: earned + 1 }, 200, origin);
     }
 
+    // ── GET /api/redeem/history ──
+    if (path === '/api/redeem/history' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { results } = await env.DB.prepare(
+        `SELECT rc.pack_name, ru.redeemed_at
+         FROM redeem_uses ru JOIN redeem_codes rc ON ru.code_id = rc.id
+         WHERE ru.user_id = ? ORDER BY ru.redeemed_at DESC`
+      ).bind(user.user_id).all();
+      return json({ history: results }, 200, origin);
+    }
+
+    // ── POST /api/redeem ──
+    // Redeem a code, pull cards from exclusive pack CSV, save to collection
+    if (path === '/api/redeem' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+
+      const { code } = await request.json();
+      if (!code) return err('No code provided', 400, origin);
+
+      // Look up code
+      const codeRow = await env.DB.prepare(
+        'SELECT id, pack_id, pack_name, description, active FROM redeem_codes WHERE code = ?'
+      ).bind(code.trim().toUpperCase()).first();
+
+      if (!codeRow) return err('Invalid code', 404, origin);
+      if (!codeRow.active) return err('This code is no longer active', 400, origin);
+
+      // Check if already redeemed by this user
+      const already = await env.DB.prepare(
+        'SELECT id FROM redeem_uses WHERE user_id = ? AND code_id = ?'
+      ).bind(user.user_id, codeRow.id).first();
+      if (already) return err('You have already redeemed this code', 400, origin);
+
+      // Fetch exclusive pack cards CSV
+      const csvUrl = `https://cards.indoorfootballindex.com/exclusive_packs/${codeRow.pack_id}/cards.csv`;
+      let cards = [];
+      try {
+        const csvRes = await fetch(csvUrl);
+        if (!csvRes.ok) return err('Pack data not found', 500, origin);
+        const csvText = await csvRes.text();
+
+        // Parse CSV (handle Windows line endings)
+        const lines = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        const rows = lines.slice(1).filter(l => l.trim()).map(l => {
+          const vals = l.split(',').map(v => v.trim());
+          return Object.fromEntries(headers.map((h, i) => [h, vals[i] || '']));
+        });
+
+        if (!rows.length) return err('Pack has no cards', 500, origin);
+
+        // Separate by rarity for pull logic (same as front end)
+        const byRarity = { c: [], u: [], r: [], sr: [] };
+        rows.forEach(r => {
+          const rar = (r.rarity || 'c').toLowerCase();
+          if (byRarity[rar]) byRarity[rar].push(r);
+        });
+
+        function pick(arr) {
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+        function pickRarity(rows) {
+          const roll = Math.random();
+          if (roll < 1/250 && byRarity.sr.length) return { ...pick(byRarity.sr), rarity: 'sr' };
+          if (roll < 0.10 && byRarity.r.length)  return { ...pick(byRarity.r),  rarity: 'r'  };
+          if (roll < 0.30 && byRarity.u.length)  return { ...pick(byRarity.u),  rarity: 'u'  };
+          const pool = byRarity.c.length ? byRarity.c : rows;
+          return { ...pick(pool), rarity: pool[0]?.rarity || 'c' };
+        }
+
+        // Pull 5 cards, slot 5 guaranteed rare+
+        for (let i = 0; i < 4; i++) cards.push(pickRarity(rows));
+        // Slot 5: guaranteed at least rare
+        const rarePool = [...byRarity.r, ...byRarity.sr];
+        if (rarePool.length) {
+          const roll = Math.random();
+          const sr = roll < 1/50 && byRarity.sr.length;
+          const picked = sr ? pick(byRarity.sr) : pick(byRarity.r);
+          cards.push({ ...picked, rarity: sr ? 'sr' : 'r' });
+        } else {
+          cards.push(pickRarity(rows));
+        }
+
+      } catch(e) {
+        return err('Failed to load pack: ' + e.message, 500, origin);
+      }
+
+      // Record redemption
+      const now = new Date().toISOString();
+      await env.DB.prepare(
+        'INSERT INTO redeem_uses (user_id, code_id, redeemed_at) VALUES (?, ?, ?)'
+      ).bind(user.user_id, codeRow.id, now).run();
+
+      // Save cards to collection
+      const stmt = env.DB.prepare(
+        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
+      );
+      await env.DB.batch(
+        cards.map(c => stmt.bind(user.user_id, c.file, codeRow.pack_id, codeRow.pack_name, c.rarity))
+      );
+
+      return json({
+        ok: true,
+        pack_id: codeRow.pack_id,
+        pack_name: codeRow.pack_name,
+        description: codeRow.description,
+        cards: cards.map(c => ({
+          file: c.file, name: c.name, team: c.team,
+          rarity: c.rarity, position: c.position || ''
+        }))
+      }, 200, origin);
+    }
+
     return err('Not found', 404, origin);
   }
 };
