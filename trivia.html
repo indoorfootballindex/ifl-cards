@@ -281,7 +281,12 @@ async function init() {
     fetch(API + '/api/packs', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
   ]);
 
+  console.log('CSV raw:', JSON.stringify(csvText.slice(0, 200)));
+  console.log('Trivia status:', JSON.stringify(statusRes));
+  console.log('Packs:', JSON.stringify(packsRes));
+
   allQuestions = parseCSV(csvText);
+  console.log('Parsed questions:', allQuestions.length, allQuestions[0]);
   triviaEarned = statusRes.trivia_packs_earned ?? 0;
   totalPacks = packsRes.packs_remaining ?? 0;
   const answeredIds = new Set((statusRes.answered_today || []).map(String));
