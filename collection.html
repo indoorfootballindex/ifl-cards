@@ -395,10 +395,10 @@ async function render() {
     if (!seen.has(key)) { seen.add(key); unique.push(c); }
   });
 
-  // totals — only count regular pack cards
+  // totals — exclusive cards count toward both owned and total since you can only get them by redeeming
   const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
-  const totalUnique = getTotalUnique();
-  const ownedUnique = unique.filter(c => regularPackIds.has(c.packId)).length;
+  const totalUnique = getTotalUnique() + unique.filter(c => !regularPackIds.has(c.packId)).length;
+  const ownedUnique = unique.length;
   document.getElementById('ownedCount').textContent = ownedUnique;
   document.getElementById('totalCount').textContent  = totalUnique;
   document.getElementById('progressBar').style.width = totalUnique ? ((ownedUnique/totalUnique)*100).toFixed(1) + '%' : '0%';

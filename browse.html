@@ -368,10 +368,8 @@ async function render() {
     if (!seen.has(key)) { seen.add(key); unique.push(c); }
   });
 
-  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
-  const regularUnique  = unique.filter(c => regularPackIds.has(c.packId));
-  const total  = regularUnique.length;
-  const owned  = regularUnique.filter(c => ownedFiles.has(c.file + '|' + c.rarity)).length;
+  const total  = unique.length;
+  const owned  = unique.filter(c => ownedFiles.has(c.file + '|' + c.rarity)).length;
   document.getElementById('ownedCount').textContent = owned;
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('progressBar').style.width = total ? ((owned/total)*100).toFixed(1)+'%' : '0%';
