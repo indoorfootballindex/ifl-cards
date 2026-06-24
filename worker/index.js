@@ -360,8 +360,9 @@ export default {
       let cards = [];
       try {
         const csvRes = await fetch(csvUrl);
-        if (!csvRes.ok) return err('Pack data not found', 500, origin);
+        if (!csvRes.ok) return err(`Pack CSV fetch failed: ${csvRes.status} ${csvUrl}`, 500, origin);
         const csvText = await csvRes.text();
+        console.log('CSV text:', csvText.slice(0, 200));
 
         // Parse CSV (handle Windows line endings)
         const lines = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
