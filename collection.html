@@ -270,6 +270,13 @@ const RARITY_LABELS = { c:'Common', u:'Uncommon', r:'Rare', sr:'Secret Rare' };
 const filters = { rarity:'all', team:'all', league:'all', pack:'all' };
 
 // getCollection — returns local data immediately
+function cardImgSrc(packId, file) {
+  const isExclusive = !(window.PACK_DATA || []).some(p => p.id === packId);
+  return isExclusive
+    ? 'exclusive_packs/' + packId + '/' + file
+    : 'packs/' + packId + '/' + file;
+}
+
 function getCollectionLocal() {
   try {
     const s = localStorage.getItem('ifiCol');
@@ -442,7 +449,7 @@ async function render() {
       el.onclick = () => openLB(card);
 
       const img = document.createElement('img');
-      img.src = 'packs/' + card.packId + '/' + card.file;
+      img.src = cardImgSrc(card.packId, card.file);
       img.alt = card.name;
       img.loading = 'lazy';
 
@@ -501,7 +508,7 @@ function clearCol() {
 
 function openLB(card) {
   const orient = card.landscape ? 'landscape' : 'portrait';
-  document.getElementById('lbImg').src = 'packs/' + card.packId + '/' + card.file;
+  document.getElementById('lbImg').src = cardImgSrc(card.packId, card.file);
   document.getElementById('lbImg').alt = card.name;
   document.getElementById('lbName').textContent = card.name + (card.position ? ' — ' + card.position : '');
   document.getElementById('lbTeam').textContent = card.team + ' · ' + (card.packName || '');
