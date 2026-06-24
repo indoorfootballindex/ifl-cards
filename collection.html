@@ -308,10 +308,17 @@ async function fetchCollectionFromServer() {
         });
       });
     }
+    // Load exclusive card metadata saved at redeem time
+    let exclusiveMeta = {};
+    try { exclusiveMeta = JSON.parse(localStorage.getItem('ifiExclusiveMeta') || '{}'); } catch(e) {}
+
     const serverCards = data.cards.map(c => {
       const rarity = c.card_rarity || 'c';
       const base = lookup[c.card_file + '|' + rarity] || {};
-      return { ...base, file: c.card_file, rarity, packId: c.pack_id, packName: c.pack_name };
+      // Fall back to exclusive metadata if not in PACK_DATA
+      const excKey = c.card_file + '|' + c.pack_id;
+      const excMeta = exclusiveMeta[excKey] || {};
+      return { ...excMeta, ...base, file: c.card_file, rarity, packId: c.pack_id, packName: c.pack_name };
     });
     localStorage.setItem('ifiCol', JSON.stringify(serverCards));
     render(); // always re-render with server data
@@ -394,12 +401,14 @@ async function render() {
   document.getElementById('ownedCount').textContent = ownedUnique;
   document.getElementById('totalCount').textContent  = totalUnique;
   document.getElementById('progressBar').style.width = totalUnique ? ((ownedUnique/totalUnique)*100).toFixed(1) + '%' : '0%';
-  document.getElementById('sTotal').textContent = col.length;
-  document.getElementById('sPacks').textContent = Math.floor(col.length / 5);
-  document.getElementById('sC').textContent  = col.filter(c => c.rarity === 'c').length;
-  document.getElementById('sU').textContent  = col.filter(c => c.rarity === 'u').length;
-  document.getElementById('sR').textContent  = col.filter(c => c.rarity === 'r').length;
-  document.getElementById('sSR').textContent = col.filter(c => c.rarity === 'sr').length;
+  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
+  const regularCards = col.filter(c => regularPackIds.has(c.packId));
+  document.getElementById('sTotal').textContent = regularCards.length;
+  document.getElementById('sPacks').textContent = Math.floor(regularCards.length / 5);
+  document.getElementById('sC').textContent  = regularCards.filter(c => c.rarity === 'c').length;
+  document.getElementById('sU').textContent  = regularCards.filter(c => c.rarity === 'u').length;
+  document.getElementById('sR').textContent  = regularCards.filter(c => c.rarity === 'r').length;
+  document.getElementById('sSR').textContent = regularCards.filter(c => c.rarity === 'sr').length;
 
   buildFilters(col);
 

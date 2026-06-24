@@ -285,10 +285,13 @@ async function fetchCollectionFromServer() {
         (pack.cards||[]).forEach(card => { lookup[card.file + '|' + card.rarity] = { ...card, packId: pack.id, packName: pack.name }; });
       });
     }
+    let exclusiveMeta = {};
+    try { exclusiveMeta = JSON.parse(localStorage.getItem('ifiExclusiveMeta') || '{}'); } catch(e) {}
     const serverCards = data.cards.map(c => {
       const rarity = c.card_rarity || 'c';
       const base = lookup[c.card_file + '|' + rarity] || {};
-      return { ...base, file: c.card_file, rarity, packId: c.pack_id, packName: c.pack_name };
+      const excMeta = exclusiveMeta[c.card_file + '|' + c.pack_id] || {};
+      return { ...excMeta, ...base, file: c.card_file, rarity, packId: c.pack_id, packName: c.pack_name };
     });
     localStorage.setItem('ifiCol', JSON.stringify(serverCards));
     render();
@@ -296,6 +299,11 @@ async function fetchCollectionFromServer() {
 }
 
 const filters = { pack:'all', status:'all' };
+
+function cardImgSrc(packId, file) {
+  const isExclusive = !(window.PACK_DATA || []).some(p => p.id === packId);
+  return isExclusive ? 'exclusive_packs/' + packId + '/' + file : 'packs/' + packId + '/' + file;
+}
 
 function getAllCards() {
   if (!window.PACK_DATA) return [];
@@ -386,7 +394,7 @@ async function render() {
 
         const img = document.createElement('img');
         img.className = 'unlocked-img';
-        img.src = 'packs/' + card.packId + '/' + card.file;
+        img.src = cardImgSrc(card.packId, card.file);
         img.alt = card.name;
         img.loading = 'lazy';
 
@@ -467,7 +475,7 @@ function setFilter(key, val, btn) {
 
 function openLB(card) {
   const orient = card.landscape ? 'landscape' : 'portrait';
-  document.getElementById('lbImg').src = 'packs/' + card.packId + '/' + card.file;
+  document.getElementById('lbImg').src = cardImgSrc(card.packId, card.file);
   document.getElementById('lbImg').alt = card.name;
   document.getElementById('lbName').textContent = card.name + (card.position ? ' — ' + card.position : '');
   document.getElementById('lbTeam').textContent = card.team + ' · ' + (card.packName||'');

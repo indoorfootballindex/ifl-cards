@@ -393,20 +393,28 @@ export default {
           return a;
         }
 
-        // Guaranteed slots: 3 commons, 1 uncommon, 1 rare (in order)
-        const commons    = shuffle(byRarity.c);
-        const slot1 = commons[0] || pick(rows);
-        const slot2 = commons[1] || pick(rows);
-        const slot3 = commons[2] || pick(rows);
-        const slot4 = pick(byRarity.u) || pick(byRarity.c) || pick(rows);
-        const slot5 = pick(byRarity.sr) || pick(byRarity.r) || pick(byRarity.u) || pick(rows);
+        // Guaranteed slots: 3 commons, 1 uncommon, 1 rare — no duplicates
+        const rShuffle = (arr) => {
+          const a = [...arr];
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        };
+        const rPick = (arr) => arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
 
-        cards = [slot1, slot2, slot3, slot4, slot5]
-          .filter(Boolean)
-          .map((c, i) => ({
-            ...c,
-            rarity: i < 3 ? (c.rarity || 'c') : i === 3 ? (c.rarity || 'u') : (c.rarity || 'r')
-          }));
+        const commons   = rShuffle(byRarity.c);
+        const uncommons = rShuffle(byRarity.u);
+        const rares     = rShuffle([...byRarity.r, ...byRarity.sr]);
+
+        const slot1 = commons[0]   || rPick(rows);
+        const slot2 = commons[1]   || commons[0] || rPick(rows);
+        const slot3 = commons[2]   || commons[0] || rPick(rows);
+        const slot4 = uncommons[0] || rPick(byRarity.c) || rPick(rows);
+        const slot5 = rares[0]     || rPick(byRarity.u) || rPick(rows);
+
+        cards = [slot1, slot2, slot3, slot4, slot5].filter(Boolean);
 
       } catch(e) {
         return err('Failed to load pack: ' + e.message, 500, origin);

@@ -413,6 +413,18 @@ async function submitCode() {
       return;
     }
 
+    // Save exclusive card metadata for collection page lookup
+    try {
+      const excMeta = JSON.parse(localStorage.getItem('ifiExclusiveMeta') || '{}');
+      data.cards.forEach(c => {
+        excMeta[c.file + '|' + data.pack_id] = {
+          name: c.name, team: c.team, position: c.position || '',
+          landscape: c.landscape || false, league: c.league || '', teamCode: c.teamCode || ''
+        };
+      });
+      localStorage.setItem('ifiExclusiveMeta', JSON.stringify(excMeta));
+    } catch(e) {}
+
     // Success — transition to pack open screen
     redeemPackId   = data.pack_id;
     redeemPackName = data.pack_name;
