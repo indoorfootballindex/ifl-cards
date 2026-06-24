@@ -478,10 +478,18 @@
   <div class="packs-badge" id="packsBadge" style="display:none;margin-left:auto;">
     Packs Today: <span class="packs-badge-count" id="packsCount">–</span>
   </div>
-  <button class="nav-hamburger" id="navHamburger" aria-label="Menu" style="display:none;margin-left:auto;" onclick="document.getElementById('authMobileMenu')?.classList.toggle('open');this.classList.toggle('open');">
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu" style="display:none;margin-left:auto;" onclick="document.getElementById('authMobileMenu').classList.toggle('open');this.classList.toggle('open');">
     <span></span><span></span><span></span>
   </button>
 </nav>
+
+<div class="nav-mobile-menu" id="authMobileMenu">
+  <a href="index.html" class="active">Open Packs</a>
+  <a href="collection.html">My Collection</a>
+  <a href="browse.html">Browse</a>
+  <a href="trivia.html">Trivia</a>
+  <a href="redeem.html">Redeem</a>
+</div>
 
 <!-- PACK SELECT -->
 <div class="screen active" id="screen-select">
