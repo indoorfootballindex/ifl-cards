@@ -374,7 +374,7 @@ export default {
 
         if (!rows.length) return err('Pack has no cards', 500, origin);
 
-        // Separate by rarity for pull logic (same as front end)
+        // Separate by rarity
         const byRarity = { c: [], u: [], r: [], sr: [] };
         rows.forEach(r => {
           const rar = (r.rarity || 'c').toLowerCase();
@@ -382,29 +382,31 @@ export default {
         });
 
         function pick(arr) {
-          return arr[Math.floor(Math.random() * arr.length)];
+          return arr.length ? arr[Math.floor(Math.random() * arr.length)] : null;
         }
-        function pickRarity(rows) {
-          const roll = Math.random();
-          if (roll < 1/250 && byRarity.sr.length) return { ...pick(byRarity.sr), rarity: 'sr' };
-          if (roll < 0.10 && byRarity.r.length)  return { ...pick(byRarity.r),  rarity: 'r'  };
-          if (roll < 0.30 && byRarity.u.length)  return { ...pick(byRarity.u),  rarity: 'u'  };
-          const pool = byRarity.c.length ? byRarity.c : rows;
-          return { ...pick(pool), rarity: pool[0]?.rarity || 'c' };
+        function shuffle(arr) {
+          const a = [...arr];
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
         }
 
-        // Pull 5 cards, slot 5 guaranteed rare+
-        for (let i = 0; i < 4; i++) cards.push(pickRarity(rows));
-        // Slot 5: guaranteed at least rare
-        const rarePool = [...byRarity.r, ...byRarity.sr];
-        if (rarePool.length) {
-          const roll = Math.random();
-          const sr = roll < 1/50 && byRarity.sr.length;
-          const picked = sr ? pick(byRarity.sr) : pick(byRarity.r);
-          cards.push({ ...picked, rarity: sr ? 'sr' : 'r' });
-        } else {
-          cards.push(pickRarity(rows));
-        }
+        // Guaranteed slots: 3 commons, 1 uncommon, 1 rare (in order)
+        const commons    = shuffle(byRarity.c);
+        const slot1 = commons[0] || pick(rows);
+        const slot2 = commons[1] || pick(rows);
+        const slot3 = commons[2] || pick(rows);
+        const slot4 = pick(byRarity.u) || pick(byRarity.c) || pick(rows);
+        const slot5 = pick(byRarity.sr) || pick(byRarity.r) || pick(byRarity.u) || pick(rows);
+
+        cards = [slot1, slot2, slot3, slot4, slot5]
+          .filter(Boolean)
+          .map((c, i) => ({
+            ...c,
+            rarity: i < 3 ? (c.rarity || 'c') : i === 3 ? (c.rarity || 'u') : (c.rarity || 'r')
+          }));
 
       } catch(e) {
         return err('Failed to load pack: ' + e.message, 500, origin);

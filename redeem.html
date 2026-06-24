@@ -553,14 +553,7 @@ function showCard(idx) {
     t.className = 'seen-thumb' + (i === idx ? ' active-thumb' : i < idx ? ' revealed' : '');
   });
 
-  // Rarity overlay
-  const oldOverlay = bc.querySelector('.rarity-overlay');
-  if (oldOverlay) oldOverlay.remove();
-  if (card.rarity === 'u' || card.rarity === 'r') {
-    const overlay = document.createElement('div');
-    overlay.className = 'rarity-overlay ' + card.rarity;
-    bc.appendChild(overlay);
-  }
+  // No rarity overlay for exclusive packs
 
   // NEW badge
   const existingBadge = document.getElementById('newBadge');
