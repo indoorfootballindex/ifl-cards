@@ -74,6 +74,14 @@
     grid-column:1/-1; font-family:'Barlow Condensed',sans-serif; font-weight:700;
     font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
     color:var(--muted); padding:6px 0 4px; border-top:1px solid var(--border); margin-top:4px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-complete {
+    font-family:'Barlow Condensed',sans-serif; font-weight:900;
+    font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--gold); background:rgba(200,152,10,0.12);
+    border:1px solid rgba(200,152,10,0.35); border-radius:4px;
+    padding:2px 8px; line-height:1.4;
   }
 
   /* BASE CARD */
@@ -397,7 +405,7 @@ function buildPackFilter(col) {
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (filters.pack === pack.id ? ' on' : '');
     const complete = isPackComplete(pack);
-    btn.innerHTML = pack.name + (complete ? '<span class="complete-badge">✦ COMPLETE</span>' : '');
+    btn.textContent = pack.name;
     btn.onclick = () => setFilter('pack', pack.id, btn);
     row.appendChild(btn);
   });
@@ -442,19 +450,44 @@ async function render() {
   // group by pack
   const byPack = {};
   filtered.forEach(c => {
-    const k = c.packName || 'Unknown';
-    if (!byPack[k]) byPack[k] = [];
-    byPack[k].push(c);
+    const k = c.packId || 'Unknown';
+    if (!byPack[k]) byPack[k] = { name: c.packName || 'Unknown', cards: [] };
+    byPack[k].cards.push(c);
   });
 
+  // build completion map per pack
+  const allPacksMap = {};
+  [...(window.PACK_DATA || []), ...EXCLUSIVE_PACK_DATA].forEach(p => { allPacksMap[p.id] = p; });
+
   let first = true;
-  Object.entries(byPack).forEach(([packName, cards]) => {
+  Object.entries(byPack).forEach(([packId, { name: packName, cards }]) => {
     const label = document.createElement('div');
     label.className = 'section-label';
     if (first) label.style.cssText = 'border-top:none;margin-top:0;';
-    label.textContent = packName;
-    grid.appendChild(label);
     first = false;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = packName;
+    label.appendChild(nameSpan);
+
+    // Check completion
+    const packDef = allPacksMap[packId];
+    if (packDef && packDef.cards && packDef.cards.length) {
+      const seen = new Set();
+      const packCards = packDef.cards.filter(c => {
+        const k = c.file + '|' + (c.rarity || 'c');
+        if (seen.has(k)) return false; seen.add(k); return true;
+      });
+      const complete = packCards.every(c => ownedFiles.has(c.file + '|' + (c.rarity || 'c')));
+      if (complete) {
+        const badge = document.createElement('span');
+        badge.className = 'section-complete';
+        badge.textContent = '✦ Set Complete';
+        label.appendChild(badge);
+      }
+    }
+
+    grid.appendChild(label);
 
     cards.forEach(card => {
       const isOwned = ownedFiles.has(card.file + '|' + card.rarity);

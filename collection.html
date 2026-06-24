@@ -101,8 +101,16 @@
     grid-column:1/-1; font-family:'Barlow Condensed',sans-serif; font-weight:700;
     font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
     color:var(--muted); padding:6px 0 4px; border-top:1px solid var(--border); margin-top:4px;
+    display:flex; align-items:center; gap:10px;
   }
   .section-label:first-child { border-top:none; margin-top:0; }
+  .section-complete {
+    font-family:'Barlow Condensed',sans-serif; font-weight:900;
+    font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--gold); background:rgba(200,152,10,0.12);
+    border:1px solid rgba(200,152,10,0.35); border-radius:4px;
+    padding:2px 8px; line-height:1.4;
+  }
 
   .coll-card {
     position:relative; border-radius:10px; overflow:hidden;
@@ -433,7 +441,7 @@ function buildFilters(col) {
     );
     const btn = document.createElement('button');
     btn.className = 'filter-btn' + (filters.pack === pack.name ? ' on' : '');
-    btn.innerHTML = pack.name + (complete ? '<span class="complete-badge">✦ COMPLETE</span>' : '');
+    btn.textContent = pack.name;
     btn.onclick = () => setFilter('pack', pack.name, btn);
     pRow.appendChild(btn);
   });
@@ -503,19 +511,47 @@ async function render() {
   // group by pack
   const byPack = {};
   filtered.forEach(card => {
-    const key = card.packName || 'Unknown';
-    if (!byPack[key]) byPack[key] = [];
-    byPack[key].push(card);
+    const key = card.packId || 'Unknown';
+    if (!byPack[key]) byPack[key] = { name: card.packName || 'Unknown', cards: [] };
+    byPack[key].cards.push(card);
   });
 
+  // Build pack definition map for completion checking
+  const allPacksMap = {};
+  [...(window.PACK_DATA || []), ...EXCLUSIVE_PACK_DATA].forEach(p => { allPacksMap[p.id] = p; });
+  const ownedKeys = new Set(col.map(c => c.packId + '|' + c.file + '|' + c.rarity));
+
   let first = true;
-  Object.entries(byPack).forEach(([packName, cards]) => {
+  Object.entries(byPack).forEach(([packId, { name: packName, cards }]) => {
     const label = document.createElement('div');
     label.className = 'section-label' + (first ? ' first' : '');
-    label.textContent = packName;
     if (first) label.style.borderTop = 'none';
-    grid.appendChild(label);
     first = false;
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = packName;
+    label.appendChild(nameSpan);
+
+    // Check completion against full pack definition
+    const packDef = allPacksMap[packId];
+    if (packDef && packDef.cards && packDef.cards.length) {
+      const seen = new Set();
+      const packCards = packDef.cards.filter(c => {
+        const k = c.file + '|' + (c.rarity || 'c');
+        if (seen.has(k)) return false; seen.add(k); return true;
+      });
+      const complete = packCards.every(c =>
+        ownedKeys.has(packId + '|' + c.file + '|' + (c.rarity || 'c'))
+      );
+      if (complete) {
+        const badge = document.createElement('span');
+        badge.className = 'section-complete';
+        badge.textContent = '✦ Set Complete';
+        label.appendChild(badge);
+      }
+    }
+
+    grid.appendChild(label);
 
     cards.forEach(card => {
       const orient = card.landscape ? 'landscape' : 'portrait';
