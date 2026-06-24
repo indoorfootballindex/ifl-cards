@@ -225,7 +225,7 @@
 <footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
 
 <script>
-const API = 'https://api.cards.indoorfootballindex.com';
+const TRIVIA_API = 'https://api.cards.indoorfootballindex.com';
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 let allQuestions = [];
@@ -276,9 +276,9 @@ async function init() {
 
   // Load questions CSV and trivia status in parallel
   const [csvText, statusRes, packsRes] = await Promise.all([
-    fetch('trivia/questions.csv').then(r => r.text()),
-    fetch(API + '/api/trivia/status', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
-    fetch(API + '/api/packs', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+    fetch('Trivia/questions.csv').then(r => r.text()),
+    fetch(TRIVIA_API + '/api/trivia/status', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+    fetch(TRIVIA_API + '/api/packs', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
   ]);
 
   console.log('CSV raw:', JSON.stringify(csvText.slice(0, 200)));
@@ -381,7 +381,7 @@ async function selectAnswer(choiceKey, btn, shuffled) {
   let packGranted = false;
   let reason = '';
   try {
-    const res = await fetch(API + '/api/trivia/answer', {
+    const res = await fetch(TRIVIA_API + '/api/trivia/answer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ question_id: parseInt(current.id), correct: isCorrect })
