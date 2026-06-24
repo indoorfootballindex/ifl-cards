@@ -77,6 +77,17 @@
   .filter-section { margin-bottom:1rem; }
   .filter-label { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:6px; }
   .filter-row { display:flex; gap:6px; flex-wrap:wrap; }
+  .filter-select {
+    background:var(--dark); border:1.5px solid var(--border); border-radius:6px;
+    color:var(--text); font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    font-size:0.8rem; letter-spacing:0.06em; text-transform:uppercase;
+    padding:5px 28px 5px 10px; cursor:pointer; outline:none;
+    appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6650'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 8px center;
+    transition:border-color 0.12s;
+  }
+  .filter-select:focus, .filter-select:hover { border-color:var(--green); color:var(--white); }
   .filter-btn {
     font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.68rem;
     letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px;
@@ -211,7 +222,7 @@
       <div class="coll-title">My <span>Collection</span></div>
       <div class="header-right">
         <div class="completion"><span id="ownedCount">0</span><span class="frac-total"> / <span id="totalCount">0</span> cards</span></div>
-        <button class="clear-btn" onclick="clearCol()">Clear all</button>
+
       </div>
     </div>
 
@@ -239,9 +250,9 @@
     </div>
     <div class="filter-section">
       <div class="filter-label">Team</div>
-      <div class="filter-row" id="teamFilters">
-        <button class="filter-btn on" onclick="setFilter('team','all',this)">All</button>
-      </div>
+      <select class="filter-select" id="teamFilters" onchange="setFilterSelect('team', this.value)">
+        <option value="all">All Teams</option>
+      </select>
     </div>
     <div class="filter-section">
       <div class="filter-label">League</div>
@@ -251,9 +262,9 @@
     </div>
     <div class="filter-section" style="margin-bottom:1.5rem;">
       <div class="filter-label">Pack</div>
-      <div class="filter-row" id="packFilters">
-        <button class="filter-btn on" onclick="setFilter('pack','all',this)">All</button>
-      </div>
+      <select class="filter-select" id="packFilters" onchange="setFilterSelect('pack', this.value)">
+        <option value="all">All Packs</option>
+      </select>
     </div>
 
     <div class="card-grid" id="cardGrid"></div>
@@ -405,9 +416,13 @@ function buildFilters(col) {
   }
 
   const tRow = document.getElementById('teamFilters');
-  tRow.innerHTML = '';
-  makeBtn(tRow, 'all', 'All', 'team');
-  teams.forEach(t => makeBtn(tRow, t, t, 'team'));
+  tRow.innerHTML = '<option value="all">All Teams</option>';
+  teams.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    if (filters.team === t) opt.selected = true;
+    tRow.appendChild(opt);
+  });
 
   const lRow = document.getElementById('leagueFilters');
   lRow.innerHTML = '';
@@ -415,8 +430,7 @@ function buildFilters(col) {
   leagues.forEach(l => makeBtn(lRow, l, l, 'league'));
 
   const pRow = document.getElementById('packFilters');
-  pRow.innerHTML = '';
-  makeBtn(pRow, 'all', 'All', 'pack');
+  pRow.innerHTML = '<option value="all">All Packs</option>';
 
   // Build pack completion map
   const ownedKeys = new Set(col.map(c => c.packId + '|' + c.file + '|' + c.rarity));
@@ -439,11 +453,11 @@ function buildFilters(col) {
     const complete = packCards.length > 0 && packCards.every(c =>
       ownedKeys.has(pack.id + '|' + c.file + '|' + (c.rarity || 'c'))
     );
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (filters.pack === pack.name ? ' on' : '');
-    btn.textContent = pack.name;
-    btn.onclick = () => setFilter('pack', pack.name, btn);
-    pRow.appendChild(btn);
+    const opt = document.createElement('option');
+    opt.value = pack.name;
+    opt.textContent = pack.name + (complete ? ' ✦' : '');
+    if (filters.pack === pack.name) opt.selected = true;
+    pRow.appendChild(opt);
   });
 }
 
@@ -599,13 +613,19 @@ async function render() {
   });
 }
 
+function setFilterSelect(key, val) {
+  filters[key] = val;
+  render();
+}
+
 function setFilter(key, val, btn) {
   filters[key] = val;
-  // reset active state for that row
-  const rowId = { rarity:'rarityFilters', team:'teamFilters', league:'leagueFilters', pack:'packFilters' }[key];
-  document.getElementById(rowId).querySelectorAll('.filter-btn').forEach(b => {
-    b.className = 'filter-btn' + (b === btn ? ' on' : '');
-  });
+  const rowId = { rarity:'rarityFilters', league:'leagueFilters' }[key];
+  if (rowId) {
+    document.getElementById(rowId).querySelectorAll('.filter-btn').forEach(b => {
+      b.className = 'filter-btn' + (b === btn ? ' on' : '');
+    });
+  }
   render();
 }
 

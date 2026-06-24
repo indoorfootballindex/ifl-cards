@@ -58,6 +58,17 @@
   .filter-section { margin-bottom:1.25rem; }
   .filter-label { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:6px; }
   .filter-row { display:flex; gap:6px; flex-wrap:wrap; }
+  .filter-select {
+    background:var(--dark); border:1.5px solid var(--border); border-radius:6px;
+    color:var(--text); font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    font-size:0.8rem; letter-spacing:0.06em; text-transform:uppercase;
+    padding:5px 28px 5px 10px; cursor:pointer; outline:none;
+    appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a6650'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 8px center;
+    transition:border-color 0.12s;
+  }
+  .filter-select:focus, .filter-select:hover { border-color:var(--green); color:var(--white); }
   .filter-btn {
     font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.68rem;
     letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px;
@@ -227,9 +238,9 @@
 
     <div class="filter-section">
       <div class="filter-label">Pack</div>
-      <div class="filter-row" id="packFilters">
-        <button class="filter-btn on" onclick="setFilter('pack','all',this)">All</button>
-      </div>
+      <select class="filter-select" id="packFilters" onchange="setFilterSelect('pack', this.value)">
+        <option value="all">All Packs</option>
+      </select>
     </div>
     <div class="filter-section">
       <div class="filter-label">Status</div>
@@ -397,19 +408,14 @@ function buildPackFilter(col) {
   }
 
   const row = document.getElementById('packFilters');
-  row.innerHTML = '';
-  const allBtn = document.createElement('button');
-  allBtn.className = 'filter-btn' + (filters.pack === 'all' ? ' on' : '');
-  allBtn.textContent = 'All';
-  allBtn.onclick = () => setFilter('pack','all',allBtn);
-  row.appendChild(allBtn);
+  row.innerHTML = '<option value="all">All Packs</option>';
   packs.forEach(pack => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn' + (filters.pack === pack.id ? ' on' : '');
     const complete = isPackComplete(pack);
-    btn.textContent = pack.name;
-    btn.onclick = () => setFilter('pack', pack.id, btn);
-    row.appendChild(btn);
+    const opt = document.createElement('option');
+    opt.value = pack.id;
+    opt.textContent = pack.name + (complete ? ' ✦' : '');
+    if (filters.pack === pack.id) opt.selected = true;
+    row.appendChild(opt);
   });
 }
 
@@ -571,12 +577,14 @@ async function render() {
   });
 }
 
+function setFilterSelect(key, val) {
+  filters[key] = val;
+  render();
+}
+
 function setFilter(key, val, btn) {
   filters[key] = val;
-  const rowId = { pack:'packFilters', status:null }[key];
-  if (rowId) {
-    document.getElementById(rowId).querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn' + (b===btn?' on':''));
-  } else {
+  if (btn) {
     btn.closest('.filter-row').querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn' + (b===btn?' on':''));
   }
   render();
