@@ -395,13 +395,13 @@ async function render() {
     if (!seen.has(key)) { seen.add(key); unique.push(c); }
   });
 
-  // totals
+  // totals — only count regular pack cards
+  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
   const totalUnique = getTotalUnique();
-  const ownedUnique = unique.length;
+  const ownedUnique = unique.filter(c => regularPackIds.has(c.packId)).length;
   document.getElementById('ownedCount').textContent = ownedUnique;
   document.getElementById('totalCount').textContent  = totalUnique;
   document.getElementById('progressBar').style.width = totalUnique ? ((ownedUnique/totalUnique)*100).toFixed(1) + '%' : '0%';
-  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
   const regularCards = col.filter(c => regularPackIds.has(c.packId));
   document.getElementById('sTotal').textContent = regularCards.length;
   document.getElementById('sPacks').textContent = Math.floor(regularCards.length / 5);

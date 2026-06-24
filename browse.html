@@ -314,8 +314,31 @@ function getAllCards() {
   return all;
 }
 
-function buildPackFilter() {
-  const packs = window.PACK_DATA || [];
+function getExclusiveCards(col) {
+  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
+  // dedupe exclusive cards by file+rarity
+  const seen = new Set();
+  const excl = [];
+  col.forEach(c => {
+    if (!regularPackIds.has(c.packId)) {
+      const key = c.file + '|' + c.rarity;
+      if (!seen.has(key)) { seen.add(key); excl.push(c); }
+    }
+  });
+  return excl;
+}
+
+function buildPackFilter(col) {
+  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
+  const packs = [...(window.PACK_DATA || [])];
+  // Add exclusive packs from collection
+  const exclSeen = new Set();
+  (col || []).forEach(c => {
+    if (!regularPackIds.has(c.packId) && !exclSeen.has(c.packId)) {
+      exclSeen.add(c.packId);
+      packs.push({ id: c.packId, name: c.packName || c.packId });
+    }
+  });
   const row = document.getElementById('packFilters');
   row.innerHTML = '';
   const allBtn = document.createElement('button');
@@ -335,9 +358,9 @@ function buildPackFilter() {
 async function render() {
   const col = await getCollection();
   const ownedFiles = new Set(col.map(c => c.file + '|' + c.rarity));
-  const all = getAllCards();
+  const all = [...getAllCards(), ...getExclusiveCards(col)];
 
-  // unique cards (dedupe by file)
+  // unique cards (dedupe by file+rarity)
   const seen = new Set();
   const unique = [];
   all.forEach(c => {
@@ -345,11 +368,15 @@ async function render() {
     if (!seen.has(key)) { seen.add(key); unique.push(c); }
   });
 
-  const total  = unique.length;
-  const owned  = unique.filter(c => ownedFiles.has(c.file + '|' + c.rarity)).length;
+  const regularPackIds = new Set((window.PACK_DATA || []).map(p => p.id));
+  const regularUnique  = unique.filter(c => regularPackIds.has(c.packId));
+  const total  = regularUnique.length;
+  const owned  = regularUnique.filter(c => ownedFiles.has(c.file + '|' + c.rarity)).length;
   document.getElementById('ownedCount').textContent = owned;
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('progressBar').style.width = total ? ((owned/total)*100).toFixed(1)+'%' : '0%';
+
+  buildPackFilter(col);
 
   // apply filters
   let filtered = unique;
@@ -504,7 +531,7 @@ function closeLB(e) {
 }
 document.addEventListener('keydown', e => { if (e.key==='Escape') closeLB(); });
 
-buildPackFilter();
+buildPackFilter([]);
 (async () => {
   try { await render(); } catch(e) { console.error('render error:', e); }
   try { await fetchCollectionFromServer(); } catch(e) { console.error('fetch error:', e); }
