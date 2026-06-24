@@ -29,7 +29,7 @@ function injectNavStyles() {
     .nav-hamburger {
       display: none; background: none; border: none;
       cursor: pointer; padding: 8px; color: #8a9a80; flex-direction: column;
-      gap: 5px; align-items: center; justify-content: center; margin-left: auto;
+      gap: 5px; align-items: center; justify-content: center;
     }
     .nav-hamburger span {
       display: block; width: 22px; height: 2px; background: currentColor;
@@ -69,7 +69,7 @@ function injectNavStyles() {
       nav .nav-tab { display: none !important; }
       nav .packs-badge { display: none !important; }
       nav > div[style*="margin-left:auto"] { display: none !important; }
-      .nav-hamburger { display: flex !important; }
+      .nav-hamburger { display: flex !important; margin-left: auto !important; }
     }
   `;
   document.head.appendChild(style);
