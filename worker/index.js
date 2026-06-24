@@ -356,7 +356,7 @@ export default {
       if (already) return err('You have already redeemed this code', 400, origin);
 
       // Fetch exclusive pack cards CSV
-      const csvUrl = `https://cards.indoorfootballindex.com/exclusive_packs/${codeRow.pack_id}/cards.csv`;
+      const csvUrl = `https://raw.githubusercontent.com/indoorfootballindex/ifl-cards/main/exclusive_packs/${codeRow.pack_id}/cards.csv`;
       let cards = [];
       try {
         const csvRes = await fetch(csvUrl);
