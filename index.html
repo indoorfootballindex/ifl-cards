@@ -944,16 +944,25 @@ function collectPack() {
   showToast(sr ? '🏆 Secret Rare! Cards saved.' : '5 cards added to collection');
   showScreen('select');
 
+  // Save to server
   try {
-    if (typeof savePullToServer === 'function') {
-      savePullToServer(packCards.map(c => ({
-        file: c.file, name: c.name, team: c.team,
-        league: c.league || '', teamCode: c.teamCode || '',
-        rarity: c.rarity, landscape: c.landscape || false,
-        packId: currentPack.id, packName: currentPack.name
-      })));
+    const token = localStorage.getItem('ifiToken');
+    if (token) {
+      fetch(API + '/api/collect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ cards: packCards.map(c => ({
+          file: c.file, name: c.name, team: c.team,
+          league: c.league || '', teamCode: c.teamCode || '',
+          rarity: c.rarity, landscape: c.landscape || false,
+          packId: currentPack.id, packName: currentPack.name
+        })) })
+      }).then(r => console.log('collect:', r.status)).catch(e => console.warn('collect error:', e.message));
     }
-  } catch(e) {}
+  } catch(e) { console.warn('collect error:', e); }
 }
 
 function showToast(msg) {
