@@ -247,6 +247,8 @@ function showToast(msg) {
 }
 
 function parseCSV(text) {
+  // Strip BOM and normalize line endings
+  text = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const lines = text.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim());
   return lines.slice(1).filter(l => l.trim()).map(l => {
