@@ -431,6 +431,16 @@
   }
   .packs-badge-count.low  { color: var(--gold); border-color: rgba(200,152,10,0.4); }
   .packs-badge-count.none { color: #f08080; border-color: rgba(240,128,128,0.4); }
+  .nav-hamburger span { display:block; width:22px; height:2px; background:currentColor; border-radius:2px; transition:transform 0.2s,opacity 0.2s; }
+  .nav-hamburger { background:none; border:none; cursor:pointer; padding:8px; color:#8a9a80; flex-direction:column; gap:5px; align-items:center; justify-content:center; }
+  .nav-hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity:0; }
+  .nav-hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  @media (max-width:768px) {
+    nav .nav-tab { display:none !important; }
+    nav .packs-badge { display:none !important; }
+    #navHamburger { display:flex !important; }
+  }
   .no-packs-msg {
     font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem;
     letter-spacing: 0.06em; color: #f08080; text-align: center; margin-top: 0.5rem;
@@ -447,9 +457,12 @@
   <a href="browse.html" class="nav-tab">Browse</a>
   <a href="trivia.html" class="nav-tab">Trivia</a>
   <a href="redeem.html" class="nav-tab">Redeem</a>
-  <div class="packs-badge" id="packsBadge" style="margin-left:auto;display:none;">
+  <div class="packs-badge" id="packsBadge" style="display:none;margin-left:auto;">
     Packs Today: <span class="packs-badge-count" id="packsCount">–</span>
   </div>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu" style="display:none;margin-left:auto;">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- PACK SELECT -->
@@ -977,6 +990,25 @@ function showToast(msg) {
 // ── INIT ──
 loadPacks();
 fetchPackLimit();
+
+// ── HAMBURGER (index.html has its own since auth.js conflicts with packsBadge) ──
+(function() {
+  const burger = document.getElementById('navHamburger');
+  if (!burger) return;
+  const menu = document.getElementById('authMobileMenu');
+  if (!menu) return; // auth.js builds the menu, just wire up this button
+  burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    menu.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    const nav = document.querySelector('nav');
+    if (!nav.contains(e.target) && !menu.contains(e.target)) {
+      burger.classList.remove('open');
+      menu.classList.remove('open');
+    }
+  });
+})();
 </script>
 <div class="card-lightbox" id="cardLightbox" onclick="closeCardLB(event)">
   <div class="card-lb-inner portrait" id="cardLbInner">

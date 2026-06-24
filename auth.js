@@ -96,16 +96,20 @@ function initNav() {
   }
   nav.appendChild(badge);
 
-  // Hamburger button
-  const burger = document.createElement('button');
-  burger.className = 'nav-hamburger';
-  burger.setAttribute('aria-label', 'Menu');
-  burger.innerHTML = '<span></span><span></span><span></span>';
-  nav.appendChild(burger);
+  // Use existing hamburger if page has one (e.g. index.html), otherwise create
+  let burger = nav.querySelector('.nav-hamburger') || document.getElementById('navHamburger');
+  if (!burger) {
+    burger = document.createElement('button');
+    burger.className = 'nav-hamburger';
+    burger.setAttribute('aria-label', 'Menu');
+    burger.innerHTML = '<span></span><span></span><span></span>';
+    nav.appendChild(burger);
+  }
 
   // Mobile menu
   const menu = document.createElement('div');
   menu.className = 'nav-mobile-menu';
+  menu.id = 'authMobileMenu';
 
   // Figure out current page for active state
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
