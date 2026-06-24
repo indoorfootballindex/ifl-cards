@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 Yard Cards – Trivia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black:  #0a0d0a; --dark: #111410; --panel: #181c16;
+    --border: #2a2e24; --silver: #8a9a80;
+    --green:  #6b7c3f; --gold: #c8980a;
+    --muted:  #5a6650; --text: #e8ece4; --white: #f0f0ee;
+    --c-color: #6a6a76; --u-color: #3a7abf; --r-color: #9b42d6; --sr-color: #c8980a;
+  }
+  html, body { background: var(--black); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+  nav {
+    background: var(--dark); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { display:flex; align-items:center; height:80px;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.2rem;
+    letter-spacing: 0.14em; color: var(--white); text-transform: uppercase;
+    margin-right: 2rem; padding: 1rem 0; text-decoration: none;
+  }
+  .nav-tab {
+    padding: 1rem 1.1rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--white); border-bottom-color: var(--green); }
+
+  .page-wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 3rem; }
+  .page-eyebrow { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(1.8rem, 5vw, 2.6rem); text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--white); margin-bottom: 0.5rem; line-height: 1;
+  }
+  .page-title span { color: var(--green); }
+
+  /* Status bar */
+  .trivia-status {
+    display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
+    margin-bottom: 2rem; padding: 0.75rem 1rem;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .status-item { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .status-item strong { color: var(--white); font-size: 1rem; }
+  .status-item.highlight strong { color: var(--gold); }
+  .status-sep { width: 1px; height: 20px; background: var(--border); }
+
+  /* Question card */
+  .question-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2rem; margin-bottom: 1.25rem;
+    animation: cardIn 0.3s ease;
+  }
+  @keyframes cardIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .question-num {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem;
+  }
+  .question-text {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: clamp(1.1rem, 3vw, 1.4rem); color: var(--white);
+    line-height: 1.3; margin-bottom: 1.5rem;
+  }
+
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice-btn {
+    width: 100%; text-align: left; padding: 0.75rem 1rem;
+    background: var(--dark); border: 1.5px solid var(--border);
+    border-radius: 8px; color: var(--text); cursor: pointer;
+    font-family: 'Barlow', sans-serif; font-size: 0.9rem;
+    transition: border-color 0.12s, background 0.12s, color 0.12s;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--green); color: var(--white); }
+  .choice-btn:disabled { cursor: default; }
+  .choice-btn.correct  { border-color: var(--green); background: rgba(107,124,63,0.2); color: var(--white); }
+  .choice-btn.wrong    { border-color: #f08080; background: rgba(240,128,128,0.1); color: #f08080; }
+  .choice-btn.reveal   { border-color: var(--green); background: rgba(107,124,63,0.1); color: var(--green); }
+
+  .choice-letter {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); width: 18px; flex-shrink: 0;
+  }
+  .choice-btn.correct .choice-letter,
+  .choice-btn.reveal .choice-letter  { color: var(--green); }
+  .choice-btn.wrong .choice-letter   { color: #f08080; }
+
+  /* Result */
+  .result-box {
+    border-radius: 10px; padding: 1rem 1.25rem;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 1.1rem; letter-spacing: 0.06em; text-transform: uppercase;
+    display: none; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;
+    animation: cardIn 0.25s ease;
+  }
+  .result-box.correct { display: flex; background: rgba(107,124,63,0.18); border: 1px solid rgba(107,124,63,0.4); color: var(--green); }
+  .result-box.wrong   { display: flex; background: rgba(240,128,128,0.1); border: 1px solid rgba(240,128,128,0.3); color: #f08080; }
+  .result-icon { font-size: 1.4rem; }
+  .result-sub { font-size: 0.75rem; color: var(--muted); font-weight: 400; letter-spacing: 0.06em; margin-top: 2px; }
+
+  /* Buttons */
+  .btn-next {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    background: var(--green); color: var(--white); border: none; border-radius: 6px;
+    padding: 0.7rem 2rem; cursor: pointer; transition: background 0.12s, transform 0.1s;
+    display: none;
+  }
+  .btn-next.show { display: inline-block; }
+  .btn-next:hover { background: #7a8f4a; transform: translateY(-1px); }
+
+  /* Done state */
+  .done-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 2.5rem 2rem; text-align: center; display: none;
+  }
+  .done-card.show { display: block; animation: cardIn 0.3s ease; }
+  .done-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 1.8rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .done-title span { color: var(--gold); }
+  .done-sub { font-size: 0.85rem; color: var(--muted); }
+
+  /* Login gate */
+  .login-gate {
+    text-align: center; padding: 3rem 1rem;
+  }
+  .login-gate-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 1.6rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .login-gate-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+  .btn-signin {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    background: var(--green); color: var(--white); border-radius: 6px;
+    padding: 0.7rem 2rem; text-decoration: none; display: inline-block;
+  }
+
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(4rem);
+    background: var(--panel); border: 1px solid var(--green);
+    color: var(--white); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.6rem 1.75rem; border-radius: 6px; opacity: 0;
+    transition: transform 0.3s, opacity 0.3s; z-index: 200; pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  footer { border-top: 1px solid var(--border); text-align: center; padding: 1.25rem; font-size: 0.7rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
+  <a href="index.html" class="nav-tab">Open Packs</a>
+  <a href="collection.html" class="nav-tab">My Collection</a>
+  <a href="browse.html" class="nav-tab">Browse</a>
+  <a href="trivia.html" class="nav-tab active">Trivia</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-eyebrow">50 Yard Cards</div>
+  <div class="page-title">Indoor Football <span>Trivia</span></div>
+
+  <!-- Login gate -->
+  <div class="login-gate" id="loginGate" style="display:none;">
+    <div class="login-gate-title">Sign In to Play</div>
+    <div class="login-gate-sub">Earn packs by answering trivia questions correctly.</div>
+    <a href="login.html" class="btn-signin">Sign In / Create Account</a>
+  </div>
+
+  <!-- Main trivia UI -->
+  <div id="triviaMain" style="display:none;">
+    <div class="trivia-status">
+      <div class="status-item">Packs Earned Today <strong id="statEarned">–</strong> / 5</div>
+      <div class="status-sep"></div>
+      <div class="status-item">Questions Left <strong id="statLeft">–</strong></div>
+      <div class="status-sep"></div>
+      <div class="status-item highlight">Total Packs Available <strong id="statPacks">–</strong></div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div class="question-num" id="questionNum">Question</div>
+      <div class="question-text" id="questionText">Loading…</div>
+      <div class="choices" id="choices"></div>
+    </div>
+
+    <div class="result-box" id="resultBox">
+      <div class="result-icon" id="resultIcon"></div>
+      <div>
+        <div id="resultText"></div>
+        <div class="result-sub" id="resultSub"></div>
+      </div>
+    </div>
+
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Next Question →</button>
+
+    <div class="done-card" id="doneCard">
+      <div class="done-title">All Done for <span>Today!</span></div>
+      <div class="done-sub" id="doneSub"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
+
+<script>
+const API = 'https://api.cards.indoorfootballindex.com';
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+let allQuestions = [];
+let queue = [];       // questions not yet answered today
+let current = null;
+let answered = false;
+let triviaEarned = 0;
+let totalPacks = 0;
+
+function getToken() {
+  try { return localStorage.getItem('ifiToken'); } catch(e) { return null; }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1).filter(l => l.trim()).map(l => {
+    const vals = l.split(',').map(v => v.trim());
+    return Object.fromEntries(headers.map((h, i) => [h, vals[i] || '']));
+  });
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+async function init() {
+  const token = getToken();
+  if (!token) {
+    document.getElementById('loginGate').style.display = 'block';
+    return;
+  }
+  document.getElementById('triviaMain').style.display = 'block';
+
+  // Load questions CSV and trivia status in parallel
+  const [csvText, statusRes, packsRes] = await Promise.all([
+    fetch('trivia/questions.csv').then(r => r.text()),
+    fetch(API + '/api/trivia/status', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+    fetch(API + '/api/packs', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+  ]);
+
+  allQuestions = parseCSV(csvText);
+  triviaEarned = statusRes.trivia_packs_earned ?? 0;
+  totalPacks = packsRes.packs_remaining ?? 0;
+  const answeredIds = new Set((statusRes.answered_today || []).map(String));
+
+  // Filter out already-answered questions
+  queue = shuffle(allQuestions.filter(q => !answeredIds.has(String(q.id))));
+
+  updateStatus();
+
+  if (triviaEarned >= 5) {
+    showDone('You\'ve earned the maximum 5 packs from trivia today. Come back tomorrow!');
+    return;
+  }
+  if (queue.length === 0) {
+    showDone('You\'ve answered all available questions today. Come back tomorrow for more!');
+    return;
+  }
+
+  showQuestion();
+}
+
+function updateStatus() {
+  document.getElementById('statEarned').textContent = triviaEarned;
+  document.getElementById('statLeft').textContent = queue.length;
+  document.getElementById('statPacks').textContent = totalPacks;
+}
+
+function showQuestion() {
+  if (queue.length === 0 || triviaEarned >= 5) {
+    showDone(triviaEarned >= 5
+      ? 'You\'ve earned the maximum 5 packs from trivia today. Come back tomorrow!'
+      : 'You\'ve answered all available questions today. Come back tomorrow for more!');
+    return;
+  }
+
+  current = queue.shift();
+  answered = false;
+
+  document.getElementById('questionNum').textContent = 'Question · ' + allQuestions.findIndex(q => q.id === current.id) + 1 + ' of ' + allQuestions.length;
+  document.getElementById('questionText').textContent = current.question;
+  document.getElementById('resultBox').className = 'result-box';
+  document.getElementById('btnNext').classList.remove('show');
+  document.getElementById('doneCard').classList.remove('show');
+  document.getElementById('questionCard').style.display = 'block';
+
+  // Build shuffled choices
+  const rawChoices = [
+    { key: 'a', text: current.a },
+    { key: 'b', text: current.b },
+    { key: 'c', text: current.c },
+    { key: 'd', text: current.d },
+  ].filter(c => c.text);
+  const shuffled = shuffle(rawChoices);
+
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+  shuffled.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-letter">${LETTERS[i]}</span>${choice.text}`;
+    btn.onclick = () => selectAnswer(choice.key, btn, shuffled);
+    container.appendChild(btn);
+  });
+
+  updateStatus();
+}
+
+async function selectAnswer(choiceKey, btn, shuffled) {
+  if (answered) return;
+  answered = true;
+
+  const isCorrect = choiceKey === current.answer;
+  const token = getToken();
+
+  // Disable all buttons and show correct/wrong
+  const allBtns = document.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => { b.disabled = true; });
+
+  // Mark selected
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+  // Reveal correct answer if wrong
+  if (!isCorrect) {
+    shuffled.forEach((c, i) => {
+      if (c.key === current.answer) {
+        allBtns[i].classList.add('reveal');
+      }
+    });
+  }
+
+  // Submit to server
+  let packGranted = false;
+  let reason = '';
+  try {
+    const res = await fetch(API + '/api/trivia/answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ question_id: parseInt(current.id), correct: isCorrect })
+    });
+    const data = await res.json();
+    packGranted = data.pack_granted;
+    reason = data.reason || '';
+    if (packGranted) {
+      triviaEarned = data.trivia_packs_earned;
+      totalPacks++;
+    }
+  } catch(e) {
+    console.warn('Trivia answer error:', e.message);
+  }
+
+  // Show result
+  const resultBox = document.getElementById('resultBox');
+  const resultText = document.getElementById('resultText');
+  const resultSub = document.getElementById('resultSub');
+  const resultIcon = document.getElementById('resultIcon');
+
+  if (isCorrect) {
+    resultBox.className = 'result-box correct';
+    resultIcon.textContent = '✓';
+    resultText.textContent = 'Correct!';
+    resultSub.textContent = packGranted
+      ? '+1 Pack added to your daily packs'
+      : reason === 'trivia_limit' ? 'Trivia pack limit reached for today'
+      : reason === 'daily_cap' ? 'Daily pack cap reached'
+      : '';
+  } else {
+    resultBox.className = 'result-box wrong';
+    resultIcon.textContent = '✗';
+    resultText.textContent = 'Wrong answer';
+    resultSub.textContent = 'The correct answer was highlighted above';
+  }
+
+  updateStatus();
+
+  // Show next button or done
+  if (queue.length > 0 && triviaEarned < 5) {
+    document.getElementById('btnNext').classList.add('show');
+  } else {
+    setTimeout(() => {
+      showDone(triviaEarned >= 5
+        ? 'You\'ve earned the maximum 5 packs from trivia today. Come back tomorrow!'
+        : 'You\'ve answered all available questions for today. Come back tomorrow!');
+    }, 1200);
+  }
+}
+
+function nextQuestion() {
+  document.getElementById('questionCard').style.animation = 'none';
+  void document.getElementById('questionCard').offsetWidth;
+  document.getElementById('questionCard').style.animation = '';
+  showQuestion();
+}
+
+function showDone(msg) {
+  document.getElementById('questionCard').style.display = 'none';
+  document.getElementById('resultBox').className = 'result-box';
+  document.getElementById('btnNext').classList.remove('show');
+  const done = document.getElementById('doneCard');
+  document.getElementById('doneSub').textContent = msg;
+  done.classList.add('show');
+}
+
+init();
+</script>
+<script src="auth.js"></script>
+</body>
+</html>

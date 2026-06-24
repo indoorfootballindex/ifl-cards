@@ -1,0 +1,11 @@
+id,question,a,b,c,d,answer
+1,How many players are on the field per team in indoor football?,6,8,7,5,b
+2,What is the width of an indoor football field in yards?,28,35,50,25,a
+3,Which league is considered the premier indoor football league in the US?,AFL,IFL,NIFL,AIFL,a
+4,How long is an indoor football field from end zone to end zone?,50 yards,100 yards,80 yards,66 yards,a
+5,What year was the Arena Football League founded?,1987,1982,1990,1995,a
+6,How many points is a touchdown worth in indoor football?,6,7,8,5,a
+7,What team has won the most AFL Arena Bowls?,Arizona Rattlers,Orlando Predators,Tampa Bay Storm,Iowa Barnstormers,a
+8,What is the name of the AFL championship game?,Arena Bowl,Indoor Cup,Grid Iron Classic,Champion's Cup,a
+9,How many end zones does an indoor football field have?,2,1,4,3,a
+10,What is the name of the Green Bay IFL team?,Blizzard,Packers,Freeze,Ice,a

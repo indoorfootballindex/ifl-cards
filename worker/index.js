@@ -226,6 +226,100 @@ export default {
       return json({ ok: true, saved: cards.length }, 200, origin);
     }
 
+    // ── GET /api/trivia/status ──
+    // Returns how many trivia packs earned today and which question IDs answered
+    if (path === '/api/trivia/status' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+
+      const today = new Date().toISOString().slice(0, 10);
+      const row = await env.DB.prepare(
+        'SELECT trivia_packs_earned, last_trivia_reset FROM users WHERE id = ?'
+      ).bind(user.user_id).first();
+
+      let earned = row?.trivia_packs_earned ?? 0;
+      const lastReset = row?.last_trivia_reset || '';
+
+      if (lastReset !== today) {
+        earned = 0;
+        await env.DB.prepare(
+          'UPDATE users SET trivia_packs_earned = 0, last_trivia_reset = ? WHERE id = ?'
+        ).bind(today, user.user_id).run();
+      }
+
+      // Get answered question IDs for today
+      const { results: answered } = await env.DB.prepare(
+        'SELECT question_id FROM trivia_answers WHERE user_id = ? AND answered_date = ?'
+      ).bind(user.user_id, today).all();
+
+      return json({
+        trivia_packs_earned: earned,
+        trivia_limit: 5,
+        answered_today: answered.map(r => r.question_id)
+      }, 200, origin);
+    }
+
+    // ── POST /api/trivia/answer ──
+    // Submit an answer; if correct and under limit, grant a pack
+    if (path === '/api/trivia/answer' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+
+      const { question_id, correct } = await request.json();
+      if (question_id === undefined || correct === undefined) return err('Missing fields', 400, origin);
+
+      const today = new Date().toISOString().slice(0, 10);
+
+      // Check if already answered today
+      const already = await env.DB.prepare(
+        'SELECT id FROM trivia_answers WHERE user_id = ? AND question_id = ? AND answered_date = ?'
+      ).bind(user.user_id, question_id, today).first();
+      if (already) return err('Already answered today', 400, origin);
+
+      // Record the answer
+      await env.DB.prepare(
+        'INSERT INTO trivia_answers (user_id, question_id, answered_date, correct) VALUES (?, ?, ?, ?)'
+      ).bind(user.user_id, question_id, today, correct ? 1 : 0).run();
+
+      if (!correct) return json({ ok: true, correct: false, pack_granted: false }, 200, origin);
+
+      // Check trivia pack limit
+      const row = await env.DB.prepare(
+        'SELECT trivia_packs_earned, last_trivia_reset, packs_remaining FROM users WHERE id = ?'
+      ).bind(user.user_id).first();
+
+      let earned = row?.trivia_packs_earned ?? 0;
+      const lastReset = row?.last_trivia_reset || '';
+      let packsLeft = row?.packs_remaining ?? 0;
+
+      if (lastReset !== today) {
+        earned = 0;
+      }
+
+      if (earned >= 5) {
+        return json({ ok: true, correct: true, pack_granted: false, reason: 'trivia_limit' }, 200, origin);
+      }
+
+      // Check total daily cap (10)
+      const totalRow = await env.DB.prepare(
+        'SELECT packs_remaining, last_pack_reset FROM users WHERE id = ?'
+      ).bind(user.user_id).first();
+      const totalRemaining = totalRow?.packs_remaining ?? 0;
+      const totalReset = totalRow?.last_pack_reset || '';
+      const effectiveTotal = totalReset !== today ? 5 : totalRemaining;
+
+      if (effectiveTotal >= 10) {
+        return json({ ok: true, correct: true, pack_granted: false, reason: 'daily_cap' }, 200, origin);
+      }
+
+      // Grant a pack
+      await env.DB.prepare(
+        'UPDATE users SET trivia_packs_earned = ?, last_trivia_reset = ?, packs_remaining = packs_remaining + 1 WHERE id = ?'
+      ).bind(earned + 1, today, user.user_id).run();
+
+      return json({ ok: true, correct: true, pack_granted: true, trivia_packs_earned: earned + 1 }, 200, origin);
+    }
+
     return err('Not found', 404, origin);
   }
 };
