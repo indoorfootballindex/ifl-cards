@@ -7,16 +7,6 @@ var PACK_DATA = [
     "sub": "Indoor Football League \u00b7 2025 Season",
     "cards": [
       {
-        "file": "LowellPatronGB_r.png",
-        "name": "Lowell Patron Jr.",
-        "team": "Green Bay Blizzard",
-        "league": "IFL",
-        "teamCode": "GB",
-        "rarity": "r",
-        "landscape": false,
-        "position": "WR"
-      },
-      {
         "file": "CameronHarrelQC_c.png",
         "name": "Cameron Harrell",
         "team": "Quad City Steamwheelers",
@@ -24,7 +14,8 @@ var PACK_DATA = [
         "teamCode": "QC",
         "rarity": "c",
         "landscape": false,
-        "position": "DB"
+        "position": "DB",
+        "order": 1
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -34,7 +25,8 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "c",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 2
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -44,17 +36,30 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "c",
         "landscape": false,
-        "position": "DB"
+        "position": "DB",
+        "order": 3
       },
       {
-        "file": "AndrewCarterSR.png",
-        "name": "Andrew Carter",
+        "file": "CameronHarrelQC_c.png",
+        "name": "Cameron Harrell",
+        "team": "Quad City Steamwheelers",
+        "league": "IFL",
+        "teamCode": "QC",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DB",
+        "order": 4
+      },
+      {
+        "file": "HarryBallardGB_c.png",
+        "name": "Harry Ballard III",
         "team": "Green Bay Blizzard",
         "league": "IFL",
         "teamCode": "GB",
-        "rarity": "sr",
+        "rarity": "u",
         "landscape": false,
-        "position": "OL"
+        "position": "WR",
+        "order": 5
       },
       {
         "file": "HarryBallardGB_u.png",
@@ -64,7 +69,19 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "u",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 7
+      },
+      {
+        "file": "RaymondBooneGB_c.png",
+        "name": "Raymond Boone",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DB",
+        "order": 6
       },
       {
         "file": "boodahlewis_u.png",
@@ -74,17 +91,8 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "u",
         "landscape": false,
-        "position": "WR"
-      },
-      {
-        "file": "CameronHarrelQC_c.png",
-        "name": "Cameron Harrell",
-        "team": "Quad City Steamwheelers",
-        "league": "IFL",
-        "teamCode": "QC",
-        "rarity": "u",
-        "landscape": false,
-        "position": "DB"
+        "position": "WR",
+        "order": 8
       },
       {
         "file": "CameronHarrelQC_c.png",
@@ -94,17 +102,8 @@ var PACK_DATA = [
         "teamCode": "QC",
         "rarity": "r",
         "landscape": false,
-        "position": "DB"
-      },
-      {
-        "file": "HarryBallardGB_c.png",
-        "name": "Harry Ballard III",
-        "team": "Green Bay Blizzard",
-        "league": "IFL",
-        "teamCode": "GB",
-        "rarity": "u",
-        "landscape": false,
-        "position": "WR"
+        "position": "DB",
+        "order": 9
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -114,17 +113,19 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "r",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 10
       },
       {
-        "file": "RaymondBooneGB_c.png",
-        "name": "Raymond Boone",
+        "file": "LowellPatronGB_r.png",
+        "name": "Lowell Patron Jr.",
         "team": "Green Bay Blizzard",
         "league": "IFL",
         "teamCode": "GB",
-        "rarity": "u",
+        "rarity": "r",
         "landscape": false,
-        "position": "DB"
+        "position": "WR",
+        "order": 12
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -134,7 +135,19 @@ var PACK_DATA = [
         "teamCode": "GB",
         "rarity": "r",
         "landscape": false,
-        "position": "DB"
+        "position": "DB",
+        "order": 11
+      },
+      {
+        "file": "AndrewCarterSR.png",
+        "name": "Andrew Carter",
+        "team": "Green Bay Blizzard",
+        "league": "IFL",
+        "teamCode": "GB",
+        "rarity": "sr",
+        "landscape": false,
+        "position": "OL",
+        "order": 13
       }
     ]
   },
@@ -157,7 +170,8 @@ var PACK_DATA = [
         "teamCode": "NYD",
         "rarity": "c",
         "landscape": false,
-        "position": "QB"
+        "position": "QB",
+        "order": 1
       },
       {
         "file": "MikeWashington_c.png",
@@ -167,7 +181,8 @@ var PACK_DATA = [
         "teamCode": "PIT",
         "rarity": "c",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 2
       },
       {
         "file": "Bones_u.png",
@@ -177,7 +192,8 @@ var PACK_DATA = [
         "teamCode": "NOV",
         "rarity": "u",
         "landscape": false,
-        "position": "Mascot"
+        "position": "Mascot",
+        "order": 5
       },
       {
         "file": "Stryker_u.png",
@@ -187,7 +203,8 @@ var PACK_DATA = [
         "teamCode": "ARZ",
         "rarity": "u",
         "landscape": false,
-        "position": "Mascot"
+        "position": "Mascot",
+        "order": 7
       },
       {
         "file": "Aaron_Garcia_r.png",
@@ -197,7 +214,8 @@ var PACK_DATA = [
         "teamCode": "JAX",
         "rarity": "r",
         "landscape": false,
-        "position": "QB"
+        "position": "QB",
+        "order": 8
       },
       {
         "file": "BobMcMillen_r.png",
@@ -207,7 +225,8 @@ var PACK_DATA = [
         "teamCode": "CHI",
         "rarity": "r",
         "landscape": false,
-        "position": "FB/LB"
+        "position": "FB/LB",
+        "order": 9
       },
       {
         "file": "MikeWashington_r.png",
@@ -217,7 +236,8 @@ var PACK_DATA = [
         "teamCode": "POW",
         "rarity": "r",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 10
       },
       {
         "file": "SoulMan_u.png",
@@ -227,7 +247,8 @@ var PACK_DATA = [
         "teamCode": "PHI",
         "rarity": "u",
         "landscape": false,
-        "position": "Mascot"
+        "position": "Mascot",
+        "order": 6
       },
       {
         "file": "AaronGarcia_c.png",
@@ -237,7 +258,8 @@ var PACK_DATA = [
         "teamCode": "NYD",
         "rarity": "u",
         "landscape": false,
-        "position": "QB"
+        "position": "QB",
+        "order": 3
       },
       {
         "file": "MikeWashington_c.png",
@@ -247,7 +269,8 @@ var PACK_DATA = [
         "teamCode": "PIT",
         "rarity": "u",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 4
       },
       {
         "file": "AaronGarcia_c.png",
@@ -257,7 +280,8 @@ var PACK_DATA = [
         "teamCode": "NYD",
         "rarity": "r",
         "landscape": false,
-        "position": "QB"
+        "position": "QB",
+        "order": 12
       },
       {
         "file": "MikeWashington_c.png",
@@ -267,7 +291,8 @@ var PACK_DATA = [
         "teamCode": "PIT",
         "rarity": "r",
         "landscape": false,
-        "position": "WR"
+        "position": "WR",
+        "order": 11
       }
     ]
   }
