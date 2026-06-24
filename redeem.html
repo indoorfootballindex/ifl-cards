@@ -403,16 +403,33 @@ async function submitCode() {
   btn.disabled = true; btn.textContent = 'Redeeming…';
   hideMsg();
 
+  // Try to get location (needed for geo-locked codes)
+  let lat = null, lng = null;
+  try {
+    const pos = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 });
+    });
+    lat = pos.coords.latitude;
+    lng = pos.coords.longitude;
+  } catch(e) {
+    // Location unavailable or denied — server will reject if code requires it
+  }
+
   try {
     const res = await fetch(REDEEM_API + '/api/redeem', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code, lat, lng })
     });
     const data = await res.json();
 
     if (!res.ok) {
-      showMsg(data.error || 'Redemption failed.', 'error');
+      // Special handling for location errors
+      if (res.status === 403 && data.error && data.error.includes('Location required')) {
+        showMsg('This code requires location access. Please enable location and try again.', 'error');
+      } else {
+        showMsg(data.error || 'Redemption failed.', 'error');
+      }
       btn.disabled = false; btn.textContent = 'Redeem';
       return;
     }

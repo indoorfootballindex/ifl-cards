@@ -59,6 +59,15 @@ function getToken(request) {
   return auth.replace('Bearer ', '').trim() || null;
 }
 
+function haversineMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000; // Earth radius in meters
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -338,16 +347,28 @@ export default {
       const user = await getUserFromToken(getToken(request), env.DB);
       if (!user) return err('Not logged in', 401, origin);
 
-      const { code } = await request.json();
+      const { code, lat, lng } = await request.json();
       if (!code) return err('No code provided', 400, origin);
 
       // Look up code
       const codeRow = await env.DB.prepare(
-        'SELECT id, pack_id, pack_name, description, active FROM redeem_codes WHERE code = ?'
+        'SELECT id, pack_id, pack_name, description, active, geo_lat, geo_lng, geo_name FROM redeem_codes WHERE code = ?'
       ).bind(code.trim().toUpperCase()).first();
 
       if (!codeRow) return err('Invalid code', 404, origin);
       if (!codeRow.active) return err('This code is no longer active', 400, origin);
+
+      // Geo check if code has location
+      if (codeRow.geo_lat && codeRow.geo_lng) {
+        if (lat === undefined || lat === null || lng === undefined || lng === null) {
+          return err('Location required to redeem this code', 403, origin);
+        }
+        const dist = haversineMeters(lat, lng, codeRow.geo_lat, codeRow.geo_lng);
+        const ONE_MILE = 1609;
+        if (dist > ONE_MILE) {
+          return err('You must be at ' + (codeRow.geo_name || 'the venue') + ' to redeem this code', 403, origin);
+        }
+      }
 
       // Check if already redeemed by this user
       const already = await env.DB.prepare(
