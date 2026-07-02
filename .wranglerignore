@@ -1,8 +1,8 @@
 worker/node_modules
 worker/package.json
 worker/package-lock.json
+.git/**
 .git
 build.py
 wrangler.toml
 *.log
-.git
