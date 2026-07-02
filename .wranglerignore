@@ -5,3 +5,4 @@ worker/package-lock.json
 build.py
 wrangler.toml
 *.log
+.git
