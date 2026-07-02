@@ -1,0 +1,7 @@
+.git
+.git/**
+worker
+build.py
+*.toml
+*.json
+*.log
