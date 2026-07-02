@@ -163,37 +163,48 @@ var PACK_DATA = [
     "sub": "Arena Football League \u00b7 Legends",
     "cards": [
       {
-        "file": "AaronGarcia_c.png",
-        "name": "Aaron Garcia",
-        "team": "New York Dragons",
+        "file": "EddieBrown_c.png",
+        "name": "Eddie Brown",
+        "team": "Albany Firebirds",
         "league": "AFL",
-        "teamCode": "NYD",
+        "teamCode": "ALB",
         "rarity": "c",
         "landscape": false,
-        "position": "QB",
-        "order": 1
+        "position": "OS",
+        "order": 9999
       },
       {
-        "file": "MikeWashington_c.png",
-        "name": "Mike Washington",
-        "team": "Pittsburgh Power",
+        "file": "EddieBrown_c.png",
+        "name": "Eddie Brown",
+        "team": "Albany Firebirds",
         "league": "AFL",
-        "teamCode": "PIT",
+        "teamCode": "ALB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "OS",
+        "order": 9999
+      },
+      {
+        "file": "EddieBrown_c.png",
+        "name": "Eddie Brown",
+        "team": "Albany Firebirds",
+        "league": "AFL",
+        "teamCode": "ALB",
+        "rarity": "r",
+        "landscape": false,
+        "position": "OS",
+        "order": 9999
+      },
+      {
+        "file": "ChrisHorn_c.png",
+        "name": "Chris Horn",
+        "team": "Arizona Rattlers",
+        "league": "AFL",
+        "teamCode": "ARZ",
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 2
-      },
-      {
-        "file": "Bones_u.png",
-        "name": "Bones - Mascot",
-        "team": "New Orleans VooDoo",
-        "league": "AFL",
-        "teamCode": "NOV",
-        "rarity": "u",
-        "landscape": false,
-        "position": "Mascot",
-        "order": 5
+        "order": 9999
       },
       {
         "file": "Stryker_u.png",
@@ -204,18 +215,29 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 7
+        "order": 9999
       },
       {
-        "file": "Aaron_Garcia_r.png",
-        "name": "Aaron Garcia - MVP",
-        "team": "Jacksonville Sharks",
+        "file": "ChrisHorn_c.png",
+        "name": "Chris Horn",
+        "team": "Arizona Rattlers",
         "league": "AFL",
-        "teamCode": "JAX",
+        "teamCode": "ARZ",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "ChrisHorn_c.png",
+        "name": "Chris Horn",
+        "team": "Arizona Rattlers",
+        "league": "AFL",
+        "teamCode": "ARZ",
         "rarity": "r",
         "landscape": false,
-        "position": "QB",
-        "order": 8
+        "position": "WR",
+        "order": 9999
       },
       {
         "file": "BobMcMillen_r.png",
@@ -226,18 +248,436 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "FB/LB",
-        "order": 9
+        "order": 9999
       },
       {
-        "file": "MikeWashington_r.png",
-        "name": "Mike \"The Joystick\" Washington",
-        "team": "Pittsburgh Power",
+        "file": "DamianHarrell_c.png",
+        "name": "Damian Harrell",
+        "team": "Colorado Crush",
         "league": "AFL",
-        "teamCode": "POW",
+        "teamCode": "COL",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "JohnDutton_c.png",
+        "name": "John Dutton",
+        "team": "Colorado Crush",
+        "league": "AFL",
+        "teamCode": "COL",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "DamianHarrell_c.png",
+        "name": "Damian Harrell",
+        "team": "Colorado Crush",
+        "league": "AFL",
+        "teamCode": "COL",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "JohnDutton_c.png",
+        "name": "John Dutton",
+        "team": "Colorado Crush",
+        "league": "AFL",
+        "teamCode": "COL",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "DamianHarrell_c.png",
+        "name": "Damian Harrell",
+        "team": "Colorado Crush",
+        "league": "AFL",
+        "teamCode": "COL",
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 10
+        "order": 9999
+      },
+      {
+        "file": "JohnDutton_c.png",
+        "name": "John Dutton",
+        "team": "Colorado Crush",
+        "league": "AFL",
+        "teamCode": "COL",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "ClintDolezel_c.png",
+        "name": "Clint Dolezel",
+        "team": "Dallas Desperados",
+        "league": "AFL",
+        "teamCode": "DAL",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "ClintDolezel_c.png",
+        "name": "Clint Dolezel",
+        "team": "Dallas Desperados",
+        "league": "AFL",
+        "teamCode": "DAL",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "ClintDolezel_c.png",
+        "name": "Clint Dolezel",
+        "team": "Dallas Desperados",
+        "league": "AFL",
+        "teamCode": "DAL",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "JoeSykes_c.png",
+        "name": "Joe Sykes",
+        "team": "Albany Empire",
+        "league": "AFL",
+        "teamCode": "EMP",
+        "rarity": "c",
+        "landscape": false,
+        "position": "DL",
+        "order": 9999
+      },
+      {
+        "file": "JoeSykes_c.png",
+        "name": "Joe Sykes",
+        "team": "Albany Empire",
+        "league": "AFL",
+        "teamCode": "EMP",
+        "rarity": "u",
+        "landscape": false,
+        "position": "DL",
+        "order": 9999
+      },
+      {
+        "file": "JoeSykes_c.png",
+        "name": "Joe Sykes",
+        "team": "Albany Empire",
+        "league": "AFL",
+        "teamCode": "EMP",
+        "rarity": "r",
+        "landscape": false,
+        "position": "DL",
+        "order": 9999
+      },
+      {
+        "file": "ChrisJackson_c.png",
+        "name": "Chris Jackson",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "CollinTaylor_c.png",
+        "name": "Collin Taylor",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "MattNagy_c.png",
+        "name": "Matt Nagy",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "ChrisJackson_c.png",
+        "name": "Chris Jackson",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "CollinTaylor_c.png",
+        "name": "Collin Taylor",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "MattNagy_c.png",
+        "name": "Matt Nagy",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "ChrisJackson_c.png",
+        "name": "Chris Jackson",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "CollinTaylor_c.png",
+        "name": "Collin Taylor",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR",
+        "order": 9999
+      },
+      {
+        "file": "MattNagy_c.png",
+        "name": "Matt Nagy",
+        "team": "Georgia Force",
+        "league": "AFL",
+        "teamCode": "GEO",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "KurtWarner_c.png",
+        "name": "Kurt Warner",
+        "team": "Iowa Barnstormers",
+        "league": "AFL",
+        "teamCode": "IAB",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "KurtWarner_c.png",
+        "name": "Kurt Warner",
+        "team": "Iowa Barnstormers",
+        "league": "AFL",
+        "teamCode": "IAB",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "KurtWarner_c.png",
+        "name": "Kurt Warner",
+        "team": "Iowa Barnstormers",
+        "league": "AFL",
+        "teamCode": "IAB",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "Aaron_Garcia_r.png",
+        "name": "Aaron Garcia - MVP",
+        "team": "Jacksonville Sharks",
+        "league": "AFL",
+        "teamCode": "JAX",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "GregHopkins_c.png",
+        "name": "Greg Hopkins",
+        "team": "Los Angeles Avengers",
+        "league": "AFL",
+        "teamCode": "LAA",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR/LB",
+        "order": 9999
+      },
+      {
+        "file": "GregHopkins_c.png",
+        "name": "Greg Hopkins",
+        "team": "Los Angeles Avengers",
+        "league": "AFL",
+        "teamCode": "LAA",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR/LB",
+        "order": 9999
+      },
+      {
+        "file": "GregHopkins_c.png",
+        "name": "Greg Hopkins",
+        "team": "Los Angeles Avengers",
+        "league": "AFL",
+        "teamCode": "LAA",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR/LB",
+        "order": 9999
+      },
+      {
+        "file": "JJRaterink_c.png",
+        "name": "JJ Raterink",
+        "team": "LA Kiss",
+        "league": "AFL",
+        "teamCode": "LAK",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "JJRaterink_c.png",
+        "name": "JJ Raterink",
+        "team": "LA Kiss",
+        "league": "AFL",
+        "teamCode": "LAK",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "JJRaterink_c.png",
+        "name": "JJ Raterink",
+        "team": "LA Kiss",
+        "league": "AFL",
+        "teamCode": "LAK",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "DarrylHammond_c.png",
+        "name": "Darryl Hammond",
+        "team": "Nashville Kats",
+        "league": "AFL",
+        "teamCode": "NAS",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR/DB",
+        "order": 9999
+      },
+      {
+        "file": "DarrylHammond_c.png",
+        "name": "Darryl Hammond",
+        "team": "Nashville Kats",
+        "league": "AFL",
+        "teamCode": "NAS",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR/DB",
+        "order": 9999
+      },
+      {
+        "file": "DarrylHammond_c.png",
+        "name": "Darryl Hammond",
+        "team": "Nashville Kats",
+        "league": "AFL",
+        "teamCode": "NAS",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR/DB",
+        "order": 9999
+      },
+      {
+        "file": "Bones_u.png",
+        "name": "Bones - Mascot",
+        "team": "New Orleans VooDoo",
+        "league": "AFL",
+        "teamCode": "NOV",
+        "rarity": "u",
+        "landscape": false,
+        "position": "Mascot",
+        "order": 9999
+      },
+      {
+        "file": "IdrisPrice_c.png",
+        "name": "Idris Price",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "c",
+        "landscape": false,
+        "position": "FB/LB",
+        "order": 9999
+      },
+      {
+        "file": "AaronGarcia_u.png",
+        "name": "Aaron Garcia",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "IdrisPrice_c.png",
+        "name": "Idris Price",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "u",
+        "landscape": false,
+        "position": "FB/LB",
+        "order": 9999
+      },
+      {
+        "file": "IdrisPrice_c.png",
+        "name": "Idris Price",
+        "team": "New York Dragons",
+        "league": "AFL",
+        "teamCode": "NYD",
+        "rarity": "r",
+        "landscape": false,
+        "position": "FB/LB",
+        "order": 9999
       },
       {
         "file": "SoulMan_u.png",
@@ -248,21 +688,10 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 6
+        "order": 9999
       },
       {
-        "file": "AaronGarcia_c.png",
-        "name": "Aaron Garcia",
-        "team": "New York Dragons",
-        "league": "AFL",
-        "teamCode": "NYD",
-        "rarity": "u",
-        "landscape": false,
-        "position": "QB",
-        "order": 3
-      },
-      {
-        "file": "MikeWashington_c.png",
+        "file": "MikeWashington_u.png",
         "name": "Mike Washington",
         "team": "Pittsburgh Power",
         "league": "AFL",
@@ -270,29 +699,117 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 4
+        "order": 9999
       },
       {
-        "file": "AaronGarcia_c.png",
-        "name": "Aaron Garcia",
-        "team": "New York Dragons",
-        "league": "AFL",
-        "teamCode": "NYD",
-        "rarity": "r",
-        "landscape": false,
-        "position": "QB",
-        "order": 12
-      },
-      {
-        "file": "MikeWashington_c.png",
-        "name": "Mike Washington",
+        "file": "MikeWashington_r.png",
+        "name": "Mike \"The Joystick\" Washington",
         "team": "Pittsburgh Power",
         "league": "AFL",
-        "teamCode": "PIT",
+        "teamCode": "POW",
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 11
+        "order": 9999
+      },
+      {
+        "file": "MarkGrieb_c.png",
+        "name": "Mark Grieb",
+        "team": "San Jose SaberCats",
+        "league": "AFL",
+        "teamCode": "SJC",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "MarkGrieb_c.png",
+        "name": "Mark Grieb",
+        "team": "San Jose SaberCats",
+        "league": "AFL",
+        "teamCode": "SJC",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "MarkGrieb_c.png",
+        "name": "Mark Grieb",
+        "team": "San Jose SaberCats",
+        "league": "AFL",
+        "teamCode": "SJC",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "JayGruden_c.png",
+        "name": "Jay Gruden",
+        "team": "Tampa Bay Storm",
+        "league": "AFL",
+        "teamCode": "TBS",
+        "rarity": "c",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "LawrenceSamuels_c.png",
+        "name": "Lawrence Samuels",
+        "team": "Tampa Bay Storm",
+        "league": "AFL",
+        "teamCode": "TBS",
+        "rarity": "c",
+        "landscape": false,
+        "position": "WR/LB",
+        "order": 9999
+      },
+      {
+        "file": "JayGruden_c.png",
+        "name": "Jay Gruden",
+        "team": "Tampa Bay Storm",
+        "league": "AFL",
+        "teamCode": "TBS",
+        "rarity": "u",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "LawrenceSamuels_c.png",
+        "name": "Lawrence Samuels",
+        "team": "Tampa Bay Storm",
+        "league": "AFL",
+        "teamCode": "TBS",
+        "rarity": "u",
+        "landscape": false,
+        "position": "WR/LB",
+        "order": 9999
+      },
+      {
+        "file": "JayGruden_c.png",
+        "name": "Jay Gruden",
+        "team": "Tampa Bay Storm",
+        "league": "AFL",
+        "teamCode": "TBS",
+        "rarity": "r",
+        "landscape": false,
+        "position": "QB",
+        "order": 9999
+      },
+      {
+        "file": "LawrenceSamuels_c.png",
+        "name": "Lawrence Samuels",
+        "team": "Tampa Bay Storm",
+        "league": "AFL",
+        "teamCode": "TBS",
+        "rarity": "r",
+        "landscape": false,
+        "position": "WR/LB",
+        "order": 9999
       }
     ]
   }
