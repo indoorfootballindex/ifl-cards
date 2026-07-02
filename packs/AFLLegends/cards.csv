@@ -1,13 +1,60 @@
-file,name,team,league,teamCode,rarity,landscape,position,order
-AaronGarcia_c.png,Aaron Garcia,New York Dragons,AFL,NYD,c,FALSE,QB,1
-MikeWashington_c.png,Mike Washington,Pittsburgh Power,AFL,PIT,c,FALSE,WR,2
-Bones_u.png,Bones - Mascot,New Orleans VooDoo,AFL,NOV,u,FALSE,Mascot,5
-Stryker_u.png,Stryker - Mascot,Arizona Rattlers,AFL,ARZ,u,FALSE,Mascot,7
-Aaron_Garcia_r.png,Aaron Garcia - MVP,Jacksonville Sharks,AFL,JAX,r,FALSE,QB,8
-BobMcMillen_r.png,Bob McMillen - COVER ART,Chicago Rush,AFL,CHI,r,FALSE,FB/LB,9
-MikeWashington_r.png,"Mike ""The Joystick"" Washington",Pittsburgh Power,AFL,POW,r,FALSE,WR,10
-SoulMan_u.png,Soul Man,Philadelphia Soul,AFL,PHI,u,FALSE,Mascot,6
-AaronGarcia_c.png,Aaron Garcia,New York Dragons,AFL,NYD,u,FALSE,QB,3
-MikeWashington_c.png,Mike Washington,Pittsburgh Power,AFL,PIT,u,FALSE,WR,4
-AaronGarcia_c.png,Aaron Garcia,New York Dragons,AFL,NYD,r,FALSE,QB,12
-MikeWashington_c.png,Mike Washington,Pittsburgh Power,AFL,PIT,r,FALSE,WR,11
+file,name,team,league,teamCode,rarity,landscape,position
+ChrisHorn_c.png,Chris Horn,Arizona Rattlers,AFL,ARZ,c,FALSE,WR
+ChrisJackson_c.png,Chris Jackson,Georgia Force,AFL,GEO,c,FALSE,WR
+ClintDolezel_c.png,Clint Dolezel,Dallas Desperados,AFL,DAL,c,FALSE,QB
+CollinTaylor_c.png,Collin Taylor,Georgia Force,AFL,GEO,c,FALSE,WR
+DamianHarrell_c.png,Damian Harrell,Colorado Crush,AFL,COL,c,FALSE,WR
+DarrylHammond_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,c,FALSE,WR/DB
+EddieBrown_c.png,Eddie Brown,Albany Firebirds,AFL,ALB,c,FALSE,OS
+GregHopkins_c.png,Greg Hopkins,Los Angeles Avengers,AFL,LAA,c,FALSE,WR/LB
+IdrisPrice_c.png,Idris Price,New York Dragons,AFL,NYD,c,FALSE,FB/LB
+JayGruden_c.png,Jay Gruden,Tampa Bay Storm,AFL,TBS,c,FALSE,QB
+JJRaterink_c.png,JJ Raterink,LA Kiss,AFL,LAK,c,FALSE,QB
+JoeSykes_c.png,Joe Sykes,Albany Empire,AFL,EMP,c,FALSE,DL
+JohnDutton_c.png,John Dutton,Colorado Crush,AFL,COL,c,FALSE,QB
+KurtWarner_c.png,Kurt Warner,Iowa Barnstormers,AFL,IAB,c,FALSE,QB
+LawrenceSamuels_c.png,Lawrence Samuels,Tampa Bay Storm,AFL,TBS,c,FALSE,WR/LB
+MarkGrieb_c.png,Mark Grieb,San Jose SaberCats,AFL,SJC,c,FALSE,QB
+MattNagy_c.png,Matt Nagy,Georgia Force,AFL,GEO,c,FALSE,QB
+Aaron_Garcia_r.png,Aaron Garcia - MVP,Jacksonville Sharks,AFL,JAX,r,FALSE,QB
+BobMcMillen_r.png,Bob McMillen - COVER ART,Chicago Rush,AFL,CHI,r,FALSE,FB/LB
+MikeWashington_r.png,"Mike ""The Joystick"" Washington",Pittsburgh Power,AFL,POW,r,FALSE,WR
+AaronGarcia_u.png,Aaron Garcia,New York Dragons,AFL,NYD,u,FALSE,QB
+Bones_u.png,Bones - Mascot,New Orleans VooDoo,AFL,NOV,u,FALSE,Mascot
+MikeWashington_u.png,Mike Washington,Pittsburgh Power,AFL,PIT,u,FALSE,WR
+SoulMan_u.png,Soul Man,Philadelphia Soul,AFL,PHI,u,FALSE,Mascot
+Stryker_u.png,Stryker - Mascot,Arizona Rattlers,AFL,ARZ,u,FALSE,Mascot
+ChrisHorn_c.png,Chris Horn,Arizona Rattlers,AFL,ARZ,u,FALSE,WR
+ChrisJackson_c.png,Chris Jackson,Georgia Force,AFL,GEO,u,FALSE,WR
+ClintDolezel_c.png,Clint Dolezel,Dallas Desperados,AFL,DAL,u,FALSE,QB
+CollinTaylor_c.png,Collin Taylor,Georgia Force,AFL,GEO,u,FALSE,WR
+DamianHarrell_c.png,Damian Harrell,Colorado Crush,AFL,COL,u,FALSE,WR
+DarrylHammond_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,u,FALSE,WR/DB
+EddieBrown_c.png,Eddie Brown,Albany Firebirds,AFL,ALB,u,FALSE,OS
+GregHopkins_c.png,Greg Hopkins,Los Angeles Avengers,AFL,LAA,u,FALSE,WR/LB
+IdrisPrice_c.png,Idris Price,New York Dragons,AFL,NYD,u,FALSE,FB/LB
+JayGruden_c.png,Jay Gruden,Tampa Bay Storm,AFL,TBS,u,FALSE,QB
+JJRaterink_c.png,JJ Raterink,LA Kiss,AFL,LAK,u,FALSE,QB
+JoeSykes_c.png,Joe Sykes,Albany Empire,AFL,EMP,u,FALSE,DL
+JohnDutton_c.png,John Dutton,Colorado Crush,AFL,COL,u,FALSE,QB
+KurtWarner_c.png,Kurt Warner,Iowa Barnstormers,AFL,IAB,u,FALSE,QB
+LawrenceSamuels_c.png,Lawrence Samuels,Tampa Bay Storm,AFL,TBS,u,FALSE,WR/LB
+MarkGrieb_c.png,Mark Grieb,San Jose SaberCats,AFL,SJC,u,FALSE,QB
+MattNagy_c.png,Matt Nagy,Georgia Force,AFL,GEO,u,FALSE,QB
+ChrisHorn_c.png,Chris Horn,Arizona Rattlers,AFL,ARZ,r,FALSE,WR
+ChrisJackson_c.png,Chris Jackson,Georgia Force,AFL,GEO,r,FALSE,WR
+ClintDolezel_c.png,Clint Dolezel,Dallas Desperados,AFL,DAL,r,FALSE,QB
+CollinTaylor_c.png,Collin Taylor,Georgia Force,AFL,GEO,r,FALSE,WR
+DamianHarrell_c.png,Damian Harrell,Colorado Crush,AFL,COL,r,FALSE,WR
+DarrylHammond_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,r,FALSE,WR/DB
+EddieBrown_c.png,Eddie Brown,Albany Firebirds,AFL,ALB,r,FALSE,OS
+GregHopkins_c.png,Greg Hopkins,Los Angeles Avengers,AFL,LAA,r,FALSE,WR/LB
+IdrisPrice_c.png,Idris Price,New York Dragons,AFL,NYD,r,FALSE,FB/LB
+JayGruden_c.png,Jay Gruden,Tampa Bay Storm,AFL,TBS,r,FALSE,QB
+JJRaterink_c.png,JJ Raterink,LA Kiss,AFL,LAK,r,FALSE,QB
+JoeSykes_c.png,Joe Sykes,Albany Empire,AFL,EMP,r,FALSE,DL
+JohnDutton_c.png,John Dutton,Colorado Crush,AFL,COL,r,FALSE,QB
+KurtWarner_c.png,Kurt Warner,Iowa Barnstormers,AFL,IAB,r,FALSE,QB
+LawrenceSamuels_c.png,Lawrence Samuels,Tampa Bay Storm,AFL,TBS,r,FALSE,WR/LB
+MarkGrieb_c.png,Mark Grieb,San Jose SaberCats,AFL,SJC,r,FALSE,QB
+MattNagy_c.png,Matt Nagy,Georgia Force,AFL,GEO,r,FALSE,QB
