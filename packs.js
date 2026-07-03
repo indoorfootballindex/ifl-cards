@@ -295,7 +295,7 @@ var PACK_DATA = [
         "order": 12
       },
       {
-        "file": "DarrylHammond_c.png",
+        "file": "Darryl_c.png",
         "name": "Darryl Hammond",
         "team": "Nashville Kats",
         "league": "AFL",
@@ -493,7 +493,7 @@ var PACK_DATA = [
         "order": 30
       },
       {
-        "file": "DarrylHammond_c.png",
+        "file": "Darryl_c.png",
         "name": "Darryl Hammond",
         "team": "Nashville Kats",
         "league": "AFL",
@@ -592,7 +592,7 @@ var PACK_DATA = [
         "order": 39
       },
       {
-        "file": "MasctoMash_r.png",
+        "file": "MascotMash_r.png",
         "name": "Mascot Mash",
         "team": "AFL",
         "league": "AFL",
@@ -801,7 +801,7 @@ var PACK_DATA = [
         "order": 58
       },
       {
-        "file": "DarrylHammond_c.png",
+        "file": "Darryl_c.png",
         "name": "Darryl Hammond",
         "team": "Nashville Kats",
         "league": "AFL",
