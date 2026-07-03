@@ -565,7 +565,7 @@
 
 <script>
 const RARITY_LABELS = { c: 'Common', u: 'Uncommon', r: 'Rare', sr: 'Secret Rare' };
-const API = 'https://api.cards.indoorfootballindex.com';
+const CARDS_API = 'https://api.cards.indoorfootballindex.com';
 
 // ── PACK LIMIT STATE ──
 let packsRemaining = null;
@@ -613,7 +613,7 @@ async function fetchPackLimit() {
     return;
   }
   try {
-    const res = await fetch(API + '/api/packs', {
+    const res = await fetch(CARDS_API + '/api/packs', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     if (res.ok) {
@@ -658,7 +658,7 @@ async function consumePack() {
     return true;
   }
   try {
-    const res = await fetch(API + '/api/packs/consume', {
+    const res = await fetch(CARDS_API + '/api/packs/consume', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token }
     });
@@ -1021,7 +1021,7 @@ function collectPack() {
   try {
     const token = localStorage.getItem('ifiToken');
     if (token) {
-      fetch(API + '/api/collect', {
+      fetch(CARDS_API + '/api/collect', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
