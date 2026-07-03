@@ -11,7 +11,7 @@ CollinTaylor_c.png,Collin Taylor,Georgia Force,AFL,GEO,c,FALSE,WR,9
 KurtWarner_c.png,Kurt Warner,Iowa Barnstormers,AFL,IAB,c,FALSE,QB,10
 GregHopkins_c.png,Greg Hopkins,Los Angeles Avengers,AFL,LAA,c,FALSE,WR/LB,11
 JJRaterink_c.png,JJ Raterink,LA Kiss,AFL,LAK,c,FALSE,QB,12
-DarrylHammond_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,c,FALSE,WR/DB,13
+Darryl_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,c,FALSE,WR/DB,13
 IdrisPrice_c.png,Idris Price,New York Dragons,AFL,NYD,c,FALSE,FB/LB,14
 MarkGrieb_c.png,Mark Grieb,San Jose SaberCats,AFL,SJC,c,FALSE,QB,15
 JayGruden_c.png,Jay Gruden,Tampa Bay Storm,AFL,TBS,c,FALSE,QB,16
@@ -29,7 +29,7 @@ CollinTaylor_c.png,Collin Taylor,Georgia Force,AFL,GEO,u,FALSE,WR,27
 KurtWarner_c.png,Kurt Warner,Iowa Barnstormers,AFL,IAB,u,FALSE,QB,28
 GregHopkins_c.png,Greg Hopkins,Los Angeles Avengers,AFL,LAA,u,FALSE,WR/LB,29
 JJRaterink_c.png,JJ Raterink,LA Kiss,AFL,LAK,u,FALSE,QB,30
-DarrylHammond_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,u,FALSE,WR/DB,31
+Darryl_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,u,FALSE,WR/DB,31
 AaronGarcia_u.png,Aaron Garcia,New York Dragons,AFL,NYD,u,FALSE,QB,32
 IdrisPrice_c.png,Idris Price,New York Dragons,AFL,NYD,u,FALSE,FB/LB,33
 StormDawg_u.png,StormDawg,Tampa Bay Storm,AFL,TBS,u,FALSE,Mascot,34
@@ -38,7 +38,7 @@ Chum_u.png,Chum,Jacksonville Sharks,AFL,JAX,u,FALSE,Mascot,36
 Sparky_u.png,Sparky,New York Dragons,AFL,NYD,u,FALSE,Mascot,37
 Klaw_u.png,Klaw,Orlando Predators,AFL,ORL,u,FALSE,Mascot,38
 SoulMan_u.png,Soul Man,Philadelphia Soul,AFL,PHI,u,FALSE,Mascot,39
-MasctoMash_r.png,Mascot Mash,AFL,AFL,AFL,r,FALSE,Mascot,40
+MascotMash_r.png,Mascot Mash,AFL,AFL,AFL,r,FALSE,Mascot,40
 MikeWashington_u.png,Mike Washington,Pittsburgh Power,AFL,PIT,u,FALSE,WR,41
 MarkGrieb_c.png,Mark Grieb,San Jose SaberCats,AFL,SJC,u,FALSE,QB,42
 JayGruden_c.png,Jay Gruden,Tampa Bay Storm,AFL,TBS,u,FALSE,QB,43
@@ -57,7 +57,7 @@ KurtWarner_c.png,Kurt Warner,Iowa Barnstormers,AFL,IAB,r,FALSE,QB,55
 Aaron_Garcia_r.png,Aaron Garcia - MVP,Jacksonville Sharks,AFL,JAX,r,FALSE,QB,56
 GregHopkins_c.png,Greg Hopkins,Los Angeles Avengers,AFL,LAA,r,FALSE,WR/LB,57
 JJRaterink_c.png,JJ Raterink,LA Kiss,AFL,LAK,r,FALSE,QB,58
-DarrylHammond_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,r,FALSE,WR/DB,59
+Darryl_c.png,Darryl Hammond,Nashville Kats,AFL,NAS,r,FALSE,WR/DB,59
 IdrisPrice_c.png,Idris Price,New York Dragons,AFL,NYD,r,FALSE,FB/LB,60
 MikeWashington_r.png,"Mike ""The Joystick"" Washington",Pittsburgh Power,AFL,POW,r,FALSE,WR,61
 MarkGrieb_c.png,Mark Grieb,San Jose SaberCats,AFL,SJC,r,FALSE,QB,62
