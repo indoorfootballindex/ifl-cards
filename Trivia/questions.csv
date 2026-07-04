@@ -24,38 +24,21 @@ id,question,a,b,c,d,answer
 23,What is the maximum number of downs to gain a first down in indoor football?,4,2,5,3,a
 24,Which league used rebound nets behind the goalposts?,Arena Football League,International Arena League,National Arena League,The Arena Legaue,a
 25,Which city hosted the original Arizona Rattlers?,Phoenix,Glendale,Tucson,Sedona,a
-26,"Which team is based in Loveland, Colorado?",Colorado Spartans,Colorado Crush,Colorado Ice,Colorado Punishers,a
-27,What is the indoor football end zone length?,8,7,9,5,a
-28,Which IFL team won four straight United Bowl championships from 2011-2014?,Sioux Falls Storm,Tampa Bay Storm,Billings Outlaws,Detroit Drive,a
-29,What was the former championship game of the IFL called?,United Bowl,Arena Bowl,IFL National Championship,The Big Game,a
-30,What is the most common indoor/arena team name,Thunder,Force,Eagles,Knights,a
-31,What league had the most games played in a single season?,AFL,af2,IFL,NAL,b
-32,"What team had a game played in their stadium, but they never played?",Bismarck Bucks,Columbus Wild Dogs,Dakota Bucks,Louisville Xtreme,c
-33,What team has the most rushing TDs in a single game?,Iowa Barnstormers,Arizona Rattlers,Wyoming Cavalry,Dallas Bulls,b
-34,What was the most toal points scored in a game?,191,181,180,175,a
-35,What team has the biggest point differential in a game?,Erie Explosion,Arizona Rattlers,San Angelo Bandits,Seattle Timberwolves,a
-36,What was the biggest shutout in a game?,138-0,131-0,101-0,115-0,a
-37,What team scored the most poins in a single game on the road?,Sioux Falls Storm,Arizona Rattlers,Seattle Timberwolves,Erie Explosion,a
-38,What was the first repeat score in the AFL?,24-13,24-17,35-20,24-23,a
-39,What team had a 40 game win streak?,Sioux Falls Storm,Albany Firebirds,Ohio Valley Grey Hounds,Quad City Steamwheelers,a
-40,What team had the longest losing streak?,Lincoln Capitals,Oklahoma Crude,Bay Area Panthers,Memphis Pharaohs,a
-41,Which of these names was not a finalist for the Athens IFL team?,Athens Hedgehawgs,Athens Panic,Athens Bullfrogs,Athens Force,d
-42,Which IFL team has won the most Fanbase of the Week awards?,Arizona Rattlers,Tulsa Oilers,Jacksonville Sharks,Green Bay Blizzard,a
-43,"According to the IFL Fanbase award, which team has the best average attendance?",,,,,
-44,What is the name of the IFL hype song?,,,,,
-45,,,,,,
-46,,,,,,
-47,,,,,,
-48,,,,,,
-49,,,,,,
-50,,,,,,
-51,,,,,,
-52,,,,,,
-53,,,,,,
-54,,,,,,
-55,,,,,,
-56,,,,,,
-57,,,,,,
-58,,,,,,
-59,,,,,,
-60,,,,,,
+26,What is the indoor football end zone length?,8,7,9,5,a
+27,Which IFL team won four straight United Bowl championships from 2011-2014?,Sioux Falls Storm,Tampa Bay Storm,Billings Outlaws,Detroit Drive,a
+28,What was the former championship game of the IFL called?,United Bowl,Arena Bowl,IFL National Championship,The Big Game,a
+29,What is the most common indoor/arena team name,Thunder,Force,Eagles,Knights,a
+30,What league had the most games played in a single season?,AFL,af2,IFL,NAL,b
+31,What team had a game played in their stadium but they never played?,Bismarck Bucks,Columbus Wild Dogs,Dakota Bucks,Louisville Xtreme,c
+32,What team has the most rushing TDs in a single game?,Iowa Barnstormers,Arizona Rattlers,Wyoming Cavalry,Dallas Bulls,b
+33,What was the most toal points scored in a game?,191,181,180,175,a
+34,What team has the biggest point differential in a game?,Erie Explosion,Arizona Rattlers,San Angelo Bandits,Seattle Timberwolves,a
+35,What was the biggest shutout in a game?,138-0,131-0,101-0,115-0,a
+36,What team scored the most poins in a single game on the road?,Sioux Falls Storm,Arizona Rattlers,Seattle Timberwolves,Erie Explosion,a
+37,What was the first repeat score in the AFL?,24-13,24-17,35-20,24-23,a
+38,What team had a 40 game win streak?,Sioux Falls Storm,Albany Firebirds,Ohio Valley Grey Hounds,Quad City Steamwheelers,a
+39,What team had the longest losing streak?,Lincoln Capitals,Oklahoma Crude,Bay Area Panthers,Memphis Pharaohs,a
+40,Which of these names was not a finalist for the Athens IFL team?,Athens Hedgehawgs,Athens Panic,Athens Bullfrogs,Athens Force,d
+41,Which IFL team has won the most Fanbase of the Week awards?,Arizona Rattlers,Tulsa Oilers,Jacksonville Sharks,Green Bay Blizzard,a
+42,"According to the IFL Fanbase award, which team has the best average attendance?",Arizona Rattlers,Tulsa Oilers,Jacksonville Sharks,Green Bay Blizzard,b
+43,What is the name of the IFL hype song?,Indoor War,50 Yard Fight,Everyday is Gameday,Indoor Fight,a
