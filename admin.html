@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 Yard Cards – Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0d0a; --dark: #111410; --panel: #181c16;
+    --border: #2a2e24; --green: #6b7c3f; --gold: #c8980a;
+    --muted: #5a6650; --text: #e8ece4; --white: #f0f0ee;
+  }
+  html, body { background: var(--black); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+  nav {
+    background: var(--dark); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem;
+  }
+  .nav-logo { height: 80px; display: flex; align-items: center; margin-right: 1rem; }
+  .nav-logo img { height: 60px; width: auto; filter: brightness(0) invert(1); }
+  .nav-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--green);
+  }
+  .nav-right { margin-left: auto; font-size: 0.72rem; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .page-wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 2rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--white); margin-bottom: 0.25rem;
+  }
+  .page-title span { color: var(--green); }
+  .page-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 2rem; }
+
+  /* Stats row */
+  .stats-row { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .stat-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem 1.5rem; flex: 1; min-width: 140px;
+  }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 2rem; color: var(--white); line-height: 1;
+  }
+  .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 4px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .tab {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.75rem 1.25rem; border: none; background: none;
+    color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: color 0.12s, border-color 0.12s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--white); border-bottom-color: var(--green); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Search */
+  .search-bar {
+    width: 100%; background: var(--dark); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.6rem 1rem; color: var(--white);
+    font-family: 'Barlow', sans-serif; font-size: 0.9rem;
+    outline: none; margin-bottom: 1rem; transition: border-color 0.12s;
+  }
+  .search-bar:focus { border-color: var(--green); }
+
+  /* Tables */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .data-table th {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border);
+    cursor: pointer; white-space: nowrap; user-select: none;
+  }
+  .data-table th:hover { color: var(--white); }
+  .data-table th.sorted { color: var(--green); }
+  .data-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(42,46,36,0.5); color: var(--text); }
+  .data-table tr:hover td { background: rgba(107,124,63,0.05); }
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .rarity-badge {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 3px; display: inline-block;
+  }
+  .rarity-badge.c  { background: rgba(106,106,118,0.2); color: #6a6a76; }
+  .rarity-badge.u  { background: rgba(58,122,191,0.15); color: #3a7abf; }
+  .rarity-badge.r  { background: rgba(155,66,214,0.2);  color: #9b42d6; }
+  .rarity-badge.sr { background: rgba(200,152,10,0.2);  color: #c8980a; }
+
+  .pull-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .pull-bar { height: 6px; background: var(--green); border-radius: 3px; min-width: 2px; }
+  .pull-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: var(--white); }
+
+  .loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.85rem; }
+
+  .gate { text-align: center; padding: 4rem 1rem; }
+  .gate-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; color: var(--white); margin-bottom: 0.5rem; }
+  .gate-sub { color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards"></div>
+  <div class="nav-title">Admin Dashboard</div>
+  <div class="nav-right" id="navUser"></div>
+</nav>
+
+<div class="page-wrap" id="mainContent" style="display:none;">
+  <div class="page-title">Admin <span>Dashboard</span></div>
+  <div class="page-sub" id="lastUpdated">Loading...</div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="statUsers">–</div><div class="stat-label">Accounts</div></div>
+    <div class="stat-card"><div class="stat-num" id="statPacks">–</div><div class="stat-label">Packs Opened</div></div>
+    <div class="stat-card"><div class="stat-num" id="statCards">–</div><div class="stat-label">Cards Collected</div></div>
+    <div class="stat-card"><div class="stat-num" id="statUnique">–</div><div class="stat-label">Unique Cards</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('opens', this)">Pack Opens</button>
+    <button class="tab" onclick="switchTab('cards', this)">Card Pulls</button>
+    <button class="tab" onclick="switchTab('users', this)">Users</button>
+  </div>
+
+  <!-- Pack Opens -->
+  <div class="tab-panel active" id="tab-opens">
+    <input class="search-bar" type="text" placeholder="Search by username or pack…" oninput="filterOpens(this.value)">
+    <table class="data-table" id="opensTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('opens','pulled_at')">Time ↕</th>
+          <th onclick="sortTable('opens','pack_name')">Pack ↕</th>
+          <th onclick="sortTable('opens','username')">Username ↕</th>
+        </tr>
+      </thead>
+      <tbody id="opensBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Card Pulls -->
+  <div class="tab-panel" id="tab-cards">
+    <input class="search-bar" type="text" placeholder="Search by card name or pack…" oninput="filterCards(this.value)">
+    <table class="data-table" id="cardsTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('cards','card_file')">Card ↕</th>
+          <th onclick="sortTable('cards','pack_name')">Pack ↕</th>
+          <th onclick="sortTable('cards','card_rarity')">Rarity ↕</th>
+          <th onclick="sortTable('cards','pull_count')">Pulls ↕</th>
+        </tr>
+      </thead>
+      <tbody id="cardsBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Users -->
+  <div class="tab-panel" id="tab-users">
+    <input class="search-bar" type="text" placeholder="Search by username or email…" oninput="filterUsers(this.value)">
+    <table class="data-table" id="usersTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('users','username')">Username ↕</th>
+          <th onclick="sortTable('users','email')">Email ↕</th>
+          <th onclick="sortTable('users','packs_opened')">Packs Opened ↕</th>
+          <th onclick="sortTable('users','cards_collected')">Cards ↕</th>
+        </tr>
+      </thead>
+      <tbody id="usersBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Gate -->
+<div class="gate" id="gateContent" style="display:none;">
+  <div class="gate-title">Access Denied</div>
+  <div class="gate-sub">This page is restricted to admin accounts.</div>
+</div>
+
+<script>
+const ADMIN_API = 'https://api.cards.indoorfootballindex.com';
+const ADMIN_EMAIL = 'indoorfootballindex@gmail.com';
+
+let data = { opens: [], cards: [], users: [], totals: {} };
+let sortState = { opens: { col: 'pulled_at', dir: -1 }, cards: { col: 'pull_count', dir: -1 }, users: { col: 'packs_opened', dir: -1 } };
+let maxPulls = 1;
+
+function getToken() { try { return localStorage.getItem('ifiToken'); } catch(e) { return null; } }
+function getUser() { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u) : null; } catch(e) { return null; } }
+
+function formatTime(ts) {
+  if (!ts) return '–';
+  const d = new Date(ts);
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function cardLabel(file) {
+  return file.replace(/\.(png|jpg|jpeg)$/i, '').replace(/_/g, ' ');
+}
+
+// ── RENDER ──
+function renderOpens(rows) {
+  const tbody = document.getElementById('opensBody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="3" style="color:var(--muted);padding:1.5rem;">No pack opens yet.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td style="color:var(--muted);white-space:nowrap;">${formatTime(r.pulled_at)}</td>
+      <td>${r.pack_name || '–'}</td>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;">${r.username || '–'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderCards(rows) {
+  const tbody = document.getElementById('cardsBody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:1.5rem;">No data yet.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td>${cardLabel(r.card_file)}</td>
+      <td style="color:var(--muted);">${r.pack_name || '–'}</td>
+      <td><span class="rarity-badge ${r.card_rarity}">${r.card_rarity?.toUpperCase() || '–'}</span></td>
+      <td>
+        <div class="pull-bar-wrap">
+          <div class="pull-bar" style="width:${Math.max(2, (r.pull_count / maxPulls) * 120)}px;"></div>
+          <span class="pull-num">${r.pull_count}</span>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderUsers(rows) {
+  const tbody = document.getElementById('usersBody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:1.5rem;">No users yet.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;">${r.username}</td>
+      <td style="color:var(--muted);font-size:0.8rem;">${r.email}</td>
+      <td>${r.packs_opened || 0}</td>
+      <td>${r.cards_collected || 0}</td>
+    </tr>
+  `).join('');
+}
+
+// ── SORT ──
+function sortTable(type, col) {
+  const s = sortState[type];
+  s.dir = (s.col === col) ? -s.dir : -1;
+  s.col = col;
+
+  const arr = [...data[type === 'opens' ? 'opens' : type === 'cards' ? 'cards' : 'users']];
+  arr.sort((a, b) => {
+    const av = a[col] ?? '';
+    const bv = b[col] ?? '';
+    if (typeof av === 'number') return s.dir * (av - bv);
+    return s.dir * String(av).localeCompare(String(bv));
+  });
+
+  if (type === 'opens') renderOpens(arr);
+  else if (type === 'cards') renderCards(arr);
+  else renderUsers(arr);
+}
+
+// ── FILTER ──
+function filterOpens(q) {
+  q = q.toLowerCase();
+  renderOpens(data.opens.filter(r =>
+    (r.username || '').toLowerCase().includes(q) ||
+    (r.pack_name || '').toLowerCase().includes(q)
+  ));
+}
+
+function filterCards(q) {
+  q = q.toLowerCase();
+  renderCards(data.cards.filter(r =>
+    (r.card_file || '').toLowerCase().includes(q) ||
+    (r.pack_name || '').toLowerCase().includes(q)
+  ));
+}
+
+function filterUsers(q) {
+  q = q.toLowerCase();
+  renderUsers(data.users.filter(r =>
+    (r.username || '').toLowerCase().includes(q) ||
+    (r.email || '').toLowerCase().includes(q)
+  ));
+}
+
+// ── TABS ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── LOAD ──
+async function loadData() {
+  const token = getToken();
+  const [statsRes, usersRes] = await Promise.all([
+    fetch(ADMIN_API + '/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } }),
+    fetch(ADMIN_API + '/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } }),
+  ]);
+
+  if (!statsRes.ok || !usersRes.ok) {
+    document.getElementById('gateContent').style.display = 'block';
+    return;
+  }
+
+  const stats = await statsRes.json();
+  const usersData = await usersRes.json();
+
+  data.opens = stats.opens || [];
+  data.cards = stats.cards || [];
+  data.users = usersData.users || [];
+
+  maxPulls = Math.max(1, ...data.cards.map(c => c.pull_count || 0));
+
+  // Totals
+  const t = stats.totals || {};
+  document.getElementById('statUsers').textContent = data.users.length;
+  document.getElementById('statPacks').textContent = t.total_packs || 0;
+  document.getElementById('statCards').textContent = t.total_cards || 0;
+  document.getElementById('statUnique').textContent = data.cards.length;
+  document.getElementById('lastUpdated').textContent = 'Last updated ' + new Date().toLocaleTimeString();
+
+  renderOpens(data.opens);
+  renderCards(data.cards);
+  renderUsers(data.users);
+
+  document.getElementById('mainContent').style.display = 'block';
+}
+
+async function init() {
+  const token = getToken();
+  const user = getUser();
+
+  if (!token || !user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  if (user.email !== ADMIN_EMAIL) {
+    document.getElementById('gateContent').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('navUser').textContent = user.username;
+  await loadData();
+
+  // Auto-refresh every 60 seconds
+  setInterval(loadData, 60000);
+}
+
+init();
+</script>
+</body>
+</html>

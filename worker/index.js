@@ -470,6 +470,60 @@ export default {
       }, 200, origin);
     }
 
+    // ── GET /api/admin/stats ──
+    if (path === '/api/admin/stats' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      if (user.email !== 'indoorfootballindex@gmail.com') return err('Forbidden', 403, origin);
+
+      // Recent pack opens: timestamp, pack name, username
+      const { results: opens } = await env.DB.prepare(`
+        SELECT c.pulled_at, c.pack_name, u.username
+        FROM collections c
+        JOIN users u ON c.user_id = u.id
+        GROUP BY c.user_id, c.pack_name, SUBSTR(c.pulled_at, 1, 16)
+        ORDER BY c.pulled_at DESC
+        LIMIT 200
+      `).all();
+
+      // Card pull counts: card file, pack, rarity, total pulls
+      const { results: cards } = await env.DB.prepare(`
+        SELECT card_file, pack_name, card_rarity, COUNT(*) as pull_count
+        FROM collections
+        GROUP BY card_file, pack_name, card_rarity
+        ORDER BY pull_count DESC
+      `).all();
+
+      // Total stats
+      const totals = await env.DB.prepare(`
+        SELECT 
+          COUNT(DISTINCT user_id) as total_users,
+          COUNT(*) as total_cards,
+          COUNT(*) / 5 as total_packs
+        FROM collections
+      `).first();
+
+      return json({ opens, cards, totals }, 200, origin);
+    }
+
+    // ── GET /api/admin/users ──
+    if (path === '/api/admin/users' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      if (user.email !== 'indoorfootballindex@gmail.com') return err('Forbidden', 403, origin);
+
+      const { results } = await env.DB.prepare(`
+        SELECT u.username, u.email, u.packs_opened,
+          COUNT(c.id) as cards_collected
+        FROM users u
+        LEFT JOIN collections c ON c.user_id = u.id
+        GROUP BY u.id
+        ORDER BY u.packs_opened DESC
+      `).all();
+
+      return json({ users: results }, 200, origin);
+    }
+
     return err('Not found', 404, origin);
   }
 };
