@@ -269,9 +269,9 @@
 
   @keyframes entryNormal { 0% { opacity:0; transform:scale(0.88); } 100% { opacity:1; transform:scale(1); } }
   @keyframes entryLast   { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.06); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
-  @keyframes entryRare   { 0% { opacity:0; transform:scale(0.7); filter:drop-shadow(0 0 0px rgba(155,66,214,0)); } 60% { transform:scale(1.08); filter:drop-shadow(0 0 30px rgba(155,66,214,0.8)); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); filter:drop-shadow(0 0 12px rgba(155,66,214,0.4)); } }
-  @keyframes entrySR     { 0% { opacity:0; transform:scale(0.6); filter:drop-shadow(0 0 0px rgba(200,152,10,0)); } 50% { transform:scale(1.12); filter:drop-shadow(0 0 40px rgba(200,152,10,1)); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); filter:drop-shadow(0 0 20px rgba(200,152,10,0.6)); } }
-  @keyframes srWrapPulse { 0%,100% { filter:drop-shadow(0 0 8px rgba(200,152,10,0.5)); } 50% { filter:drop-shadow(0 0 20px rgba(200,152,10,0.8)); } }
+  @keyframes entryRare   { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.08); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
+  @keyframes entrySR     { 0% { opacity:0; transform:scale(0.6); } 50% { transform:scale(1.12); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
+  @keyframes srWrapPulse { 0%,100% { opacity:1; } 50% { opacity:0.9; } }
 
   /* Screen flash on last card */
   .reveal-screen::before {
