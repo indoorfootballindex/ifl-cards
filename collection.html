@@ -301,21 +301,18 @@
 <footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
 
 <div class="lightbox" id="lightbox" onclick="closeLB(event)">
-  <div class="lb-inner portrait" id="lbInner">
+  <div class="lb-inner portrait" id="lbInner" style="max-width:320px;width:90vw;">
     <button class="lb-close" onclick="closeLB()">&times;</button>
-    <div class="flip-scene" id="lbFlipScene">
-      <div class="flip-card-inner" id="lbFlipInner" onclick="toggleFlip(event)">
-        <div class="flip-face flip-face-front">
-          <img id="lbImg" src="" alt="">
-          <div class="rarity-overlay" id="lbOverlay" style="display:none;border-radius:14px;"></div>
-          <div class="flip-hint">tap to flip</div>
-        </div>
-        <div class="flip-face flip-face-back">
-          <img src="50ydcards.png" class="card-back-logo" alt="50 Yard Cards">
-          <div class="card-back-divider"></div>
-          <div id="lbBackLines"></div>
-        </div>
-      </div>
+    <div id="lbFront" style="position:relative;cursor:pointer;" onclick="showLbBack()">
+      <img id="lbImg" src="" alt="" style="width:100%;display:block;border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,0.8);">
+      <div class="rarity-overlay" id="lbOverlay" style="display:none;border-radius:14px;"></div>
+      <div style="position:absolute;bottom:10px;right:10px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);font-family:Barlow Condensed,sans-serif;">tap to flip</div>
+    </div>
+    <div id="lbBack" style="display:none;cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,0.8);padding:2rem;flex-direction:column;align-items:center;justify-content:center;min-height:200px;" onclick="showLbFront()">
+      <img src="50ydcards.png" class="card-back-logo" alt="50 Yard Cards">
+      <div class="card-back-divider"></div>
+      <div id="lbBackLines"></div>
+      <div style="margin-top:1rem;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);font-family:Barlow Condensed,sans-serif;">tap to flip back</div>
     </div>
     <div class="lb-info">
       <div class="lb-name" id="lbName"></div>
@@ -691,8 +688,6 @@ function openLB(card) {
   inner.style.maxWidth = maxW;
   inner.style.width = '90vw';
   inner.style.overflow = 'hidden';
-  document.getElementById('lbFlipScene').style.width = '100%';
-  document.getElementById('lbFlipScene').style.maxWidth = maxW;
 
   // overlay — only if common variant exists
   const lbOverlay = document.getElementById('lbOverlay');
@@ -707,7 +702,10 @@ function openLB(card) {
   }
 
   document.getElementById('lightbox').classList.add('open');
-  document.getElementById('lbFlipInner').classList.remove('flipped');
+  document.getElementById('lbFront').style.display = 'block';
+  document.getElementById('lbBack').style.display = 'none';
+  const maxW = card.landscape ? '540px' : '320px';
+  inner.style.maxWidth = maxW;
   buildBackLines(card.back || '', 'lbBackLines');
 }
 
@@ -726,10 +724,15 @@ function buildBackLines(backStr, containerId) {
   });
 }
 
-function toggleFlip(e) {
-  e.stopPropagation();
-  document.getElementById('lbFlipInner').classList.toggle('flipped');
+function showLbBack() {
+  document.getElementById('lbFront').style.display = 'none';
+  document.getElementById('lbBack').style.display = 'flex';
 }
+function showLbFront() {
+  document.getElementById('lbBack').style.display = 'none';
+  document.getElementById('lbFront').style.display = 'block';
+}
+function toggleFlip(e) { showLbBack(); }
 
 function closeLB(e) {
   if (!e || e.target === document.getElementById('lightbox') || e.currentTarget.tagName === 'BUTTON')
