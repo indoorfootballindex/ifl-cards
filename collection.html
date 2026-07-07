@@ -690,6 +690,8 @@ function openLB(card) {
   inner.className = 'lb-inner ' + orient + ' rarity-' + card.rarity;
   inner.style.maxWidth = maxW;
   inner.style.width = '90vw';
+  inner.style.overflow = 'hidden';
+  document.getElementById('lbFlipScene').style.width = '100%';
   document.getElementById('lbFlipScene').style.maxWidth = maxW;
 
   // overlay — only if common variant exists
