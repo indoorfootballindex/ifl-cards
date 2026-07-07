@@ -364,7 +364,7 @@
     border-radius: 6px; overflow: hidden; border: 1.5px solid var(--border);
     opacity: 0.4; transition: opacity 0.2s, border-color 0.2s;
     background: var(--panel); flex-shrink: 0;
-    width: 44px; height: 61px;
+    width: 44px; height: 61px; position: relative;
   }
   .seen-thumb.revealed     { opacity: 0.6; }
   .seen-thumb.active-thumb { opacity: 1; border-color: var(--green); }
@@ -893,8 +893,11 @@ async function startOpen() {
 
 function toggleBigCardFlip() {
   const bc = document.getElementById('bigCard');
+  // Remove animation classes so inline transform takes over
+  bc.classList.remove('flip-normal', 'flip-last', 'flip-last');
   const isFlipped = bc.dataset.flipped === '1';
-  bc.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+  bc.style.transition = 'transform 0.55s cubic-bezier(0.22,1,0.36,1)';
+  bc.style.transform = isFlipped ? 'rotateY(0deg) scale(1)' : 'rotateY(180deg) scale(1)';
   bc.dataset.flipped = isFlipped ? '0' : '1';
 }
 
@@ -1024,9 +1027,16 @@ function showCard(idx) {
   bc.style.cursor = 'pointer';
   bc.dataset.flipped = '0';
   bc.style.transform = '';
+  bc.style.transition = '';
   void bc.offsetWidth;
   bc.style.animation = '';
   buildBigCardBack(card.back || '');
+
+  // After animation completes, remove class so click-flip works
+  bc.addEventListener('animationend', () => {
+    bc.classList.remove('flip-normal', 'flip-last');
+    bc.style.transform = 'rotateY(0deg) scale(1)';
+  }, { once: true });
 
   // screen flash on last card
   if (isLast) {
@@ -1049,10 +1059,20 @@ function showCard(idx) {
   // seen strip
   const thumb = document.getElementById('thumb' + idx);
   if (thumb && !thumb.querySelector('img')) {
+    thumb.style.position = 'relative';
     const ti = document.createElement('img');
     ti.src = 'packs/' + currentPack.id + '/' + card.file;
     ti.alt = card.name;
     thumb.appendChild(ti);
+    // Add rarity overlay to thumb if needed
+    const packCardList = currentPack.cards || [];
+    const hasCommon = packCardList.some(c => c.file === card.file && c.rarity === 'c');
+    if ((card.rarity === 'u' || card.rarity === 'r') && hasCommon) {
+      const ov = document.createElement('div');
+      ov.className = 'rarity-overlay ' + card.rarity;
+      ov.style.cssText = 'position:absolute;inset:0;border-radius:5px;';
+      thumb.appendChild(ov);
+    }
   }
   packCards.forEach((c, i) => {
     const t = document.getElementById('thumb' + i);
