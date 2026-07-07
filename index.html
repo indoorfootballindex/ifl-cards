@@ -260,18 +260,21 @@
   .big-card.rarity-r  { border-color: #9b42d6; }
   .big-card.rarity-sr { border-color: var(--gold); }
 
-  /* Entry animations on wrapper — keeps big-card transform-style clean for flip */
+  /* Entry animations — opacity only on wrapper to avoid breaking preserve-3d */
   #cardAnimWrap { display: flex; justify-content: center; }
-  #cardAnimWrap.anim-normal { animation: entryNormal 0.4s cubic-bezier(0.22,1,0.36,1) both; }
-  #cardAnimWrap.anim-last   { animation: entryLast   0.7s cubic-bezier(0.16,1,0.3,1) both; }
-  #cardAnimWrap.anim-last.rarity-r  { animation: entryRare 0.7s cubic-bezier(0.16,1,0.3,1) both; }
-  #cardAnimWrap.anim-last.rarity-sr { animation: entrySR   1.0s cubic-bezier(0.16,1,0.3,1) both, srWrapPulse 2s ease-in-out 1.0s infinite; }
+  #cardAnimWrap.anim-normal { animation: entryFade 0.4s ease both; }
+  #cardAnimWrap.anim-last   { animation: entryFade 0.3s ease both; }
+  #cardAnimWrap.anim-last.rarity-r  { animation: entryFade 0.3s ease both; }
+  #cardAnimWrap.anim-last.rarity-sr { animation: entryFade 0.3s ease both; }
+  @keyframes entryFade { 0% { opacity:0; } 100% { opacity:1; } }
 
-  @keyframes entryNormal { 0% { opacity:0; transform:scale(0.88); } 100% { opacity:1; transform:scale(1); } }
-  @keyframes entryLast   { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.06); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
-  @keyframes entryRare   { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.08); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
-  @keyframes entrySR     { 0% { opacity:0; transform:scale(0.6); } 50% { transform:scale(1.12); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
-  @keyframes srWrapPulse { 0%,100% { opacity:1; } 50% { opacity:0.9; } }
+  #cardScaleWrap.scale-normal { animation: scaleNormal 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+  #cardScaleWrap.scale-last   { animation: scaleLast   0.7s cubic-bezier(0.16,1,0.3,1) both; }
+  #cardScaleWrap.scale-last.rarity-r  { animation: scaleLast 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+  #cardScaleWrap.scale-last.rarity-sr { animation: scaleSR   1.0s cubic-bezier(0.16,1,0.3,1) both; }
+  @keyframes scaleNormal { 0% { transform:scale(0.88); } 100% { transform:scale(1); } }
+  @keyframes scaleLast   { 0% { transform:scale(0.7); } 60% { transform:scale(1.06); } 80% { transform:scale(0.97); } 100% { transform:scale(1); } }
+  @keyframes scaleSR     { 0% { transform:scale(0.6); } 50% { transform:scale(1.12); } 80% { transform:scale(0.97); } 100% { transform:scale(1); } }
 
   /* Screen flash on last card */
   .reveal-screen::before {
@@ -548,7 +551,8 @@
     <div class="rarity-banner c" id="rarityBanner">Common</div>
     <div class="card-flip-outer">
       <div id="cardAnimWrap">
-        <div class="big-card portrait" id="bigCard" onclick="toggleBigCardFlip()">
+        <div id="cardScaleWrap">
+          <div class="big-card portrait" id="bigCard" onclick="toggleBigCardFlip()">
           <!-- Front face -->
           <div id="bigCardFront" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;">
             <img id="bigCardImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
@@ -565,8 +569,9 @@
             <div id="bigCardBackLines"></div>
           </div>
         </div>
-      </div>
-    </div>
+        </div><!-- /cardScaleWrap -->
+      </div><!-- /cardAnimWrap -->
+    </div><!-- /card-flip-outer -->
     <button class="btn-next" id="nextBtn" onclick="nextCard()">Next Card →</button>
     <div class="seen-strip" id="seenStrip"></div>
   </div>
@@ -983,13 +988,16 @@ function showCard(idx) {
   void banner.offsetWidth;
   banner.style.animation = '';
 
-  const animClass = isLast ? 'anim-last' : 'anim-normal';
+  const animClass  = isLast ? 'anim-last'  : 'anim-normal';
+  const scaleClass = isLast ? 'scale-last' : 'scale-normal';
 
-  // Animate the wrapper, keep bigCard clean for flip
   const wrap = document.getElementById('cardAnimWrap');
   wrap.className = '';
+  const scaleWrap = document.getElementById('cardScaleWrap');
+  scaleWrap.className = '';
   void wrap.offsetWidth;
   wrap.className = animClass + (isLast ? ' rarity-' + card.rarity : '');
+  scaleWrap.className = scaleClass + (isLast ? ' rarity-' + card.rarity : '');
 
   const bc = document.getElementById('bigCard');
   bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity].join(' ');
