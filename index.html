@@ -260,48 +260,18 @@
   .big-card.rarity-r  { border-color: #9b42d6; }
   .big-card.rarity-sr { border-color: var(--gold); }
 
-  /* Normal card entry */
-  .big-card.flip-normal {
-    animation: flipNormal 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
-  }
-  @keyframes flipNormal {
-    0%   { opacity: 0; transform: rotateY(0deg) scale(0.88); }
-    100% { opacity: 1; transform: rotateY(0deg) scale(1); }
-  }
+  /* Entry animations on wrapper — keeps big-card transform-style clean for flip */
+  #cardAnimWrap { display: flex; justify-content: center; }
+  #cardAnimWrap.anim-normal { animation: entryNormal 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+  #cardAnimWrap.anim-last   { animation: entryLast   0.7s cubic-bezier(0.16,1,0.3,1) both; }
+  #cardAnimWrap.anim-last.rarity-r  { animation: entryRare 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+  #cardAnimWrap.anim-last.rarity-sr { animation: entrySR   1.0s cubic-bezier(0.16,1,0.3,1) both, srWrapPulse 2s ease-in-out 1.0s infinite; }
 
-  /* Last card — dramatic entrance */
-  .big-card.flip-last {
-    animation: flipLast 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes flipLast {
-    0%   { opacity: 0; transform: rotateY(0deg) scale(0.7); }
-    60%  { opacity: 1; transform: rotateY(0deg) scale(1.06); }
-    80%  { transform: rotateY(0deg) scale(0.97); }
-    100% { opacity: 1; transform: rotateY(0deg) scale(1); }
-  }
-
-  /* Rare last card — purple burst */
-  .big-card.flip-last.rarity-r {
-    animation: flipLastRare 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes flipLastRare {
-    0%   { opacity: 0; transform: rotateY(0deg) scale(0.7); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-    60%  { opacity: 1; transform: rotateY(0deg) scale(1.08); box-shadow: 0 0 60px rgba(155,66,214,0.8); }
-    80%  { transform: rotateY(0deg) scale(0.97); }
-    100% { opacity: 1; transform: rotateY(0deg) scale(1); box-shadow: 0 8px 40px rgba(155,66,214,0.4); }
-  }
-
-  /* Secret rare — gold explosion */
-  .big-card.flip-last.rarity-sr {
-    animation: flipLastSR 1.0s cubic-bezier(0.16,1,0.3,1) forwards, srCardPulse 2s ease-in-out 1.0s infinite;
-  }
-  @keyframes flipLastSR {
-    0%   { opacity: 0; transform: rotateY(0deg) scale(0.6); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-    50%  { opacity: 1; transform: rotateY(0deg) scale(1.12); box-shadow: 0 0 80px rgba(200,152,10,1); }
-    80%  { transform: rotateY(0deg) scale(0.97); }
-    100% { opacity: 1; transform: rotateY(0deg) scale(1); box-shadow: 0 0 0 2px var(--gold), 0 8px 60px rgba(200,152,10,0.6); }
-  }
-  @keyframes srCardPulse { 0%,100% { box-shadow: 0 0 0 1px var(--gold), 0 8px 50px rgba(200,152,10,0.5); } 50% { box-shadow: 0 0 0 2px var(--gold), 0 8px 60px rgba(200,152,10,0.8); } }
+  @keyframes entryNormal { 0% { opacity:0; transform:scale(0.88); } 100% { opacity:1; transform:scale(1); } }
+  @keyframes entryLast   { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.06); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
+  @keyframes entryRare   { 0% { opacity:0; transform:scale(0.7); filter:drop-shadow(0 0 0px rgba(155,66,214,0)); } 60% { transform:scale(1.08); filter:drop-shadow(0 0 30px rgba(155,66,214,0.8)); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); filter:drop-shadow(0 0 12px rgba(155,66,214,0.4)); } }
+  @keyframes entrySR     { 0% { opacity:0; transform:scale(0.6); filter:drop-shadow(0 0 0px rgba(200,152,10,0)); } 50% { transform:scale(1.12); filter:drop-shadow(0 0 40px rgba(200,152,10,1)); } 80% { transform:scale(0.97); } 100% { opacity:1; transform:scale(1); filter:drop-shadow(0 0 20px rgba(200,152,10,0.6)); } }
+  @keyframes srWrapPulse { 0%,100% { filter:drop-shadow(0 0 8px rgba(200,152,10,0.5)); } 50% { filter:drop-shadow(0 0 20px rgba(200,152,10,0.8)); } }
 
   /* Screen flash on last card */
   .reveal-screen::before {
@@ -576,22 +546,24 @@
   <div class="reveal-screen">
     <div class="pip-row" id="pipRow"></div>
     <div class="rarity-banner c" id="rarityBanner">Common</div>
-    <div class="card-flip-outer" style="perspective:900px;">
-      <div class="big-card portrait" id="bigCard" onclick="toggleBigCardFlip()">
-        <!-- Front face -->
-        <div id="bigCardFront" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;">
-          <img id="bigCardImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-          <div class="big-card-label">
-            <div class="big-card-name" id="bigCardName"></div>
-            <div class="big-card-team" id="bigCardTeam"></div>
+    <div class="card-flip-outer">
+      <div id="cardAnimWrap">
+        <div class="big-card portrait" id="bigCard" onclick="toggleBigCardFlip()">
+          <!-- Front face -->
+          <div id="bigCardFront" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;">
+            <img id="bigCardImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+            <div class="big-card-label">
+              <div class="big-card-name" id="bigCardName"></div>
+              <div class="big-card-team" id="bigCardTeam"></div>
+            </div>
+            <div style="position:absolute;bottom:8px;right:8px;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;pointer-events:none;">tap to flip</div>
           </div>
-          <div style="position:absolute;bottom:8px;right:8px;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;pointer-events:none;">tap to flip</div>
-        </div>
-        <!-- Back face -->
-        <div id="bigCardBack" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;">
-          <img src="50ydcards.png" style="width:60px;opacity:0.9;margin-bottom:0.85rem;filter:brightness(0) invert(1);" alt="">
-          <div style="width:36px;height:1px;background:var(--border);margin-bottom:0.85rem;"></div>
-          <div id="bigCardBackLines"></div>
+          <!-- Back face -->
+          <div id="bigCardBack" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;">
+            <img src="50ydcards.png" style="width:60px;opacity:0.9;margin-bottom:0.85rem;filter:brightness(0) invert(1);" alt="">
+            <div style="width:36px;height:1px;background:var(--border);margin-bottom:0.85rem;"></div>
+            <div id="bigCardBackLines"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -888,9 +860,6 @@ async function startOpen() {
 function toggleBigCardFlip() {
   const bc = document.getElementById('bigCard');
   const isFlipped = bc.dataset.flipped === '1';
-  // Remove entry animation classes so transition takes over
-  bc.classList.remove('flip-normal', 'flip-last', 'flip-last');
-  bc.style.animation = 'none';
   bc.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
   bc.dataset.flipped = isFlipped ? '0' : '1';
 }
@@ -1014,10 +983,16 @@ function showCard(idx) {
   void banner.offsetWidth;
   banner.style.animation = '';
 
-  // flip class — last card gets dramatic flip
-  const flipClass = isLast ? 'flip-last' : 'flip-normal';
+  const animClass = isLast ? 'anim-last' : 'anim-normal';
+
+  // Animate the wrapper, keep bigCard clean for flip
+  const wrap = document.getElementById('cardAnimWrap');
+  wrap.className = '';
+  void wrap.offsetWidth;
+  wrap.className = animClass + (isLast ? ' rarity-' + card.rarity : '');
+
   const bc = document.getElementById('bigCard');
-  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');
+  bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity].join(' ');
   bc.style.cursor = 'pointer';
   bc.dataset.flipped = '0';
   bc.style.transform = 'rotateY(0deg)';
