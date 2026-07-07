@@ -582,12 +582,22 @@
   <div class="reveal-screen">
     <div class="pip-row" id="pipRow"></div>
     <div class="rarity-banner c" id="rarityBanner">Common</div>
-    <div class="card-flip-outer">
-      <div class="big-card portrait" id="bigCard">
-        <img id="bigCardImg" src="" alt="">
-        <div class="big-card-label">
-          <div class="big-card-name" id="bigCardName"></div>
-          <div class="big-card-team" id="bigCardTeam"></div>
+    <div class="card-flip-outer" style="perspective:900px;">
+      <div class="big-card portrait" id="bigCard" style="transform-style:preserve-3d;transition:transform 0.55s cubic-bezier(0.22,1,0.36,1);" onclick="toggleBigCardFlip()">
+        <!-- Front -->
+        <div style="backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;overflow:hidden;position:relative;">
+          <img id="bigCardImg" src="" alt="" style="width:100%;display:block;">
+          <div class="big-card-label">
+            <div class="big-card-name" id="bigCardName"></div>
+            <div class="big-card-team" id="bigCardTeam"></div>
+          </div>
+          <div class="flip-hint" style="position:absolute;bottom:8px;right:8px;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;pointer-events:none;">tap to flip</div>
+        </div>
+        <!-- Back -->
+        <div id="bigCardBack" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:var(--panel);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;">
+          <img src="50ydcards.png" style="width:60px;opacity:0.9;margin-bottom:0.85rem;filter:brightness(0) invert(1);" alt="">
+          <div style="width:36px;height:1px;background:var(--border);margin-bottom:0.85rem;"></div>
+          <div id="bigCardBackLines"></div>
         </div>
       </div>
     </div>
@@ -881,6 +891,28 @@ async function startOpen() {
   }, 680);
 }
 
+function toggleBigCardFlip() {
+  const bc = document.getElementById('bigCard');
+  const isFlipped = bc.dataset.flipped === '1';
+  bc.style.transform = isFlipped ? '' : 'rotateY(180deg)';
+  bc.dataset.flipped = isFlipped ? '0' : '1';
+}
+
+function buildBigCardBack(backStr) {
+  const lines = document.getElementById('bigCardBackLines');
+  lines.innerHTML = '';
+  if (!backStr) return;
+  backStr.split('|').forEach(pair => {
+    const [label, ...rest] = pair.split(':');
+    const value = rest.join(':').trim();
+    if (!label && !value) return;
+    const div = document.createElement('div');
+    div.style.cssText = 'text-align:center;margin-bottom:0.7rem;';
+    div.innerHTML = `<span style="font-family:'Barlow Condensed',sans-serif;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px;">${label.trim()}</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.95rem;color:var(--white);">${value}</span>`;
+    lines.appendChild(div);
+  });
+}
+
 function buildCardBack(backStr) {
   const lines = document.getElementById('lbBackLines');
   lines.innerHTML = '';
@@ -958,6 +990,11 @@ function buildRevealUI() {
     const thumb = document.createElement('div');
     thumb.className = 'seen-thumb';
     thumb.id = 'thumb' + i;
+    thumb.style.cursor = 'pointer';
+    thumb.title = card.name || '';
+    thumb.onclick = () => {
+      if (i <= cardIndex) { cardIndex = i; showCard(i); }
+    };
     strip.appendChild(thumb);
   });
 }
@@ -984,10 +1021,12 @@ function showCard(idx) {
   const flipClass = isLast ? 'flip-last' : 'flip-normal';
   const bc = document.getElementById('bigCard');
   bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');
-  bc.style.cursor = 'zoom-in';
-  bc.onclick = () => openCardLB('packs/' + currentPack.id + '/' + card.file, orient, card.back || '');
+  bc.style.cursor = 'pointer';
+  bc.dataset.flipped = '0';
+  bc.style.transform = '';
   void bc.offsetWidth;
   bc.style.animation = '';
+  buildBigCardBack(card.back || '');
 
   // screen flash on last card
   if (isLast) {
