@@ -704,8 +704,6 @@ function openLB(card) {
   document.getElementById('lightbox').classList.add('open');
   document.getElementById('lbFront').style.display = 'block';
   document.getElementById('lbBack').style.display = 'none';
-  const maxW = card.landscape ? '540px' : '320px';
-  inner.style.maxWidth = maxW;
   buildBackLines(card.back || '', 'lbBackLines');
 }
 

@@ -647,8 +647,6 @@ function openLB(card) {
   document.getElementById('lightbox').classList.add('open');
   document.getElementById('lbFront').style.display = 'block';
   document.getElementById('lbBack').style.display = 'none';
-  const maxW = card.landscape ? '540px' : '320px';
-  inner.style.maxWidth = maxW;
   buildBackLines(card.back || '', 'lbBackLines');
 }
 
@@ -660,7 +658,21 @@ function showLbFront() {
   document.getElementById('lbBack').style.display = 'none';
   document.getElementById('lbFront').style.display = 'block';
 }
-function toggleFlip(e) { showLbBack(); }
+
+function buildBackLines(backStr, containerId) {
+  const lines = document.getElementById(containerId);
+  lines.innerHTML = '';
+  if (!backStr) return;
+  backStr.split('|').forEach(pair => {
+    const [label, ...rest] = pair.split(':');
+    const value = rest.join(':').trim();
+    if (!label && !value) return;
+    const div = document.createElement('div');
+    div.className = 'card-back-line';
+    div.innerHTML = `<span class="card-back-label">${label.trim()}</span><span class="card-back-value">${value}</span>`;
+    lines.appendChild(div);
+  });
+}
 
 function closeLB(e) {
   const lines = document.getElementById(containerId);
@@ -677,15 +689,6 @@ function closeLB(e) {
   });
 }
 
-function toggleFlip(e) {
-  e.stopPropagation();
-  document.getElementById('lbFlipInner').classList.toggle('flipped');
-}
-
-function closeLB(e) {
-  if (!e || e.target===document.getElementById('lightbox') || e.currentTarget.tagName==='BUTTON')
-    document.getElementById('lightbox').classList.remove('open');
-}
 document.addEventListener('keydown', e => { if (e.key==='Escape') closeLB(); });
 
 buildPackFilter([]);
