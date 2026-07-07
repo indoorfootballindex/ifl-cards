@@ -199,7 +199,9 @@
     background:var(--panel); border:1px solid var(--border); color:var(--muted);
 
   /* FLIP CARD */
-  .flip-scene { perspective:900px; width:100%; }
+  .flip-scene { perspective:900px; width:100%; position:relative; }
+  .lb-inner.portrait  .flip-scene { aspect-ratio: 5/7; }
+  .lb-inner.landscape .flip-scene { aspect-ratio: 7/5; }
   .flip-card-inner {
     position:relative; width:100%;
     transform-style:preserve-3d;
@@ -207,8 +209,8 @@
   }
   .flip-card-inner.flipped { transform:rotateY(180deg); }
   .flip-face { width:100%; border-radius:14px; box-shadow:0 16px 60px rgba(0,0,0,0.8); backface-visibility:hidden; -webkit-backface-visibility:hidden; }
-  .flip-face-front { position:relative; overflow:hidden; border-radius:14px; }
-  .flip-face-front img { width:100%; display:block; border-radius:14px; }
+  .flip-face-front { position:relative; overflow:hidden; border-radius:14px; width:100%; }
+  .flip-face-front img { width:100%; height:auto; display:block; border-radius:14px; }
   .flip-face-back {
     position:absolute; top:0; left:0; width:100%; height:100%;
     transform:rotateY(180deg);
