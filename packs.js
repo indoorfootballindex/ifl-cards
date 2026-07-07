@@ -15,7 +15,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "DB",
-        "order": 1
+        "order": 1,
+        "back": ""
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -26,7 +27,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 2
+        "order": 2,
+        "back": ""
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -37,7 +39,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "DB",
-        "order": 3
+        "order": 3,
+        "back": ""
       },
       {
         "file": "CameronHarrelQC_c.png",
@@ -48,7 +51,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "DB",
-        "order": 4
+        "order": 4,
+        "back": ""
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -59,7 +63,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 5
+        "order": 5,
+        "back": ""
       },
       {
         "file": "HarryBallardGB_u.png",
@@ -70,7 +75,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 7
+        "order": 7,
+        "back": ""
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -81,7 +87,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "DB",
-        "order": 6
+        "order": 6,
+        "back": ""
       },
       {
         "file": "boodahlewis_u.png",
@@ -92,7 +99,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 8
+        "order": 8,
+        "back": ""
       },
       {
         "file": "CameronHarrelQC_c.png",
@@ -103,7 +111,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "DB",
-        "order": 9
+        "order": 9,
+        "back": ""
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -114,7 +123,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 10
+        "order": 10,
+        "back": ""
       },
       {
         "file": "LowellPatronGB_r.png",
@@ -125,7 +135,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 12
+        "order": 12,
+        "back": ""
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -136,7 +147,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "DB",
-        "order": 11
+        "order": 11,
+        "back": ""
       },
       {
         "file": "AndrewCarterSR.png",
@@ -147,7 +159,8 @@ var PACK_DATA = [
         "rarity": "sr",
         "landscape": false,
         "position": "OL",
-        "order": 13
+        "order": 13,
+        "back": ""
       }
     ]
   },
@@ -171,7 +184,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "FB/LB",
-        "order": 1
+        "order": 1,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "ChrisHorn_c.png",
@@ -182,7 +196,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 2
+        "order": 2,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "ChrisJackson_c.png",
@@ -193,7 +208,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 3
+        "order": 3,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "ClintDolezel_c.png",
@@ -204,7 +220,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 4
+        "order": 4,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "CollinTaylor_c.png",
@@ -215,7 +232,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 5
+        "order": 5,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "DamianHarrell_c.png",
@@ -226,7 +244,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 6
+        "order": 6,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "Darryl_c.png",
@@ -237,7 +256,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR/DB",
-        "order": 7
+        "order": 7,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "DonovanMorgan_c.png",
@@ -248,7 +268,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 8
+        "order": 8,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "EddieBrown_c.png",
@@ -259,7 +280,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "OS",
-        "order": 9
+        "order": 9,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "GaryCompton_c.png",
@@ -270,7 +292,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 10
+        "order": 10,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "GregHopkins_c.png",
@@ -281,7 +304,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR/LB",
-        "order": 11
+        "order": 11,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "IdrisPrice_c.png",
@@ -292,7 +316,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "FB/LB",
-        "order": 12
+        "order": 12,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "JayGruden_c.png",
@@ -303,7 +328,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 13
+        "order": 13,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "JJRaterink_c.png",
@@ -314,7 +340,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 14
+        "order": 14,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "JoeSykes_c.png",
@@ -325,7 +352,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "DL",
-        "order": 15
+        "order": 15,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "JohnDutton_c.png",
@@ -336,7 +364,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 16
+        "order": 16,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "KurtWarner_c.png",
@@ -347,7 +376,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 17
+        "order": 17,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "LawrenceSamuels_c.png",
@@ -358,7 +388,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR/LB",
-        "order": 18
+        "order": 18,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "MarkGrieb_c.png",
@@ -369,7 +400,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 19
+        "order": 19,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "MattNagy_c.png",
@@ -380,7 +412,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 20
+        "order": 20,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "NickDavila_c.png",
@@ -391,7 +424,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 21
+        "order": 21,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "RandyGatewood_c.png",
@@ -402,7 +436,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 22
+        "order": 22,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "RayPhilyaw_c.png",
@@ -413,7 +448,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 23
+        "order": 23,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "RickyFoggie_c.png",
@@ -424,7 +460,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 24
+        "order": 24,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "RogerJackson_c.png",
@@ -435,7 +472,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 25
+        "order": 25,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "SedBonner_c.png",
@@ -446,7 +484,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 26
+        "order": 26,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "TommyGrady_c.png",
@@ -457,7 +496,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 27
+        "order": 27,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "TonyGraziani_c.png",
@@ -468,7 +508,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "QB",
-        "order": 28
+        "order": 28,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "TTToliver_c.png",
@@ -479,7 +520,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "WR",
-        "order": 29
+        "order": 29,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "WillFalakiseni_c.png",
@@ -490,7 +532,8 @@ var PACK_DATA = [
         "rarity": "c",
         "landscape": false,
         "position": "OL",
-        "order": 30
+        "order": 30,
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL"
       },
       {
         "file": "AaronGarcia_u.png",
@@ -501,7 +544,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 31
+        "order": 31,
+        "back": ""
       },
       {
         "file": "BobMcMillen_c.png",
@@ -512,7 +556,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "FB/LB",
-        "order": 32
+        "order": 32,
+        "back": ""
       },
       {
         "file": "ChrisHorn_c.png",
@@ -523,7 +568,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 33
+        "order": 33,
+        "back": ""
       },
       {
         "file": "ChrisJackson_c.png",
@@ -534,7 +580,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 34
+        "order": 34,
+        "back": ""
       },
       {
         "file": "ClintDolezel_c.png",
@@ -545,7 +592,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 35
+        "order": 35,
+        "back": ""
       },
       {
         "file": "CollinTaylor_c.png",
@@ -556,7 +604,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 36
+        "order": 36,
+        "back": ""
       },
       {
         "file": "DamianHarrell_u.png",
@@ -567,7 +616,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 37
+        "order": 37,
+        "back": ""
       },
       {
         "file": "Darryl_c.png",
@@ -578,7 +628,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR/DB",
-        "order": 38
+        "order": 38,
+        "back": ""
       },
       {
         "file": "DonovanMorgan_c.png",
@@ -589,7 +640,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 39
+        "order": 39,
+        "back": ""
       },
       {
         "file": "GaryCompton_c.png",
@@ -600,7 +652,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 40
+        "order": 40,
+        "back": ""
       },
       {
         "file": "GregHopkins_c.png",
@@ -611,7 +664,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR/LB",
-        "order": 41
+        "order": 41,
+        "back": ""
       },
       {
         "file": "IdrisPrice_c.png",
@@ -622,7 +676,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "FB/LB",
-        "order": 42
+        "order": 42,
+        "back": ""
       },
       {
         "file": "JayGruden_c.png",
@@ -633,7 +688,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 43
+        "order": 43,
+        "back": ""
       },
       {
         "file": "JJRaterink_c.png",
@@ -644,7 +700,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 44
+        "order": 44,
+        "back": ""
       },
       {
         "file": "JoeSykes_c.png",
@@ -655,7 +712,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "DL",
-        "order": 45
+        "order": 45,
+        "back": ""
       },
       {
         "file": "JohnDutton_c.png",
@@ -666,7 +724,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 46
+        "order": 46,
+        "back": ""
       },
       {
         "file": "KurtWarner_c.png",
@@ -677,7 +736,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 47
+        "order": 47,
+        "back": ""
       },
       {
         "file": "LawrenceSamuels_c.png",
@@ -688,7 +748,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR/LB",
-        "order": 48
+        "order": 48,
+        "back": ""
       },
       {
         "file": "MarkGrieb_c.png",
@@ -699,7 +760,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 49
+        "order": 49,
+        "back": ""
       },
       {
         "file": "MattNagy_c.png",
@@ -710,7 +772,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 50
+        "order": 50,
+        "back": ""
       },
       {
         "file": "MikeWashington_u.png",
@@ -721,7 +784,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 51
+        "order": 51,
+        "back": ""
       },
       {
         "file": "NickDavila_c.png",
@@ -732,7 +796,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 52
+        "order": 52,
+        "back": ""
       },
       {
         "file": "RandyGatewood_c.png",
@@ -743,7 +808,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 53
+        "order": 53,
+        "back": ""
       },
       {
         "file": "RayPhilyaw_c.png",
@@ -754,7 +820,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 54
+        "order": 54,
+        "back": ""
       },
       {
         "file": "RickyFoggie_c.png",
@@ -765,7 +832,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 55
+        "order": 55,
+        "back": ""
       },
       {
         "file": "RogerJackson_c.png",
@@ -776,7 +844,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 56
+        "order": 56,
+        "back": ""
       },
       {
         "file": "TommyGrady_c.png",
@@ -787,7 +856,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 57
+        "order": 57,
+        "back": ""
       },
       {
         "file": "TonyGraziani_c.png",
@@ -798,7 +868,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 58
+        "order": 58,
+        "back": ""
       },
       {
         "file": "TTToliver_c.png",
@@ -809,7 +880,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR",
-        "order": 59
+        "order": 59,
+        "back": ""
       },
       {
         "file": "WillFalakiseni_c.png",
@@ -820,7 +892,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "OL",
-        "order": 60
+        "order": 60,
+        "back": ""
       },
       {
         "file": "SedBonner_c.png",
@@ -831,7 +904,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "QB",
-        "order": 61
+        "order": 61,
+        "back": ""
       },
       {
         "file": "BarryWagner_u.png",
@@ -842,7 +916,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "WR/LB",
-        "order": 62
+        "order": 62,
+        "back": ""
       },
       {
         "file": "SoulMan_u.png",
@@ -853,7 +928,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 63
+        "order": 63,
+        "back": ""
       },
       {
         "file": "Sparky_u.png",
@@ -864,7 +940,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 64
+        "order": 64,
+        "back": ""
       },
       {
         "file": "StormDawg_u.png",
@@ -875,7 +952,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 65
+        "order": 65,
+        "back": ""
       },
       {
         "file": "Stryker_u.png",
@@ -886,7 +964,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 66
+        "order": 66,
+        "back": ""
       },
       {
         "file": "Klaw_u.png",
@@ -897,7 +976,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 67
+        "order": 67,
+        "back": ""
       },
       {
         "file": "Chum_u.png",
@@ -908,7 +988,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 68
+        "order": 68,
+        "back": ""
       },
       {
         "file": "Bones_u.png",
@@ -919,7 +1000,8 @@ var PACK_DATA = [
         "rarity": "u",
         "landscape": false,
         "position": "Mascot",
-        "order": 69
+        "order": 69,
+        "back": ""
       },
       {
         "file": "MascotMash_r.png",
@@ -930,7 +1012,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "Mascot",
-        "order": 70
+        "order": 70,
+        "back": ""
       },
       {
         "file": "ChrisHorn_c.png",
@@ -941,7 +1024,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 71
+        "order": 71,
+        "back": ""
       },
       {
         "file": "ChrisJackson_c.png",
@@ -952,7 +1036,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 72
+        "order": 72,
+        "back": ""
       },
       {
         "file": "ClintDolezel_c.png",
@@ -963,7 +1048,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 73
+        "order": 73,
+        "back": ""
       },
       {
         "file": "CollinTaylor_c.png",
@@ -974,7 +1060,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 74
+        "order": 74,
+        "back": ""
       },
       {
         "file": "Darryl_c.png",
@@ -985,7 +1072,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR/DB",
-        "order": 75
+        "order": 75,
+        "back": ""
       },
       {
         "file": "DonovanMorgan_c.png",
@@ -996,7 +1084,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 76
+        "order": 76,
+        "back": ""
       },
       {
         "file": "GaryCompton_c.png",
@@ -1007,7 +1096,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 77
+        "order": 77,
+        "back": ""
       },
       {
         "file": "GregHopkins_c.png",
@@ -1018,7 +1108,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR/LB",
-        "order": 78
+        "order": 78,
+        "back": ""
       },
       {
         "file": "IdrisPrice_c.png",
@@ -1029,7 +1120,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "FB/LB",
-        "order": 79
+        "order": 79,
+        "back": ""
       },
       {
         "file": "JayGruden_c.png",
@@ -1040,7 +1132,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 80
+        "order": 80,
+        "back": ""
       },
       {
         "file": "JJRaterink_c.png",
@@ -1051,7 +1144,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 81
+        "order": 81,
+        "back": ""
       },
       {
         "file": "JoeSykes_c.png",
@@ -1062,7 +1156,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "DL",
-        "order": 82
+        "order": 82,
+        "back": ""
       },
       {
         "file": "JohnDutton_c.png",
@@ -1073,7 +1168,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 83
+        "order": 83,
+        "back": ""
       },
       {
         "file": "KurtWarner_c.png",
@@ -1084,7 +1180,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 84
+        "order": 84,
+        "back": ""
       },
       {
         "file": "LawrenceSamuels_c.png",
@@ -1095,7 +1192,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR/LB",
-        "order": 85
+        "order": 85,
+        "back": ""
       },
       {
         "file": "MarkGrieb_c.png",
@@ -1106,7 +1204,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 86
+        "order": 86,
+        "back": ""
       },
       {
         "file": "MattNagy_c.png",
@@ -1117,7 +1216,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 87
+        "order": 87,
+        "back": ""
       },
       {
         "file": "NickDavila_c.png",
@@ -1128,7 +1228,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 88
+        "order": 88,
+        "back": ""
       },
       {
         "file": "RandyGatewood_c.png",
@@ -1139,7 +1240,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 89
+        "order": 89,
+        "back": ""
       },
       {
         "file": "RayPhilyaw_c.png",
@@ -1150,7 +1252,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 90
+        "order": 90,
+        "back": ""
       },
       {
         "file": "RickyFoggie_c.png",
@@ -1161,7 +1264,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 91
+        "order": 91,
+        "back": ""
       },
       {
         "file": "RogerJackson_c.png",
@@ -1172,7 +1276,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 92
+        "order": 92,
+        "back": ""
       },
       {
         "file": "SedBonner_c.png",
@@ -1183,7 +1288,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 93
+        "order": 93,
+        "back": ""
       },
       {
         "file": "TommyGrady_c.png",
@@ -1194,7 +1300,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 94
+        "order": 94,
+        "back": ""
       },
       {
         "file": "TonyGraziani_c.png",
@@ -1205,7 +1312,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 95
+        "order": 95,
+        "back": ""
       },
       {
         "file": "TTToliver_c.png",
@@ -1216,7 +1324,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 96
+        "order": 96,
+        "back": ""
       },
       {
         "file": "WillFalakiseni_c.png",
@@ -1227,7 +1336,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "OL",
-        "order": 97
+        "order": 97,
+        "back": ""
       },
       {
         "file": "Aaron_Garcia_r.png",
@@ -1238,7 +1348,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "QB",
-        "order": 98
+        "order": 98,
+        "back": ""
       },
       {
         "file": "BobMcMillen_r.png",
@@ -1249,7 +1360,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "FB/LB",
-        "order": 99
+        "order": 99,
+        "back": ""
       },
       {
         "file": "EddieBrown_r.png",
@@ -1260,7 +1372,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "OS",
-        "order": 100
+        "order": 100,
+        "back": ""
       },
       {
         "file": "MikeWashington_r.png",
@@ -1271,7 +1384,8 @@ var PACK_DATA = [
         "rarity": "r",
         "landscape": false,
         "position": "WR",
-        "order": 101
+        "order": 101,
+        "back": ""
       }
     ]
   }

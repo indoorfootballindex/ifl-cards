@@ -52,6 +52,7 @@ def build():
                 'landscape': r.get('landscape','false').strip().lower() == 'true',
                 'position':  r.get('position','').strip(),
                 'order':     int(r.get('order','').strip()) if r.get('order','').strip().isdigit() else 9999,
+                'back':      r.get('back','').strip(),
             })
         packs.append({'id': pid, 'name': m.get('name',pid).strip(),
                       'sub': m.get('sub','').strip(), 'cards': cards})
