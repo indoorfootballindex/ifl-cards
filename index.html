@@ -1070,7 +1070,8 @@ function showCard(idx) {
   });
 
   // remove old overlay if any
-  const oldOverlay = document.getElementById('bigCard').querySelector('.rarity-overlay');
+  const bigCardFront = document.getElementById('bigCardFront');
+  const oldOverlay = bigCardFront.querySelector('.rarity-overlay');
   if (oldOverlay) oldOverlay.remove();
 
   // build overlay flag — check if a common version of this card exists
@@ -1079,7 +1080,7 @@ function showCard(idx) {
     if (hasCommonVariant) {
       const overlay = document.createElement('div');
       overlay.className = 'rarity-overlay ' + card.rarity;
-      document.getElementById('bigCard').appendChild(overlay);
+      bigCardFront.appendChild(overlay);
     }
   }
 
@@ -1094,7 +1095,7 @@ function showCard(idx) {
       badge.className = 'new-badge';
       badge.id = 'newBadge';
       badge.textContent = 'NEW';
-      document.getElementById('bigCard').appendChild(badge);
+      bigCardFront.appendChild(badge);
     }
   } catch(e) {}
 
