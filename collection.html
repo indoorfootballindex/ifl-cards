@@ -678,6 +678,7 @@ function clearCol() {
 
 function openLB(card) {
   const orient = card.landscape ? 'landscape' : 'portrait';
+  const maxW = card.landscape ? '540px' : '320px';
   document.getElementById('lbImg').src = cardImgSrc(card.packId, card.file);
   document.getElementById('lbImg').alt = card.name;
   document.getElementById('lbName').textContent = card.name + (card.position ? ' — ' + card.position : '');
@@ -685,7 +686,11 @@ function openLB(card) {
   const rar = document.getElementById('lbRarity');
   rar.textContent = RARITY_LABELS[card.rarity];
   rar.className = 'lb-rarity ' + card.rarity;
-  document.getElementById('lbInner').className = 'lb-inner ' + orient + ' rarity-' + card.rarity;
+  const inner = document.getElementById('lbInner');
+  inner.className = 'lb-inner ' + orient + ' rarity-' + card.rarity;
+  inner.style.maxWidth = maxW;
+  inner.style.width = '90vw';
+  document.getElementById('lbFlipScene').style.maxWidth = maxW;
 
   // overlay — only if common variant exists
   const lbOverlay = document.getElementById('lbOverlay');
