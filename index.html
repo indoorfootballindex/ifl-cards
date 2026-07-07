@@ -251,6 +251,7 @@
     border-radius: 12px; border: 2px solid var(--border); position: relative;
     box-shadow: 0 8px 40px rgba(0,0,0,0.6);
     transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.22,1,0.36,1);
   }
   .big-card.portrait  { width: min(240px, 68vw); aspect-ratio: 5/7; }
   .big-card.landscape { width: min(380px, 88vw); aspect-ratio: 7/5; }
@@ -583,18 +584,18 @@
     <div class="pip-row" id="pipRow"></div>
     <div class="rarity-banner c" id="rarityBanner">Common</div>
     <div class="card-flip-outer" style="perspective:900px;">
-      <div class="big-card portrait" id="bigCard" style="transform-style:preserve-3d;transition:transform 0.55s cubic-bezier(0.22,1,0.36,1);" onclick="toggleBigCardFlip()">
-        <!-- Front -->
-        <div style="backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;position:relative;width:100%;height:100%;">
+      <div class="big-card portrait" id="bigCard" onclick="toggleBigCardFlip()">
+        <!-- Front face -->
+        <div id="bigCardFront" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;overflow:hidden;">
           <img id="bigCardImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
           <div class="big-card-label">
             <div class="big-card-name" id="bigCardName"></div>
             <div class="big-card-team" id="bigCardTeam"></div>
           </div>
-          <div class="flip-hint" style="position:absolute;bottom:8px;right:8px;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;pointer-events:none;">tap to flip</div>
+          <div style="position:absolute;bottom:8px;right:8px;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;pointer-events:none;">tap to flip</div>
         </div>
-        <!-- Back -->
-        <div id="bigCardBack" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:var(--panel);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;">
+        <!-- Back face -->
+        <div id="bigCardBack" style="position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;">
           <img src="50ydcards.png" style="width:60px;opacity:0.9;margin-bottom:0.85rem;filter:brightness(0) invert(1);" alt="">
           <div style="width:36px;height:1px;background:var(--border);margin-bottom:0.85rem;"></div>
           <div id="bigCardBackLines"></div>
@@ -893,11 +894,11 @@ async function startOpen() {
 
 function toggleBigCardFlip() {
   const bc = document.getElementById('bigCard');
-  // Remove animation classes so inline transform takes over
-  bc.classList.remove('flip-normal', 'flip-last', 'flip-last');
   const isFlipped = bc.dataset.flipped === '1';
-  bc.style.transition = 'transform 0.55s cubic-bezier(0.22,1,0.36,1)';
-  bc.style.transform = isFlipped ? 'rotateY(0deg) scale(1)' : 'rotateY(180deg) scale(1)';
+  // Remove entry animation classes so transition takes over
+  bc.classList.remove('flip-normal', 'flip-last', 'flip-last');
+  bc.style.animation = 'none';
+  bc.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
   bc.dataset.flipped = isFlipped ? '0' : '1';
 }
 
@@ -1026,16 +1027,17 @@ function showCard(idx) {
   bc.className = ['big-card', orient, 'team-' + (card.teamCode||'').toLowerCase(), 'rarity-' + card.rarity, flipClass].join(' ');
   bc.style.cursor = 'pointer';
   bc.dataset.flipped = '0';
-  bc.style.transform = '';
-  bc.style.transition = '';
+  bc.style.animation = 'none';
+  bc.style.transform = 'rotateY(0deg)';
+  bc.style.transition = 'none';
   void bc.offsetWidth;
+  bc.style.transition = '';
   bc.style.animation = '';
   buildBigCardBack(card.back || '');
 
-  // After animation completes, remove class so click-flip works
+  // After entry animation completes, allow click-flip
   bc.addEventListener('animationend', () => {
-    bc.classList.remove('flip-normal', 'flip-last');
-    bc.style.transform = 'rotateY(0deg) scale(1)';
+    bc.style.transform = 'rotateY(0deg)';
   }, { once: true });
 
   // screen flash on last card
