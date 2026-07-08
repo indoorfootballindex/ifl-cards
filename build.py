@@ -53,6 +53,7 @@ def build():
                 'position':  r.get('position','').strip(),
                 'order':     int(r.get('order','').strip()) if r.get('order','').strip().isdigit() else 9999,
                 'back':      r.get('back','').strip(),
+                'qty':       int(r.get('qty','').strip()) if r.get('qty','').strip().isdigit() else None,
             })
         packs.append({'id': pid, 'name': m.get('name',pid).strip(),
                       'sub': m.get('sub','').strip(), 'cards': cards})

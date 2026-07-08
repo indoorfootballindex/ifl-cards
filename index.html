@@ -869,7 +869,16 @@ async function startOpen() {
   document.getElementById('openBtn').disabled = true;
   document.getElementById('packWrap').classList.add('ripping');
   setTimeout(() => {
-    packCards = pullPack(currentPack);
+    // Fetch card limits for this pack
+    let limitCounts = {};
+    const hasLimited = currentPack.cards.some(c => c.qty);
+    if (hasLimited) {
+      try {
+        const limRes = await fetch(CARDS_API + '/api/cards/limits?packId=' + currentPack.id);
+        if (limRes.ok) { const d = await limRes.json(); limitCounts = d.counts || {}; }
+      } catch(e) {}
+    }
+    packCards = pullPack(currentPack, limitCounts);
     cardIndex = 0;
     buildRevealUI();
     showCard(0);
@@ -935,9 +944,19 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keyup', e => { if (e.key === '0') cheatSR = false; });
 // Slots 1-3: commons | Slot 4: uncommon | Slot 5: SR (1/1000) or rare
-function pullPack(pack) {
+function pullPack(pack, limitCounts = {}) {
+  // Filter out cards that have hit their qty limit
+  const available = pack.cards.filter(c => {
+    if (!c.qty) return true; // no limit = always available
+    const pulled = limitCounts[c.file + '|' + c.rarity] || 0;
+    return pulled < c.qty;
+  });
+
   const byRarity = { c: [], u: [], r: [], sr: [] };
-  pack.cards.forEach(c => { if (byRarity[c.rarity]) byRarity[c.rarity].push(c); });
+  available.forEach(c => { if (byRarity[c.rarity]) byRarity[c.rarity].push(c); });
+
+  // Fall back to full pool if a rarity tier is empty after limiting
+  const allCards = available.length ? available : pack.cards;
 
   function pick(pool) { return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null; }
   function shuffle(arr) {
@@ -948,11 +967,11 @@ function pullPack(pack) {
 
   const slot5 = (byRarity.sr.length && (cheatSR || Math.random() < 1/250))
     ? pick(byRarity.sr)
-    : (pick(byRarity.r) || pick(byRarity.u) || pick(byRarity.c));
+    : (pick(byRarity.r) || pick(byRarity.u) || pick(byRarity.c) || pick(allCards));
 
-  const slot4 = pick(byRarity.u) || pick(byRarity.c);
+  const slot4 = pick(byRarity.u) || pick(byRarity.c) || pick(allCards);
 
-  const commonPool = shuffle(byRarity.c.length ? byRarity.c : pack.cards);
+  const commonPool = shuffle(byRarity.c.length ? byRarity.c : allCards);
   const slots123 = [0,1,2].map(i => commonPool[i % commonPool.length]);
 
   return [...slots123, slot4, slot5].filter(Boolean);
