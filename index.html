@@ -866,18 +866,19 @@ async function startOpen() {
     return;
   }
 
+  // Fetch card limits before animation starts
+  let limitCounts = {};
+  const hasLimited = currentPack.cards.some(c => c.qty);
+  if (hasLimited) {
+    try {
+      const limRes = await fetch(CARDS_API + '/api/cards/limits?packId=' + currentPack.id);
+      if (limRes.ok) { const d = await limRes.json(); limitCounts = d.counts || {}; }
+    } catch(e) {}
+  }
+
   document.getElementById('openBtn').disabled = true;
   document.getElementById('packWrap').classList.add('ripping');
   setTimeout(() => {
-    // Fetch card limits for this pack
-    let limitCounts = {};
-    const hasLimited = currentPack.cards.some(c => c.qty);
-    if (hasLimited) {
-      try {
-        const limRes = await fetch(CARDS_API + '/api/cards/limits?packId=' + currentPack.id);
-        if (limRes.ok) { const d = await limRes.json(); limitCounts = d.counts || {}; }
-      } catch(e) {}
-    }
     packCards = pullPack(currentPack, limitCounts);
     cardIndex = 0;
     buildRevealUI();
