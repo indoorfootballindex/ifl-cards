@@ -717,7 +717,7 @@ function buildBackLines(backStr, containerId) {
     if (!label && !value) return;
     const div = document.createElement('div');
     div.className = 'card-back-line';
-    div.innerHTML = `<span class="card-back-label">${label.trim()}</span><span class="card-back-value">${value}</span>`;
+    div.innerHTML = `<div class="card-back-label">${label.trim()}</div><div class="card-back-value">${value}</div>`;
     lines.appendChild(div);
   });
 }
