@@ -576,6 +576,90 @@ export default {
       return json({ users: results }, 200, origin);
     }
 
+    // ── GET /api/leaderboard ──
+    if (path === '/api/leaderboard' && request.method === 'GET') {
+      const { results: userRows } = await env.DB.prepare(`
+        SELECT 
+          u.id,
+          u.username,
+          u.packs_opened,
+          COUNT(DISTINCT c.card_file || '|' || c.card_rarity || '|' || c.pack_id) as unique_cards
+        FROM users u
+        LEFT JOIN collections c ON c.user_id = u.id
+        GROUP BY u.id
+        ORDER BY u.packs_opened DESC
+        LIMIT 100
+      `).all();
+
+      // Numbered cards per user (cards with total pull count <= 500 as a proxy for limited cards)
+      // Better: count cards that appear fewer times globally than some threshold
+      // We track this simply as cards where global pull count indicates it's limited
+      // For now count all cards pulled by each user grouped
+      const { results: numberedRows } = await env.DB.prepare(`
+        SELECT c.user_id, COUNT(*) as numbered_count
+        FROM collections c
+        INNER JOIN (
+          SELECT card_file, pack_id, card_rarity
+          FROM collections
+          GROUP BY card_file, pack_id, card_rarity
+          HAVING COUNT(*) <= 500
+        ) limited ON c.card_file = limited.card_file 
+          AND c.pack_id = limited.pack_id 
+          AND c.card_rarity = limited.card_rarity
+        GROUP BY c.user_id
+      `).all();
+      const numberedMap = {};
+      numberedRows.forEach(r => { numberedMap[r.user_id] = r.numbered_count; });
+
+      // Sets per user
+      const { results: setsRows } = await env.DB.prepare(`
+        SELECT user_id, pack_id, COUNT(DISTINCT card_file || '|' || card_rarity) as owned_unique
+        FROM collections
+        GROUP BY user_id, pack_id
+      `).all();
+      const setsMap = {};
+      setsRows.forEach(r => {
+        if (!setsMap[r.user_id]) setsMap[r.user_id] = {};
+        setsMap[r.user_id][r.pack_id] = r.owned_unique;
+      });
+
+      const globalRes = await env.DB.prepare(`
+        SELECT 
+          COUNT(DISTINCT id) as total_users,
+          COALESCE(SUM(packs_opened), 0) as total_packs,
+          (SELECT COUNT(*) FROM collections) as total_cards
+        FROM users
+      `).first();
+
+      const leaderboard = userRows.map(u => ({
+        username: u.username,
+        user_id: u.id,
+        packs_opened: u.packs_opened || 0,
+        unique_cards: u.unique_cards || 0,
+        numbered_cards: numberedMap[u.id] || 0,
+        user_sets: setsMap[u.id] || {},
+      }));
+
+      return json({
+        leaderboard,
+        global: {
+          total_users: globalRes?.total_users || 0,
+          total_packs: globalRes?.total_packs || 0,
+          total_cards: globalRes?.total_cards || 0,
+        }
+      }, 200, origin);
+    }
+
+    // ── GET /api/leaderboard/sets ──
+    if (path === '/api/leaderboard/sets' && request.method === 'GET') {
+      const { results } = await env.DB.prepare(`
+        SELECT user_id, pack_id, COUNT(DISTINCT card_file || '|' || card_rarity) as owned_unique
+        FROM collections
+        GROUP BY user_id, pack_id
+      `).all();
+      return json({ sets: results }, 200, origin);
+    }
+
     return err('Not found', 404, origin);
   }
 };

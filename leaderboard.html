@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 Yard Cards – Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0d0a; --dark: #111410; --panel: #181c16;
+    --border: #2a2e24; --green: #6b7c3f; --gold: #c8980a;
+    --muted: #5a6650; --text: #e8ece4; --white: #f0f0ee;
+    --c-color: #6a6a76; --u-color: #3a7abf; --r-color: #9b42d6; --sr-color: #c8980a;
+  }
+  html, body { background: var(--black); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+  nav {
+    background: var(--dark); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 2rem; padding: 1rem 0; text-decoration: none; }
+  .nav-tab {
+    padding: 1rem 1.1rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--white); border-bottom-color: var(--green); }
+
+  .page-wrap { max-width: 1000px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  .page-eyebrow { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(1.8rem, 5vw, 2.6rem); text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--white); margin-bottom: 2rem; line-height: 1;
+  }
+  .page-title span { color: var(--green); }
+
+  /* Global stats bar */
+  .global-bar {
+    display: flex; gap: 1px; margin-bottom: 2rem;
+    background: var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .global-stat {
+    flex: 1; background: var(--panel); padding: 1rem 1.25rem; text-align: center;
+  }
+  .global-stat:first-child { border-radius: 10px 0 0 10px; }
+  .global-stat:last-child { border-radius: 0 10px 10px 0; }
+  .global-num {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(1.4rem, 4vw, 2rem); color: var(--white); line-height: 1;
+  }
+  .global-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  /* Table */
+  .lb-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .lb-table { width: 100%; border-collapse: collapse; }
+  .lb-table th {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border);
+    cursor: pointer; user-select: none; white-space: nowrap;
+    transition: color 0.12s;
+  }
+  .lb-table th:hover { color: var(--white); }
+  .lb-table th.sorted { color: var(--green); }
+  .lb-table th .sort-arrow { font-size: 0.6rem; margin-left: 4px; opacity: 0.7; }
+  .lb-table td { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(42,46,36,0.5); font-size: 0.88rem; }
+  .lb-table tr:last-child td { border-bottom: none; }
+  .lb-table tr:hover td { background: rgba(107,124,63,0.05); }
+
+  .rank-cell { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: var(--muted); width: 48px; text-align: center; }
+  .rank-1 { color: var(--gold); font-size: 1rem; }
+  .rank-2 { color: #aaa; }
+  .rank-3 { color: #cd7f32; }
+
+  .username-cell { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; color: var(--white); }
+  .num-cell { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; color: var(--white); }
+  .num-cell.gold { color: var(--gold); }
+  .num-cell.green { color: var(--green); }
+
+  .loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.85rem; }
+
+  footer { border-top: 1px solid var(--border); text-align: center; padding: 1.25rem; font-size: 0.7rem; color: var(--muted); margin-top: 3rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
+  <a href="index.html"       class="nav-tab">Open Packs</a>
+  <a href="collection.html"  class="nav-tab">My Collection</a>
+  <a href="browse.html"      class="nav-tab">Browse</a>
+  <a href="trivia.html"      class="nav-tab">Trivia</a>
+  <a href="redeem.html"      class="nav-tab">Redeem</a>
+  <a href="leaderboard.html" class="nav-tab active">Leaderboard</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-eyebrow">50 Yard Cards</div>
+  <div class="page-title">Leader<span>board</span></div>
+
+  <!-- Global stats -->
+  <div class="global-bar">
+    <div class="global-stat">
+      <div class="global-num" id="gUsers">–</div>
+      <div class="global-label">Collectors</div>
+    </div>
+    <div class="global-stat">
+      <div class="global-num" id="gPacks">–</div>
+      <div class="global-label">Packs Opened</div>
+    </div>
+    <div class="global-stat">
+      <div class="global-num" id="gCards">–</div>
+      <div class="global-label">Cards Collected</div>
+    </div>
+  </div>
+
+  <!-- Leaderboard table -->
+  <div class="lb-wrap">
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th class="rank-cell">#</th>
+          <th onclick="sortBy('username')">Player <span class="sort-arrow" id="arr-username"></span></th>
+          <th onclick="sortBy('packs_opened')" class="sorted">Packs <span class="sort-arrow" id="arr-packs_opened">↓</span></th>
+          <th onclick="sortBy('unique_cards')">Unique Cards <span class="sort-arrow" id="arr-unique_cards"></span></th>
+          <th onclick="sortBy('numbered_cards')">Numbered <span class="sort-arrow" id="arr-numbered_cards"></span></th>
+          <th onclick="sortBy('sets_complete')">Sets Complete <span class="sort-arrow" id="arr-sets_complete"></span></th>
+        </tr>
+      </thead>
+      <tbody id="lbBody">
+        <tr><td colspan="6" class="loading">Loading leaderboard…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
+
+<script>
+const API = 'https://api.cards.indoorfootballindex.com';
+
+let rows = [];
+let sortCol = 'packs_opened';
+let sortDir = -1; // -1 = desc
+
+async function load() {
+  try {
+    const lbRes = await fetch(API + '/api/leaderboard');
+    const lb = await lbRes.json();
+
+    // Load packs.js for pack totals
+    await new Promise(resolve => {
+      if (window.PACK_DATA) return resolve();
+      const s = document.createElement('script');
+      s.src = 'packs.js'; s.onload = resolve;
+      document.head.appendChild(s);
+    });
+
+    const PACK_DATA = window.PACK_DATA || [];
+
+    // Build pack unique card counts
+    const packTotals = {};
+    PACK_DATA.forEach(p => {
+      const seen = new Set();
+      (p.cards || []).forEach(c => seen.add(c.file + '|' + c.rarity));
+      packTotals[p.id] = seen.size;
+    });
+
+    // Build rows
+    rows = (lb.leaderboard || []).map(u => {
+      let setsComplete = 0;
+      PACK_DATA.forEach(p => {
+        const owned = (u.user_sets || {})[p.id] || 0;
+        const total = packTotals[p.id] || 0;
+        if (total > 0 && owned >= total) setsComplete++;
+      });
+
+      return {
+        username: u.username,
+        packs_opened: u.packs_opened || 0,
+        unique_cards: u.unique_cards || 0,
+        numbered_cards: u.numbered_cards || 0,
+        sets_complete: setsComplete,
+      };
+    });
+
+    // Global stats
+    const g = lb.global || {};
+    document.getElementById('gUsers').textContent = (g.total_users || 0).toLocaleString();
+    document.getElementById('gPacks').textContent = (g.total_packs || 0).toLocaleString();
+    document.getElementById('gCards').textContent = (g.total_cards || 0).toLocaleString();
+
+    render();
+
+  } catch(e) {
+    console.error('Leaderboard error:', e);
+    document.getElementById('lbBody').innerHTML = '<tr><td colspan="6" class="loading">Failed to load leaderboard.</td></tr>';
+  }
+}
+
+function sortBy(col) {
+  if (sortCol === col) {
+    sortDir = -sortDir;
+  } else {
+    sortCol = col;
+    sortDir = col === 'username' ? 1 : -1;
+  }
+  // Update header styles
+  document.querySelectorAll('.lb-table th').forEach(th => th.classList.remove('sorted'));
+  const arrows = { username: '', packs_opened: '', unique_cards: '', numbered_cards: '', sets_complete: '' };
+  arrows[col] = sortDir === -1 ? '↓' : '↑';
+  Object.keys(arrows).forEach(k => {
+    const el = document.getElementById('arr-' + k);
+    if (el) el.textContent = arrows[k];
+  });
+  render();
+}
+
+function render() {
+  const sorted = [...rows].sort((a, b) => {
+    const av = a[sortCol] ?? '';
+    const bv = b[sortCol] ?? '';
+    if (typeof av === 'number') return sortDir * (av - bv);
+    return sortDir * String(av).localeCompare(String(bv));
+  });
+
+  const rankIcons = ['🥇', '🥈', '🥉'];
+
+  document.getElementById('lbBody').innerHTML = sorted.map((u, i) => `
+    <tr>
+      <td class="rank-cell ${i < 3 ? 'rank-' + (i+1) : ''}">${i < 3 ? rankIcons[i] : i + 1}</td>
+      <td class="username-cell">${u.username}</td>
+      <td class="num-cell">${u.packs_opened.toLocaleString()}</td>
+      <td class="num-cell green">${u.unique_cards.toLocaleString()}</td>
+      <td class="num-cell gold">${u.numbered_cards.toLocaleString()}</td>
+      <td class="num-cell">${u.sets_complete}</td>
+    </tr>
+  `).join('');
+}
+
+load();
+</script>
+<script src="auth.js"></script>
+</body>
+</html>
