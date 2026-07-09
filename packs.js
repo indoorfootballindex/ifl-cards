@@ -16,7 +16,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "DB",
         "order": 1,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -29,7 +29,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "WR",
         "order": 2,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -42,7 +42,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "DB",
         "order": 3,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -55,7 +55,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "DB",
         "order": 4,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -68,7 +68,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "WR",
         "order": 5,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -81,7 +81,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "WR",
         "order": 7,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -94,7 +94,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "DB",
         "order": 6,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -107,7 +107,7 @@ var PACK_DATA = [
         "landscape": false,
         "position": "WR",
         "order": 8,
-        "back": "",
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
         "qty": null
       },
       {
@@ -120,8 +120,8 @@ var PACK_DATA = [
         "landscape": false,
         "position": "DB",
         "order": 9,
-        "back": "",
-        "qty": null
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
+        "qty": 50
       },
       {
         "file": "HarryBallardGB_c.png",
@@ -133,8 +133,8 @@ var PACK_DATA = [
         "landscape": false,
         "position": "WR",
         "order": 10,
-        "back": "",
-        "qty": null
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
+        "qty": 50
       },
       {
         "file": "LowellPatronGB_r.png",
@@ -146,8 +146,8 @@ var PACK_DATA = [
         "landscape": false,
         "position": "WR",
         "order": 12,
-        "back": "",
-        "qty": null
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
+        "qty": 50
       },
       {
         "file": "RaymondBooneGB_c.png",
@@ -159,8 +159,8 @@ var PACK_DATA = [
         "landscape": false,
         "position": "DB",
         "order": 11,
-        "back": "",
-        "qty": null
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
+        "qty": 50
       },
       {
         "file": "AndrewCarterSR.png",
@@ -172,8 +172,8 @@ var PACK_DATA = [
         "landscape": false,
         "position": "OL",
         "order": 13,
-        "back": "",
-        "qty": null
+        "back": "Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL",
+        "qty": 1
       }
     ]
   },

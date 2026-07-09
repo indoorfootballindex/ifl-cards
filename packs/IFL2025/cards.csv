@@ -1,14 +1,14 @@
-file,name,team,league,teamCode,rarity,landscape,position,order,
-CameronHarrelQC_c.png,Cameron Harrell,Quad City Steamwheelers,IFL,QC,c,FALSE,DB,1,
-HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,c,FALSE,WR,2,
-RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,c,FALSE,DB,3,
-CameronHarrelQC_c.png,Cameron Harrell,Quad City Steamwheelers,IFL,QC,u,FALSE,DB,4,
-HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,u,FALSE,WR,5,
-HarryBallardGB_u.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,u,FALSE,WR,7,
-RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,u,FALSE,DB,6,
-boodahlewis_u.png,Zane Lewis,Green Bay Blizzard,IFL,GB,u,FALSE,WR,8,
-CameronHarrelQC_c.png,Cameron Harrell,Quad City Steamwheelers,IFL,QC,r,FALSE,DB,9,50
-HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,r,FALSE,WR,10,50
-LowellPatronGB_r.png,Lowell Patron Jr.,Green Bay Blizzard,IFL,GB,r,FALSE,WR,12,50
-RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,r,FALSE,DB,11,50
-AndrewCarterSR.png,Andrew Carter,Green Bay Blizzard,IFL,GB,sr,FALSE,OL,13,1
+file,name,team,league,teamCode,rarity,landscape,position,order,back,qty
+CameronHarrelQC_c.png,Cameron Harrell,Quad City Steamwheelers,IFL,QC,c,FALSE,DB,1,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,c,FALSE,WR,2,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,c,FALSE,DB,3,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+CameronHarrelQC_c.png,Cameron Harrell,Quad City Steamwheelers,IFL,QC,u,FALSE,DB,4,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,u,FALSE,WR,5,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+HarryBallardGB_u.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,u,FALSE,WR,7,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,u,FALSE,DB,6,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+boodahlewis_u.png,Zane Lewis,Green Bay Blizzard,IFL,GB,u,FALSE,WR,8,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,
+CameronHarrelQC_c.png,Cameron Harrell,Quad City Steamwheelers,IFL,QC,r,FALSE,DB,9,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,50
+HarryBallardGB_c.png,Harry Ballard III,Green Bay Blizzard,IFL,GB,r,FALSE,WR,10,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,50
+LowellPatronGB_r.png,Lowell Patron Jr.,Green Bay Blizzard,IFL,GB,r,FALSE,WR,12,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,50
+RaymondBooneGB_c.png,Raymond Boone,Green Bay Blizzard,IFL,GB,r,FALSE,DB,11,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,50
+AndrewCarterSR.png,Andrew Carter,Green Bay Blizzard,IFL,GB,sr,FALSE,OL,13,Position:Wide Receiver|Team:Green Bay Blizzard|Season:2025|League:IFL,1
