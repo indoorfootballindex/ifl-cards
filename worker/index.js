@@ -242,16 +242,32 @@ export default {
       try { body = JSON.parse(text); } catch(e) { return err('Invalid JSON', 400, origin); }
       const cards = body.cards;
       if (!cards || !Array.isArray(cards)) return err('Invalid cards data', 400, origin);
-      const stmt = env.DB.prepare(
-        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
-      );
-      await env.DB.batch(
-        cards.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name, c.rarity || 'c'))
-      );
+
+      // Filter out cards that have hit their qty limit
+      const toSave = [];
+      for (const c of cards) {
+        if (c.qty) {
+          const row = await env.DB.prepare(
+            'SELECT COUNT(*) as count FROM collections WHERE card_file = ? AND pack_id = ? AND card_rarity = ?'
+          ).bind(c.file, c.packId || c.pack_id, c.rarity || 'c').first();
+          if ((row?.count || 0) >= c.qty) continue; // skip — limit reached
+        }
+        toSave.push(c);
+      }
+
+      if (toSave.length) {
+        const stmt = env.DB.prepare(
+          'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
+        );
+        await env.DB.batch(
+          toSave.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name, c.rarity || 'c'))
+        );
+      }
+
       await env.DB.prepare(
         'UPDATE users SET packs_opened = packs_opened + 1 WHERE id = ?'
       ).bind(user.user_id).run();
-      return json({ ok: true, saved: cards.length }, 200, origin);
+      return json({ ok: true, saved: toSave.length, skipped: cards.length - toSave.length }, 200, origin);
     }
 
     // ── GET /api/trivia/status ──
