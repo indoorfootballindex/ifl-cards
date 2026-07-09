@@ -257,10 +257,10 @@ export default {
 
       if (toSave.length) {
         const stmt = env.DB.prepare(
-          'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
+          'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity, card_qty) VALUES (?, ?, ?, ?, ?, ?)'
         );
         await env.DB.batch(
-          toSave.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name, c.rarity || 'c'))
+          toSave.map(c => stmt.bind(user.user_id, c.file, c.packId || c.pack_id, c.packName || c.pack_name, c.rarity || 'c', c.qty || null))
         );
       }
 
@@ -504,10 +504,10 @@ export default {
 
       // Save cards to collection
       const stmt = env.DB.prepare(
-        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)'
+        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity, card_qty) VALUES (?, ?, ?, ?, ?, ?)'
       );
       await env.DB.batch(
-        cards.map(c => stmt.bind(user.user_id, c.file, codeRow.pack_id, codeRow.pack_name, c.rarity))
+        cards.map(c => stmt.bind(user.user_id, c.file, codeRow.pack_id, codeRow.pack_name, c.rarity, c.qty || null))
       );
 
       return json({
@@ -591,22 +591,12 @@ export default {
         LIMIT 100
       `).all();
 
-      // Numbered cards per user (cards with total pull count <= 500 as a proxy for limited cards)
-      // Better: count cards that appear fewer times globally than some threshold
-      // We track this simply as cards where global pull count indicates it's limited
-      // For now count all cards pulled by each user grouped
+      // Numbered cards per user — cards that have a qty limit
       const { results: numberedRows } = await env.DB.prepare(`
-        SELECT c.user_id, COUNT(*) as numbered_count
-        FROM collections c
-        INNER JOIN (
-          SELECT card_file, pack_id, card_rarity
-          FROM collections
-          GROUP BY card_file, pack_id, card_rarity
-          HAVING COUNT(*) <= 500
-        ) limited ON c.card_file = limited.card_file 
-          AND c.pack_id = limited.pack_id 
-          AND c.card_rarity = limited.card_rarity
-        GROUP BY c.user_id
+        SELECT user_id, COUNT(*) as numbered_count
+        FROM collections
+        WHERE card_qty IS NOT NULL
+        GROUP BY user_id
       `).all();
       const numberedMap = {};
       numberedRows.forEach(r => { numberedMap[r.user_id] = r.numbered_count; });

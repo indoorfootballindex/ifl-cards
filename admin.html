@@ -20,8 +20,15 @@
     background: var(--dark); border-bottom: 1px solid var(--border);
     display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem;
   }
-  .nav-logo { height: 80px; display: flex; align-items: center; margin-right: 1rem; }
+  .nav-logo { height: 80px; display: flex; align-items: center; margin-right: 1rem; text-decoration: none; }
   .nav-logo img { height: 60px; width: auto; filter: brightness(0) invert(1); }
+  .nav-tab {
+    padding: 1rem 1.1rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    border-bottom: 2px solid transparent; transition: color 0.15s;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  }
+  .nav-tab:hover { color: var(--text); }
   .nav-title {
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
     font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -113,7 +120,13 @@
 <body>
 
 <nav>
-  <div class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards"></div>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards"></a>
+  <a href="index.html"       class="nav-tab">Open Packs</a>
+  <a href="collection.html"  class="nav-tab">My Collection</a>
+  <a href="browse.html"      class="nav-tab">Browse</a>
+  <a href="trivia.html"      class="nav-tab">Trivia</a>
+  <a href="redeem.html"      class="nav-tab">Redeem</a>
+  <a href="leaderboard.html" class="nav-tab">Leaderboard</a>
   <div class="nav-title">Admin Dashboard</div>
   <div class="nav-right" id="navUser"></div>
 </nav>
