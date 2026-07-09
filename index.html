@@ -353,7 +353,15 @@
   .seen-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   /* NEW badge */
-  .new-badge {
+  .pull-count-badge {
+    position: absolute; bottom: 8px; left: 10px; z-index: 20;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 0.68rem; letter-spacing: 0.08em;
+    background: rgba(0,0,0,0.7); color: var(--gold);
+    padding: 2px 8px; border-radius: 4px;
+    border: 1px solid rgba(200,152,10,0.5);
+    pointer-events: none;
+  }
     position: absolute; top: 8px; right: 8px; z-index: 10;
     font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
     font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
@@ -608,6 +616,7 @@ const CARDS_API = 'https://api.cards.indoorfootballindex.com';
 
 // ── PACK LIMIT STATE ──
 let packsRemaining = null;
+let limitCounts = {}; // card qty pull counts for current pack
 
 // ── STORAGE ──
 function saveCollectionLocal(col) {
@@ -867,7 +876,7 @@ async function startOpen() {
   }
 
   // Fetch card limits before animation starts
-  let limitCounts = {};
+  limitCounts = {};
   const hasLimited = currentPack.cards.some(c => c.qty);
   if (hasLimited) {
     try {
@@ -1113,6 +1122,18 @@ function showCard(idx) {
       bigCardFront.appendChild(badge);
     }
   } catch(e) {}
+
+  // Pull count badge for limited cards
+  const existingPullBadge = document.getElementById('pullCountBadge');
+  if (existingPullBadge) existingPullBadge.remove();
+  if (card.qty) {
+    const pulled = (limitCounts[card.file + '|' + card.rarity] || 0) + 1; // +1 for this pull
+    const pullBadge = document.createElement('div');
+    pullBadge.className = 'pull-count-badge';
+    pullBadge.id = 'pullCountBadge';
+    pullBadge.textContent = '#' + pulled + '/' + card.qty;
+    bigCardFront.appendChild(pullBadge);
+  }
 
   // button
   const btn = document.getElementById('nextBtn');

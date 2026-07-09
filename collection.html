@@ -231,6 +231,16 @@
   .lb-close:hover { color:var(--green); border-color:var(--green); }
 
   footer { border-top:1px solid var(--border); text-align:center; padding:1.25rem; font-size:0.7rem; color:var(--muted); }
+
+  .pull-count-badge {
+    position: absolute; bottom: 8px; left: 10px; z-index: 20;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 0.68rem; letter-spacing: 0.08em;
+    background: rgba(0,0,0,0.7); color: #c8980a;
+    padding: 2px 8px; border-radius: 4px;
+    border: 1px solid rgba(200,152,10,0.5);
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
@@ -307,6 +317,7 @@
       <img id="lbImg" src="" alt="" style="width:100%;display:block;border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,0.8);">
       <div class="rarity-overlay" id="lbOverlay" style="display:none;border-radius:14px;"></div>
       <div style="position:absolute;bottom:10px;right:10px;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);font-family:Barlow Condensed,sans-serif;">tap to flip</div>
+      <div id="lbPullBadge" class="pull-count-badge" style="display:none;"></div>
     </div>
     <div id="lbBack" style="display:none;cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,0.8);padding:1.5rem;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:5/7;width:100%;box-sizing:border-box;" onclick="event.stopPropagation();showLbFront()">
       <img src="50ydcards.png" class="card-back-logo" alt="50 Yard Cards" style="width:60px;max-width:60px;opacity:0.9;filter:brightness(0) invert(1);margin-bottom:0.75rem;">
@@ -705,6 +716,19 @@ function openLB(card) {
   document.getElementById('lbFront').style.display = 'block';
   document.getElementById('lbBack').style.display = 'none';
   buildBackLines(card.back || '', 'lbBackLines');
+
+  // Pull count badge
+  const pullBadge = document.getElementById('lbPullBadge');
+  pullBadge.style.display = 'none';
+  if (card.qty) {
+    fetch('https://api.cards.indoorfootballindex.com/api/cards/limits?packId=' + card.packId)
+      .then(r => r.json())
+      .then(d => {
+        const count = (d.counts || {})[card.file + '|' + card.rarity] || 0;
+        pullBadge.textContent = '#' + count + '/' + card.qty;
+        pullBadge.style.display = 'block';
+      }).catch(() => {});
+  }
 }
 
 function buildBackLines(backStr, containerId) {
