@@ -19,15 +19,16 @@
 
   nav {
     background: var(--dark); border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; padding: 0 1.5rem;
-    position: sticky; top: 0; z-index: 100; gap: 0;
+    display: flex; align-items: center; padding: 0 1rem;
+    position: sticky; top: 0; z-index: 100; gap: 0; overflow-x: auto;
   }
-  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1.5rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
   .nav-tab {
-    padding: 1rem 0.9rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    padding: 1rem 0.65rem; font-size: 0.68rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--muted); text-decoration: none;
     border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap; flex-shrink: 0;
   }
   .nav-tab:hover { color: var(--text); }
   .nav-tab.active { color: var(--white); border-bottom-color: var(--green); }
@@ -145,7 +146,7 @@
 <footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
 
 <script>
-const API = 'https://api.cards.indoorfootballindex.com';
+const LB_API = 'https://api.cards.indoorfootballindex.com';
 
 let rows = [];
 let sortCol = 'packs_opened';
@@ -153,7 +154,7 @@ let sortDir = -1; // -1 = desc
 
 async function load() {
   try {
-    const lbRes = await fetch(API + '/api/leaderboard');
+    const lbRes = await fetch(LB_API + '/api/leaderboard');
     const lb = await lbRes.json();
 
     // Load packs.js for pack totals
