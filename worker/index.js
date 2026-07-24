@@ -650,6 +650,185 @@ export default {
       return json({ sets: results }, 200, origin);
     }
 
+    // ── GET /api/coins ──
+    if (path === '/api/coins' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const row = await env.DB.prepare('SELECT coins FROM users WHERE id = ?').bind(user.user_id).first();
+      return json({ coins: row?.coins || 0 }, 200, origin);
+    }
+
+    // ── POST /api/coins/earn ──
+    if (path === '/api/coins/earn' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { amount } = await request.json();
+      await env.DB.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').bind(amount, user.user_id).run();
+      const row = await env.DB.prepare('SELECT coins FROM users WHERE id = ?').bind(user.user_id).first();
+      return json({ ok: true, coins: row?.coins || 0 }, 200, origin);
+    }
+
+    // ── POST /api/coins/spend ──
+    if (path === '/api/coins/spend' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { amount } = await request.json();
+      const row = await env.DB.prepare('SELECT coins FROM users WHERE id = ?').bind(user.user_id).first();
+      const balance = row?.coins || 0;
+      if (balance < amount) return err('Not enough coins', 400, origin);
+      await env.DB.prepare('UPDATE users SET coins = coins - ? WHERE id = ?').bind(amount, user.user_id).run();
+      return json({ ok: true, coins: balance - amount }, 200, origin);
+    }
+
+    // ── GET /api/marketplace ──
+    if (path === '/api/marketplace' && request.method === 'GET') {
+      const { results } = await env.DB.prepare(`
+        SELECT m.id, m.card_file, m.pack_id, m.pack_name, m.card_rarity, m.price, m.listed_at, m.card_qty,
+               u.username as seller_name
+        FROM marketplace m
+        JOIN users u ON m.seller_id = u.id
+        WHERE m.sold = 0
+        ORDER BY m.listed_at DESC
+        LIMIT 100
+      `).all();
+      return json({ listings: results }, 200, origin);
+    }
+
+    // ── POST /api/marketplace/list ──
+    if (path === '/api/marketplace/list' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { card_file, pack_id, pack_name, card_rarity, price, card_qty } = await request.json();
+      if (!card_file || !pack_id || !price) return err('Missing fields', 400, origin);
+      if (price < 1) return err('Price must be at least 1 coin', 400, origin);
+      const owned = await env.DB.prepare(
+        'SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(user.user_id, card_file, pack_id, card_rarity || 'c').first();
+      if (!owned) return err('You do not own this card', 400, origin);
+      const alreadyListed = await env.DB.prepare(
+        'SELECT id FROM marketplace WHERE seller_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? AND sold = 0'
+      ).bind(user.user_id, card_file, pack_id, card_rarity || 'c').first();
+      if (alreadyListed) return err('Card already listed', 400, origin);
+      await env.DB.prepare(
+        'DELETE FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(user.user_id, card_file, pack_id, card_rarity || 'c').run();
+      await env.DB.prepare(
+        'INSERT INTO marketplace (seller_id, card_file, pack_id, pack_name, card_rarity, price, listed_at, card_qty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(user.user_id, card_file, pack_id, pack_name || '', card_rarity || 'c', price, new Date().toISOString(), card_qty || null).run();
+      return json({ ok: true }, 200, origin);
+    }
+
+    // ── POST /api/marketplace/buy ──
+    if (path === '/api/marketplace/buy' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { listing_id } = await request.json();
+      const listing = await env.DB.prepare('SELECT * FROM marketplace WHERE id = ? AND sold = 0').bind(listing_id).first();
+      if (!listing) return err('Listing not found', 404, origin);
+      if (listing.seller_id === user.user_id) return err('Cannot buy your own listing', 400, origin);
+      const buyer = await env.DB.prepare('SELECT coins, username FROM users WHERE id = ?').bind(user.user_id).first();
+      if ((buyer?.coins || 0) < listing.price) return err('Not enough coins', 400, origin);
+      await env.DB.prepare('UPDATE users SET coins = coins - ? WHERE id = ?').bind(listing.price, user.user_id).run();
+      await env.DB.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').bind(listing.price, listing.seller_id).run();
+      await env.DB.prepare(
+        'INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity, card_qty) VALUES (?, ?, ?, ?, ?, ?)'
+      ).bind(user.user_id, listing.card_file, listing.pack_id, listing.pack_name, listing.card_rarity, listing.card_qty).run();
+      await env.DB.prepare('UPDATE marketplace SET sold = 1 WHERE id = ?').bind(listing_id).run();
+      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)')
+        .bind(listing.seller_id, `${buyer?.username || 'Someone'} bought your card for ${listing.price} coins!`, new Date().toISOString()).run();
+      return json({ ok: true, coins: (buyer?.coins || 0) - listing.price }, 200, origin);
+    }
+
+    // ── POST /api/marketplace/unlist ──
+    if (path === '/api/marketplace/unlist' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { listing_id } = await request.json();
+      const listing = await env.DB.prepare('SELECT * FROM marketplace WHERE id = ? AND seller_id = ? AND sold = 0').bind(listing_id, user.user_id).first();
+      if (!listing) return err('Listing not found', 404, origin);
+      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity, card_qty) VALUES (?, ?, ?, ?, ?, ?)')
+        .bind(user.user_id, listing.card_file, listing.pack_id, listing.pack_name, listing.card_rarity, listing.card_qty).run();
+      await env.DB.prepare('UPDATE marketplace SET sold = 1 WHERE id = ?').bind(listing_id).run();
+      return json({ ok: true }, 200, origin);
+    }
+
+    // ── GET /api/notifications ──
+    if (path === '/api/notifications' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { results } = await env.DB.prepare(
+        'SELECT id, message, read, created_at FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 20'
+      ).bind(user.user_id).all();
+      return json({ notifications: results, unread: results.filter(n => !n.read).length }, 200, origin);
+    }
+
+    // ── POST /api/notifications/read ──
+    if (path === '/api/notifications/read' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      await env.DB.prepare('UPDATE notifications SET read = 1 WHERE user_id = ?').bind(user.user_id).run();
+      return json({ ok: true }, 200, origin);
+    }
+
+    // ── GET /api/trades ──
+    if (path === '/api/trades' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { results } = await env.DB.prepare(`
+        SELECT t.*, s.username as sender_name, r.username as receiver_name
+        FROM trade_offers t
+        JOIN users s ON t.sender_id = s.id
+        JOIN users r ON t.receiver_id = r.id
+        WHERE (t.sender_id = ? OR t.receiver_id = ?) AND t.status = 'pending'
+        ORDER BY t.created_at DESC
+      `).bind(user.user_id, user.user_id).all();
+      return json({ trades: results }, 200, origin);
+    }
+
+    // ── POST /api/trades/offer ──
+    if (path === '/api/trades/offer' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { receiver_username, sender_card_file, sender_pack_id, sender_card_rarity, receiver_card_file, receiver_pack_id, receiver_card_rarity } = await request.json();
+      const receiver = await env.DB.prepare('SELECT id, username FROM users WHERE username = ?').bind(receiver_username).first();
+      if (!receiver) return err('User not found', 404, origin);
+      if (receiver.id === user.user_id) return err('Cannot trade with yourself', 400, origin);
+      const senderOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, sender_card_file, sender_pack_id, sender_card_rarity).first();
+      if (!senderOwns) return err('You do not own that card', 400, origin);
+      const receiverOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(receiver.id, receiver_card_file, receiver_pack_id, receiver_card_rarity).first();
+      if (!receiverOwns) return err('That user does not own that card', 400, origin);
+      const senderRow = await env.DB.prepare('SELECT username FROM users WHERE id = ?').bind(user.user_id).first();
+      await env.DB.prepare('INSERT INTO trade_offers (sender_id, receiver_id, sender_card_file, sender_pack_id, sender_card_rarity, receiver_card_file, receiver_pack_id, receiver_card_rarity, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(user.user_id, receiver.id, sender_card_file, sender_pack_id, sender_card_rarity, receiver_card_file, receiver_pack_id, receiver_card_rarity, new Date().toISOString()).run();
+      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)')
+        .bind(receiver.id, `${senderRow?.username} sent you a trade offer! Check the Marketplace.`, new Date().toISOString()).run();
+      return json({ ok: true }, 200, origin);
+    }
+
+    // ── POST /api/trades/respond ──
+    if (path === '/api/trades/respond' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { trade_id, accept } = await request.json();
+      const trade = await env.DB.prepare("SELECT * FROM trade_offers WHERE id = ? AND receiver_id = ? AND status = 'pending'").bind(trade_id, user.user_id).first();
+      if (!trade) return err('Trade not found', 404, origin);
+      if (!accept) {
+        await env.DB.prepare("UPDATE trade_offers SET status = 'declined' WHERE id = ?").bind(trade_id).run();
+        return json({ ok: true, accepted: false }, 200, origin);
+      }
+      const senderOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(trade.sender_id, trade.sender_card_file, trade.sender_pack_id, trade.sender_card_rarity).first();
+      const receiverOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, trade.receiver_card_file, trade.receiver_pack_id, trade.receiver_card_rarity).first();
+      if (!senderOwns || !receiverOwns) return err('One or both cards are no longer available', 400, origin);
+      await env.DB.prepare('DELETE FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(trade.sender_id, trade.sender_card_file, trade.sender_pack_id, trade.sender_card_rarity).run();
+      await env.DB.prepare('DELETE FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, trade.receiver_card_file, trade.receiver_pack_id, trade.receiver_card_rarity).run();
+      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)').bind(user.user_id, trade.sender_card_file, trade.sender_pack_id, '', trade.sender_card_rarity).run();
+      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)').bind(trade.sender_id, trade.receiver_card_file, trade.receiver_pack_id, '', trade.receiver_card_rarity).run();
+      await env.DB.prepare("UPDATE trade_offers SET status = 'accepted' WHERE id = ?").bind(trade_id).run();
+      const receiverRow = await env.DB.prepare('SELECT username FROM users WHERE id = ?').bind(user.user_id).first();
+      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)').bind(trade.sender_id, `${receiverRow?.username} accepted your trade offer!`, new Date().toISOString()).run();
+      return json({ ok: true, accepted: true }, 200, origin);
+    }
+
     return err('Not found', 404, origin);
   }
 };

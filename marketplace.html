@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 Yard Cards – Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black:#0a0d0a; --dark:#111410; --panel:#181c16;
+    --border:#2a2e24; --green:#6b7c3f; --gold:#c8980a;
+    --muted:#5a6650; --text:#e8ece4; --white:#f0f0ee;
+    --c-color:#6a6a76; --u-color:#3a7abf; --r-color:#9b42d6; --sr-color:#c8980a;
+  }
+  html,body { background:var(--black); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; }
+
+  nav { background:var(--dark); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 1.5rem; position:sticky; top:0; z-index:100; }
+  .nav-logo { display:flex; align-items:center; height:80px; margin-right:2rem; padding:1rem 0; text-decoration:none; }
+  .nav-tab { padding:1rem 1.1rem; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; border-bottom:2px solid transparent; transition:color 0.15s,border-color 0.15s; font-family:'Barlow Condensed',sans-serif; font-weight:700; }
+  .nav-tab:hover { color:var(--text); }
+  .nav-tab.active { color:var(--white); border-bottom-color:var(--green); }
+
+  .page-wrap { max-width:1000px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+  .page-eyebrow { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.4rem; }
+  .page-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(1.8rem,5vw,2.6rem); text-transform:uppercase; letter-spacing:0.04em; color:var(--white); margin-bottom:1.5rem; line-height:1; }
+  .page-title span { color:var(--green); }
+
+  /* Coins bar */
+  .coins-bar { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:0.75rem 1.25rem; display:flex; align-items:center; gap:0.75rem; margin-bottom:2rem; }
+  .coins-icon { font-size:1.2rem; }
+  .coins-label { font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+  .coins-amount { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem; color:var(--gold); margin-left:auto; }
+  .coins-badge { display:inline-flex; align-items:center; gap:4px; }
+
+  /* Notif badge */
+  .notif-badge { display:inline-flex; align-items:center; justify-content:center; background:var(--green); color:var(--white); font-size:0.6rem; font-weight:900; min-width:16px; height:16px; border-radius:8px; padding:0 4px; margin-left:4px; vertical-align:middle; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:1.5rem; }
+  .tab { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.75rem 1.25rem; border:none; background:none; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color 0.12s,border-color 0.12s; }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:var(--white); border-bottom-color:var(--green); }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* Cards grid */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+  .market-card { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; cursor:pointer; transition:border-color 0.12s,transform 0.1s; }
+  .market-card:hover { border-color:var(--green); transform:translateY(-2px); }
+  .market-card-img { position:relative; width:100%; aspect-ratio:5/7; background:var(--dark); overflow:hidden; }
+  .market-card-img img { width:100%; height:100%; object-fit:cover; display:block; }
+  .market-card-img .rarity-overlay { position:absolute; inset:0; background-size:cover; background-position:center; pointer-events:none; mix-blend-mode:hue; opacity:1; }
+  .market-card-img .rarity-overlay.u { background-image:url('packs/overlays/uncommon.png'); }
+  .market-card-img .rarity-overlay.r { background-image:url('packs/overlays/rare.png'); }
+  .market-card-info { padding:0.6rem; }
+  .market-card-name { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.85rem; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .market-card-sub { font-size:0.7rem; color:var(--muted); margin-top:1px; }
+  .market-card-price { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:0.9rem; color:var(--gold); margin-top:4px; }
+  .market-card-seller { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+
+  .rarity-badge { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border-radius:3px; display:inline-block; }
+  .rarity-badge.c { background:rgba(106,106,118,0.2); color:var(--c-color); }
+  .rarity-badge.u { background:rgba(58,122,191,0.15); color:var(--u-color); }
+  .rarity-badge.r { background:rgba(155,66,214,0.2); color:var(--r-color); }
+  .rarity-badge.sr { background:rgba(200,152,10,0.2); color:var(--sr-color); }
+
+  /* List card modal */
+  .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:500; align-items:center; justify-content:center; padding:1.5rem; }
+  .modal-bg.open { display:flex; }
+  .modal { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:2rem; max-width:420px; width:100%; position:relative; }
+  .modal-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.4rem; text-transform:uppercase; color:var(--white); margin-bottom:1.25rem; }
+  .modal-close { position:absolute; top:12px; right:14px; background:none; border:none; color:var(--muted); font-size:1.2rem; cursor:pointer; }
+  .modal-close:hover { color:var(--white); }
+  .field-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); display:block; margin-bottom:5px; margin-top:1rem; }
+  .field-input { width:100%; background:var(--dark); border:1.5px solid var(--border); border-radius:6px; padding:0.6rem 0.9rem; color:var(--white); font-family:'Barlow',sans-serif; font-size:0.9rem; outline:none; transition:border-color 0.12s; }
+  .field-input:focus { border-color:var(--green); }
+  .btn-primary { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:0.95rem; letter-spacing:0.12em; text-transform:uppercase; background:var(--green); color:var(--white); border:none; border-radius:6px; padding:0.65rem 1.5rem; cursor:pointer; transition:background 0.12s; margin-top:1.25rem; width:100%; }
+  .btn-primary:hover { background:#7a8f4a; }
+  .btn-danger { background:#8a2020; }
+  .btn-danger:hover { background:#a02828; }
+  .btn-secondary { background:var(--dark); border:1px solid var(--border); color:var(--text); }
+  .btn-secondary:hover { border-color:var(--green); color:var(--white); }
+
+  /* My listings */
+  .listing-row { display:flex; align-items:center; gap:12px; padding:0.75rem; background:var(--dark); border:1px solid var(--border); border-radius:8px; margin-bottom:8px; }
+  .listing-img { width:44px; height:61px; border-radius:5px; overflow:hidden; flex-shrink:0; }
+  .listing-img img { width:100%; height:100%; object-fit:cover; }
+  .listing-info { flex:1; min-width:0; }
+  .listing-name { font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--white); font-size:0.9rem; }
+  .listing-price { font-family:'Barlow Condensed',sans-serif; color:var(--gold); font-size:0.85rem; font-weight:700; }
+  .btn-unlist { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:4px 10px; cursor:pointer; flex-shrink:0; }
+  .btn-unlist:hover { border-color:#f08080; color:#f08080; }
+
+  /* Trade rows */
+  .trade-row { background:var(--dark); border:1px solid var(--border); border-radius:8px; padding:0.85rem 1rem; margin-bottom:8px; }
+  .trade-header { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.9rem; color:var(--white); margin-bottom:0.5rem; }
+  .trade-cards { display:flex; align-items:center; gap:12px; font-size:0.82rem; color:var(--muted); flex-wrap:wrap; }
+  .trade-card-chip { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:3px 8px; font-size:0.75rem; }
+  .trade-actions { display:flex; gap:8px; margin-top:0.75rem; }
+  .btn-accept { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; background:var(--green); color:var(--white); border:none; border-radius:4px; padding:5px 14px; cursor:pointer; }
+  .btn-decline { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:5px 14px; cursor:pointer; }
+  .btn-decline:hover { border-color:#f08080; color:#f08080; }
+
+  /* Notifs */
+  .notif-item { padding:0.6rem 0.75rem; border-bottom:1px solid var(--border); font-size:0.82rem; }
+  .notif-item:last-child { border-bottom:none; }
+  .notif-item.unread { background:rgba(107,124,63,0.08); }
+  .notif-time { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+
+  .empty-state { text-align:center; padding:3rem 1rem; color:var(--muted); font-size:0.85rem; }
+
+  /* Select card modal */
+  .card-select-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:8px; max-height:300px; overflow-y:auto; margin-top:0.75rem; }
+  .card-select-item { border:2px solid var(--border); border-radius:6px; overflow:hidden; cursor:pointer; transition:border-color 0.12s; aspect-ratio:5/7; }
+  .card-select-item:hover { border-color:var(--green); }
+  .card-select-item.selected { border-color:var(--green); box-shadow:0 0 0 1px var(--green); }
+  .card-select-item img { width:100%; height:100%; object-fit:cover; display:block; }
+
+  .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(4rem); background:var(--panel); border:1px solid var(--green); color:var(--white); font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.6rem 1.75rem; border-radius:6px; opacity:0; transition:transform 0.3s,opacity 0.3s; z-index:600; pointer-events:none; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  footer { border-top:1px solid var(--border); text-align:center; padding:1.25rem; font-size:0.7rem; color:var(--muted); margin-top:3rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
+  <a href="index.html"        class="nav-tab">Open Packs</a>
+  <a href="collection.html"   class="nav-tab">My Collection</a>
+  <a href="browse.html"       class="nav-tab">Browse</a>
+  <a href="trivia.html"       class="nav-tab">Trivia</a>
+  <a href="redeem.html"       class="nav-tab">Redeem</a>
+  <a href="leaderboard.html"  class="nav-tab">Leaderboard</a>
+  <a href="marketplace.html"  class="nav-tab active">Marketplace</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-eyebrow">50 Yard Cards</div>
+  <div class="page-title">Market<span>place</span></div>
+
+  <div class="coins-bar" id="coinsBar" style="display:none;">
+    <span class="coins-icon">🪙</span>
+    <span class="coins-label">Your Coins</span>
+    <span class="coins-amount" id="coinsAmount">0</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('browse',this)">Browse</button>
+    <button class="tab" onclick="switchTab('sell',this)">My Listings</button>
+    <button class="tab" onclick="switchTab('trades',this)">Trades</button>
+    <button class="tab" id="notifTab" onclick="switchTab('notifs',this)">Notifications</button>
+  </div>
+
+  <!-- Browse Listings -->
+  <div class="tab-panel active" id="tab-browse">
+    <div id="listingsGrid" class="card-grid">
+      <div class="empty-state">Loading listings…</div>
+    </div>
+  </div>
+
+  <!-- My Listings -->
+  <div class="tab-panel" id="tab-sell">
+    <div id="myListings">
+      <div class="empty-state">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Trades -->
+  <div class="tab-panel" id="tab-trades">
+    <button class="btn-primary" style="width:auto;margin-bottom:1.5rem;" onclick="openTradeModal()">+ Send Trade Offer</button>
+    <div id="tradesList"><div class="empty-state">No pending trades.</div></div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="tab-panel" id="tab-notifs">
+    <div id="notifsList"><div class="empty-state">No notifications.</div></div>
+  </div>
+</div>
+
+<!-- Buy Modal -->
+<div class="modal-bg" id="buyModal" onclick="closeBuyModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBuyModal()">&times;</button>
+    <div class="modal-title">Buy Card</div>
+    <div id="buyCardPreview" style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
+      <div style="width:70px;height:98px;border-radius:6px;overflow:hidden;flex-shrink:0;">
+        <img id="buyCardImg" src="" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div>
+        <div id="buyCardName" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--white);"></div>
+        <div id="buyCardSeller" style="font-size:0.75rem;color:var(--muted);margin-top:2px;"></div>
+        <div id="buyCardPrice" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;color:var(--gold);font-size:1.1rem;margin-top:6px;"></div>
+      </div>
+    </div>
+    <button class="btn-primary" id="buyConfirmBtn" onclick="confirmBuy()">Confirm Purchase</button>
+    <div id="buyMsg" style="margin-top:0.75rem;font-size:0.8rem;color:#f08080;display:none;"></div>
+  </div>
+</div>
+
+<!-- Trade Modal -->
+<div class="modal-bg" id="tradeModal" onclick="closeTradeModal(event)">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="closeTradeModal()">&times;</button>
+    <div class="modal-title">Send Trade Offer</div>
+
+    <label class="field-label">Their Username</label>
+    <input class="field-input" type="text" id="tradeUsername" placeholder="Username">
+
+    <label class="field-label">Your Card (offering)</label>
+    <div class="card-select-grid" id="myCardGrid"></div>
+    <div id="selectedMyCard" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
+
+    <label class="field-label">Their Card (requesting)</label>
+    <input class="field-input" type="text" id="tradeTheirUsername" placeholder="Their username first" style="margin-bottom:8px;">
+    <button class="btn-secondary btn-primary" style="width:auto;padding:0.4rem 1rem;margin-top:0;" onclick="loadTheirCards()">Load Their Cards</button>
+    <div class="card-select-grid" id="theirCardGrid" style="margin-top:8px;"></div>
+    <div id="selectedTheirCard" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
+
+    <button class="btn-primary" onclick="submitTrade()">Send Offer</button>
+    <div id="tradeMsg" style="margin-top:0.75rem;font-size:0.8rem;color:#f08080;display:none;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
+
+<script>
+const MKT_API = 'https://api.cards.indoorfootballindex.com';
+const RARITY_LABELS = { c:'Common', u:'Uncommon', r:'Rare', sr:'Secret Rare' };
+
+function getToken() { try { return localStorage.getItem('ifiToken'); } catch(e) { return null; } }
+function cardImgSrc(packId, file) {
+  return packId && packId.startsWith('BLIZZARD') || (window.PACK_DATA && !window.PACK_DATA.some(p => p.id === packId))
+    ? 'exclusive_packs/' + packId + '/' + file
+    : 'packs/' + packId + '/' + file;
+}
+function cardLabel(file) { return file.replace(/\.(png|jpg|jpeg)$/i,'').replace(/_/g,' '); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+let myCoins = 0;
+let allListings = [];
+let selectedListing = null;
+let myCollection = [];
+let selectedMyCard = null;
+let selectedTheirCard = null;
+
+// ── INIT ──
+async function init() {
+  // Load packs.js
+  if (!window.PACK_DATA) {
+    await new Promise(resolve => {
+      const s = document.createElement('script'); s.src = 'packs.js'; s.onload = resolve;
+      document.head.appendChild(s);
+    });
+  }
+
+  const token = getToken();
+  if (token) {
+    document.getElementById('coinsBar').style.display = 'flex';
+    fetchCoins();
+    fetchNotifications();
+  }
+
+  loadListings();
+}
+
+async function fetchCoins() {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/coins', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (res.ok) { const d = await res.json(); myCoins = d.coins; document.getElementById('coinsAmount').textContent = myCoins.toLocaleString() + ' coins'; }
+  } catch(e) {}
+}
+
+async function fetchNotifications() {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/notifications', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return;
+    const d = await res.json();
+    const tab = document.getElementById('notifTab');
+    if (d.unread > 0) tab.innerHTML = `Notifications <span class="notif-badge">${d.unread}</span>`;
+    renderNotifs(d.notifications || []);
+  } catch(e) {}
+}
+
+function renderNotifs(notifs) {
+  const el = document.getElementById('notifsList');
+  if (!notifs.length) { el.innerHTML = '<div class="empty-state">No notifications.</div>'; return; }
+  el.innerHTML = notifs.map(n => `
+    <div class="notif-item ${n.read ? '' : 'unread'}">
+      ${n.message}
+      <div class="notif-time">${new Date(n.created_at).toLocaleString()}</div>
+    </div>
+  `).join('');
+}
+
+// ── LISTINGS ──
+async function loadListings() {
+  try {
+    const res = await fetch(MKT_API + '/api/marketplace');
+    if (!res.ok) return;
+    const d = await res.json();
+    allListings = d.listings || [];
+    renderListings();
+    renderMyListings();
+  } catch(e) {}
+}
+
+function renderListings() {
+  const grid = document.getElementById('listingsGrid');
+  const token = getToken();
+  const myUsername = (() => { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u).username : null; } catch(e) { return null; } })();
+
+  const others = allListings.filter(l => l.seller_name !== myUsername);
+  if (!others.length) { grid.innerHTML = '<div class="empty-state">No listings yet.</div>'; return; }
+
+  grid.innerHTML = others.map(l => `
+    <div class="market-card" onclick="openBuyModal(${l.id})">
+      <div class="market-card-img">
+        <img src="${cardImgSrc(l.pack_id, l.card_file)}" alt="${cardLabel(l.card_file)}" loading="lazy">
+        ${(l.card_rarity === 'u' || l.card_rarity === 'r') ? `<div class="rarity-overlay ${l.card_rarity}"></div>` : ''}
+      </div>
+      <div class="market-card-info">
+        <div class="market-card-name">${cardLabel(l.card_file)}</div>
+        <div class="market-card-sub"><span class="rarity-badge ${l.card_rarity}">${RARITY_LABELS[l.card_rarity] || l.card_rarity}</span></div>
+        <div class="market-card-price">🪙 ${l.price.toLocaleString()}</div>
+        <div class="market-card-seller">by ${l.seller_name}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMyListings() {
+  const el = document.getElementById('myListings');
+  const myUsername = (() => { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u).username : null; } catch(e) { return null; } })();
+  const mine = allListings.filter(l => l.seller_name === myUsername);
+
+  const token = getToken();
+  const listBtn = token ? `<button class="btn-primary" style="width:auto;margin-bottom:1.5rem;" onclick="openListModal()">+ List a Card</button>` : '';
+
+  if (!mine.length) { el.innerHTML = listBtn + '<div class="empty-state">You have no active listings.</div>'; return; }
+
+  el.innerHTML = listBtn + mine.map(l => `
+    <div class="listing-row">
+      <div class="listing-img"><img src="${cardImgSrc(l.pack_id, l.card_file)}" alt=""></div>
+      <div class="listing-info">
+        <div class="listing-name">${cardLabel(l.card_file)}</div>
+        <div style="font-size:0.7rem;color:var(--muted);">${l.pack_name} · <span class="rarity-badge ${l.card_rarity}">${RARITY_LABELS[l.card_rarity]}</span></div>
+        <div class="listing-price">🪙 ${l.price.toLocaleString()}</div>
+      </div>
+      <button class="btn-unlist" onclick="unlist(${l.id})">Unlist</button>
+    </div>
+  `).join('');
+}
+
+// ── BUY MODAL ──
+function openBuyModal(listingId) {
+  const l = allListings.find(x => x.id === listingId);
+  if (!l) return;
+  selectedListing = l;
+  document.getElementById('buyCardImg').src = cardImgSrc(l.pack_id, l.card_file);
+  document.getElementById('buyCardName').textContent = cardLabel(l.card_file);
+  document.getElementById('buyCardSeller').textContent = 'Listed by ' + l.seller_name;
+  document.getElementById('buyCardPrice').textContent = '🪙 ' + l.price.toLocaleString() + ' coins';
+  document.getElementById('buyMsg').style.display = 'none';
+  document.getElementById('buyModal').classList.add('open');
+}
+function closeBuyModal(e) {
+  if (!e || e.target === document.getElementById('buyModal')) document.getElementById('buyModal').classList.remove('open');
+}
+async function confirmBuy() {
+  const token = getToken();
+  if (!token) { showToast('Sign in to buy cards'); return; }
+  if (!selectedListing) return;
+  const btn = document.getElementById('buyConfirmBtn');
+  btn.disabled = true; btn.textContent = 'Buying…';
+  try {
+    const res = await fetch(MKT_API + '/api/marketplace/buy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ listing_id: selectedListing.id })
+    });
+    const d = await res.json();
+    if (!res.ok) {
+      document.getElementById('buyMsg').textContent = d.error || 'Purchase failed.';
+      document.getElementById('buyMsg').style.display = 'block';
+    } else {
+      myCoins = d.coins;
+      document.getElementById('coinsAmount').textContent = myCoins.toLocaleString() + ' coins';
+      showToast('Card added to your collection!');
+      document.getElementById('buyModal').classList.remove('open');
+      loadListings();
+    }
+  } catch(e) { document.getElementById('buyMsg').textContent = 'Network error.'; document.getElementById('buyMsg').style.display = 'block'; }
+  btn.disabled = false; btn.textContent = 'Confirm Purchase';
+}
+
+// ── LIST MODAL ──
+async function openListModal() {
+  const token = getToken();
+  if (!token) { showToast('Sign in to list cards'); return; }
+  // Load collection
+  try {
+    const res = await fetch(MKT_API + '/api/collection', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return;
+    const d = await res.json();
+    myCollection = d.cards || [];
+  } catch(e) { return; }
+
+  // Show modal with collection grid
+  const modal = document.createElement('div');
+  modal.className = 'modal-bg open'; modal.id = 'listModal';
+  modal.innerHTML = `
+    <div class="modal" style="max-width:560px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="document.getElementById('listModal').remove()">&times;</button>
+      <div class="modal-title">List a Card</div>
+      <label class="field-label">Select a card to list</label>
+      <div class="card-select-grid" id="listCardGrid"></div>
+      <div id="listSelectedCard" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
+      <label class="field-label">Price (coins)</label>
+      <input class="field-input" type="number" id="listPrice" min="1" placeholder="e.g. 50">
+      <button class="btn-primary" onclick="submitListing()">List Card</button>
+      <div id="listMsg" style="margin-top:0.75rem;font-size:0.8rem;color:#f08080;display:none;"></div>
+    </div>
+  `;
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+
+  let selectedCard = null;
+  const grid = document.getElementById('listCardGrid');
+  myCollection.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'card-select-item';
+    div.innerHTML = `<img src="${cardImgSrc(c.pack_id, c.card_file)}" alt="" loading="lazy">`;
+    div.onclick = () => {
+      document.querySelectorAll('#listCardGrid .card-select-item').forEach(x => x.classList.remove('selected'));
+      div.classList.add('selected');
+      selectedCard = c;
+      document.getElementById('listSelectedCard').textContent = cardLabel(c.card_file) + ' · ' + RARITY_LABELS[c.card_rarity];
+    };
+    grid.appendChild(div);
+  });
+
+  window.submitListing = async () => {
+    if (!selectedCard) { document.getElementById('listMsg').textContent = 'Select a card.'; document.getElementById('listMsg').style.display = 'block'; return; }
+    const price = parseInt(document.getElementById('listPrice').value);
+    if (!price || price < 1) { document.getElementById('listMsg').textContent = 'Enter a valid price.'; document.getElementById('listMsg').style.display = 'block'; return; }
+    try {
+      const res = await fetch(MKT_API + '/api/marketplace/list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+        body: JSON.stringify({ card_file: selectedCard.card_file, pack_id: selectedCard.pack_id, pack_name: selectedCard.pack_name, card_rarity: selectedCard.card_rarity, price, card_qty: selectedCard.card_qty })
+      });
+      const d = await res.json();
+      if (!res.ok) { document.getElementById('listMsg').textContent = d.error; document.getElementById('listMsg').style.display = 'block'; return; }
+      showToast('Card listed!');
+      modal.remove();
+      loadListings();
+    } catch(e) { document.getElementById('listMsg').textContent = 'Network error.'; document.getElementById('listMsg').style.display = 'block'; }
+  };
+}
+
+async function unlist(listingId) {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/marketplace/unlist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ listing_id: listingId })
+    });
+    if (res.ok) { showToast('Listing removed, card returned.'); loadListings(); }
+  } catch(e) {}
+}
+
+// ── TRADES ──
+async function loadTrades() {
+  const token = getToken();
+  if (!token) { document.getElementById('tradesList').innerHTML = '<div class="empty-state">Sign in to view trades.</div>'; return; }
+  try {
+    const res = await fetch(MKT_API + '/api/trades', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return;
+    const d = await res.json();
+    const trades = d.trades || [];
+    const myUsername = (() => { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u).username : null; } catch(e) { return null; } })();
+    const el = document.getElementById('tradesList');
+    if (!trades.length) { el.innerHTML = '<div class="empty-state">No pending trades.</div>'; return; }
+    el.innerHTML = trades.map(t => {
+      const isReceiver = t.receiver_name === myUsername;
+      return `
+        <div class="trade-row">
+          <div class="trade-header">${isReceiver ? t.sender_name + ' wants to trade with you' : 'Your offer to ' + t.receiver_name}</div>
+          <div class="trade-cards">
+            <span>You give:</span>
+            <span class="trade-card-chip">${isReceiver ? cardLabel(t.receiver_card_file) : cardLabel(t.sender_card_file)}</span>
+            <span>↔</span>
+            <span>You get:</span>
+            <span class="trade-card-chip">${isReceiver ? cardLabel(t.sender_card_file) : cardLabel(t.receiver_card_file)}</span>
+          </div>
+          ${isReceiver ? `
+          <div class="trade-actions">
+            <button class="btn-accept" onclick="respondTrade(${t.id}, true)">Accept</button>
+            <button class="btn-decline" onclick="respondTrade(${t.id}, false)">Decline</button>
+          </div>` : '<div style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Waiting for response…</div>'}
+        </div>
+      `;
+    }).join('');
+  } catch(e) {}
+}
+
+async function respondTrade(tradeId, accept) {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/trades/respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ trade_id: tradeId, accept })
+    });
+    const d = await res.json();
+    if (res.ok) { showToast(accept ? 'Trade accepted!' : 'Trade declined.'); loadTrades(); }
+    else showToast(d.error || 'Error');
+  } catch(e) {}
+}
+
+function openTradeModal() {
+  const token = getToken();
+  if (!token) { showToast('Sign in to send trades'); return; }
+  document.getElementById('tradeModal').classList.add('open');
+  loadMyCardsForTrade();
+}
+function closeTradeModal(e) {
+  if (!e || e.target === document.getElementById('tradeModal')) document.getElementById('tradeModal').classList.remove('open');
+}
+
+async function loadMyCardsForTrade() {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/collection', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return;
+    const d = await res.json();
+    myCollection = d.cards || [];
+    const grid = document.getElementById('myCardGrid');
+    grid.innerHTML = '';
+    myCollection.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'card-select-item';
+      div.innerHTML = `<img src="${cardImgSrc(c.pack_id, c.card_file)}" loading="lazy">`;
+      div.onclick = () => {
+        document.querySelectorAll('#myCardGrid .card-select-item').forEach(x => x.classList.remove('selected'));
+        div.classList.add('selected');
+        selectedMyCard = c;
+        document.getElementById('selectedMyCard').textContent = cardLabel(c.card_file) + ' · ' + RARITY_LABELS[c.card_rarity];
+      };
+      grid.appendChild(div);
+    });
+  } catch(e) {}
+}
+
+async function loadTheirCards() {
+  const username = document.getElementById('tradeTheirUsername').value.trim();
+  if (!username) return;
+  // We don't have a public collection endpoint by username yet — show message
+  document.getElementById('theirCardGrid').innerHTML = '<div style="color:var(--muted);font-size:0.78rem;grid-column:1/-1;">Enter their card name manually below.</div>';
+  // Fallback: manual card input
+  const grid = document.getElementById('theirCardGrid');
+  grid.innerHTML = `<input class="field-input" id="theirCardManual" placeholder="Card filename e.g. HarryBallardGB_r.png" style="grid-column:1/-1;margin-top:4px;">
+  <input class="field-input" id="theirPackManual" placeholder="Pack ID e.g. IFL2025" style="grid-column:1/-1;margin-top:4px;">
+  <select class="field-input" id="theirRarityManual" style="grid-column:1/-1;margin-top:4px;">
+    <option value="c">Common</option><option value="u">Uncommon</option><option value="r">Rare</option><option value="sr">Secret Rare</option>
+  </select>`;
+  selectedTheirCard = { username };
+}
+
+async function submitTrade() {
+  const token = getToken();
+  if (!token) return;
+  if (!selectedMyCard) { showMsg('tradeMsg','Select your card.'); return; }
+  const receiverUsername = document.getElementById('tradeUsername').value.trim();
+  if (!receiverUsername) { showMsg('tradeMsg','Enter their username.'); return; }
+
+  // Get their card details
+  const theirFile = document.getElementById('theirCardManual')?.value?.trim();
+  const theirPack = document.getElementById('theirPackManual')?.value?.trim();
+  const theirRarity = document.getElementById('theirRarityManual')?.value || 'c';
+  if (!theirFile || !theirPack) { showMsg('tradeMsg','Enter their card details.'); return; }
+
+  try {
+    const res = await fetch(MKT_API + '/api/trades/offer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        receiver_username: receiverUsername,
+        sender_card_file: selectedMyCard.card_file,
+        sender_pack_id: selectedMyCard.pack_id,
+        sender_card_rarity: selectedMyCard.card_rarity,
+        receiver_card_file: theirFile,
+        receiver_pack_id: theirPack,
+        receiver_card_rarity: theirRarity,
+      })
+    });
+    const d = await res.json();
+    if (!res.ok) { showMsg('tradeMsg', d.error || 'Failed.'); return; }
+    showToast('Trade offer sent!');
+    document.getElementById('tradeModal').classList.remove('open');
+  } catch(e) { showMsg('tradeMsg','Network error.'); }
+}
+
+function showMsg(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'trades') loadTrades();
+  if (name === 'notifs') { fetchNotifications(); markNotifsRead(); }
+}
+
+function markNotifsRead() {
+  const token = getToken();
+  if (!token) return;
+  fetch(MKT_API + '/api/notifications/read', { method:'POST', headers:{'Authorization':'Bearer '+token} });
+  document.getElementById('notifTab').textContent = 'Notifications';
+}
+
+init();
+</script>
+<script src="auth.js"></script>
+</body>
+</html>
