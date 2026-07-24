@@ -343,13 +343,13 @@ function renderListings() {
 
 function renderMyListings() {
   const el = document.getElementById('myListings');
-  const myUsername = (() => { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u).username : null; } catch(e) { return null; } })();
-  const mine = allListings.filter(l => l.seller_name === myUsername);
-
   const token = getToken();
-  const listBtn = token ? `<button class="btn-primary" style="width:auto;margin-bottom:1.5rem;" onclick="openListModal()">+ List a Card</button>` : '';
+  const myUsername = (() => { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u).username : null; } catch(e) { return null; } })();
 
-  if (!mine.length) { el.innerHTML = listBtn + '<div class="empty-state">You have no active listings.</div>'; return; }
+  const listBtn = token ? `<button class="btn-primary" style="width:auto;margin-bottom:1.5rem;" onclick="openListModal()">+ List a Card</button>` : '<div class="empty-state">Sign in to list cards.</div>';
+
+  const mine = allListings.filter(l => l.seller_name === myUsername);
+  if (!mine.length) { el.innerHTML = listBtn + (token ? '<div class="empty-state">You have no active listings.</div>' : ''); return; }
 
   el.innerHTML = listBtn + mine.map(l => `
     <div class="listing-row">

@@ -408,12 +408,14 @@ async function selectAnswer(choiceKey, btn, shuffled) {
       const data = await res.json();
       packGranted = data.pack_granted;
       reason = data.reason || '';
+      if (isCorrect) {
+        // Award 10 coins for every correct answer
+        const token = getToken();
+        if (token) fetch(TRIVIA_API + '/api/coins/earn', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({amount:10}) }).catch(()=>{});
+      }
       if (packGranted) {
         triviaEarned = data.trivia_packs_earned;
         totalPacks++;
-        // Award 10 coins
-        const token = getToken();
-        if (token) fetch(TRIVIA_API + '/api/coins/earn', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({amount:10}) }).catch(()=>{});
       }
     } catch(e) {
       console.warn('Trivia answer error:', e.message);
