@@ -21,23 +21,19 @@
   html,body { background:var(--black); color:var(--text); font-family:'Barlow',sans-serif; min-height:100vh; }
 
   nav {
-    background:var(--dark); border-bottom:1px solid var(--border);
-    display:flex; align-items:center; padding:0 1.5rem;
-    position:sticky; top:0; z-index:100;
+    background: var(--dark); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 1.5rem;
+    position: sticky; top: 0; z-index: 100; gap: 0;
   }
-  .nav-logo { display:flex; align-items:center; height:80px;
-    font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.2rem;
-    letter-spacing:0.14em; color:var(--white); text-transform:uppercase;
-    margin-right:2rem; padding:1rem 0; text-decoration:none;
-  }
-  .nav-logo span { color:var(--green); }
+  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1.5rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
   .nav-tab {
-    padding:1rem 1.1rem; font-size:0.72rem; letter-spacing:0.1em;
-    text-transform:uppercase; color:var(--muted); text-decoration:none;
-    border-bottom:2px solid transparent; transition:color 0.15s,border-color 0.15s;
+    padding: 1rem 0.9rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); text-decoration: none;
+    border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap;
   }
-  .nav-tab:hover { color:var(--text); }
-  .nav-tab.active { color:var(--white); border-bottom-color:var(--green); }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--white); border-bottom-color: var(--green); }
 
   .page-wrap { max-width:1000px; margin:0 auto; padding:2rem 1.25rem 3rem; }
 
@@ -246,11 +242,11 @@
 <body>
 <nav>
   <a href="index.html" class="nav-logo"><img src="50ydcards.png" alt="50 Yard Cards" style="height:88px;width:auto;display:block;filter:brightness(0) invert(1);"></a>
-  <a href="index.html"      class="nav-tab">Open Packs</a>
+    <a href="index.html" class="nav-tab">Open Packs</a>
   <a href="collection.html" class="nav-tab active">My Collection</a>
-  <a href="browse.html"     class="nav-tab">Browse</a>
-  <a href="trivia.html"     class="nav-tab">Trivia</a>
-  <a href="redeem.html"     class="nav-tab">Redeem</a>
+  <a href="browse.html" class="nav-tab">Browse</a>
+  <a href="trivia.html" class="nav-tab">Trivia</a>
+  <a href="redeem.html" class="nav-tab">Redeem</a>
   <a href="leaderboard.html" class="nav-tab">Leaderboard</a>
   <a href="marketplace.html" class="nav-tab">Marketplace</a>
 </nav>
