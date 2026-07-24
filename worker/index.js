@@ -709,9 +709,10 @@ export default {
         'SELECT id FROM marketplace WHERE seller_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? AND sold = 0'
       ).bind(user.user_id, card_file, pack_id, card_rarity || 'c').first();
       if (alreadyListed) return err('Card already listed', 400, origin);
-      await env.DB.prepare(
-        'DELETE FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
-      ).bind(user.user_id, card_file, pack_id, card_rarity || 'c').run();
+      const listDelRow = await env.DB.prepare(
+        'SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(user.user_id, card_file, pack_id, card_rarity || 'c').first();
+      if (listDelRow) await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(listDelRow.id).run();
       await env.DB.prepare(
         'INSERT INTO marketplace (seller_id, card_file, pack_id, pack_name, card_rarity, price, listed_at, card_qty) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
       ).bind(user.user_id, card_file, pack_id, pack_name || '', card_rarity || 'c', price, new Date().toISOString(), card_qty || null).run();
@@ -819,8 +820,8 @@ export default {
       const senderOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(trade.sender_id, trade.sender_card_file, trade.sender_pack_id, trade.sender_card_rarity).first();
       const receiverOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, trade.receiver_card_file, trade.receiver_pack_id, trade.receiver_card_rarity).first();
       if (!senderOwns || !receiverOwns) return err('One or both cards are no longer available', 400, origin);
-      await env.DB.prepare('DELETE FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(trade.sender_id, trade.sender_card_file, trade.sender_pack_id, trade.sender_card_rarity).run();
-      await env.DB.prepare('DELETE FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, trade.receiver_card_file, trade.receiver_pack_id, trade.receiver_card_rarity).run();
+      await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(senderOwns.id).run();
+      await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(receiverOwns.id).run();
       await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)').bind(user.user_id, trade.sender_card_file, trade.sender_pack_id, '', trade.sender_card_rarity).run();
       await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)').bind(trade.sender_id, trade.receiver_card_file, trade.receiver_pack_id, '', trade.receiver_card_rarity).run();
       await env.DB.prepare("UPDATE trade_offers SET status = 'accepted' WHERE id = ?").bind(trade_id).run();
