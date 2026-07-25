@@ -713,8 +713,14 @@ async function loadMyCardsForPost() {
 
   try {
     const res = await fetch(MKT_API + '/api/collection', { headers: { 'Authorization': 'Bearer ' + token } });
-    if (res.ok) { const d = await res.json(); myCardsForOffer = d.cards || []; filterOfferGrid(''); }
-  } catch(e) {}
+    console.log('Collection status:', res.status);
+    if (res.ok) { 
+      const d = await res.json(); 
+      console.log('Collection cards:', d.cards?.length, d.cards?.[0]);
+      myCardsForOffer = d.cards || []; 
+      filterOfferGrid(''); 
+    }
+  } catch(e) { console.error('Collection fetch error:', e); }
 
   allCardsForWant = [];
   (window.PACK_DATA || []).forEach(p => {
