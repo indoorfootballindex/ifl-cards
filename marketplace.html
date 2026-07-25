@@ -713,6 +713,8 @@ async function loadMyCardsForPost() {
 
   console.log('Token:', token ? token.slice(0,20) + '...' : 'NULL');
   try {
+    const res = await fetch(MKT_API + '/api/collection', { headers: { 'Authorization': 'Bearer ' + token } });
+    console.log('Collection status:', res.status);
     if (res.ok) { 
       const d = await res.json(); 
       console.log('Collection cards:', d.cards?.length, d.cards?.[0]);
