@@ -227,26 +227,26 @@
 
 <!-- Post Want Modal -->
 <div class="modal-bg" id="postTradeModal" onclick="closePostTradeModal(event)">
-  <div class="modal" style="max-width:560px;" onclick="event.stopPropagation()">
+  <div class="modal" style="max-width:780px;width:95vw;" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="closePostTradeModal()">&times;</button>
     <div class="modal-title">Post a Want</div>
-
-    <label class="field-label">Card I'm Offering (from my collection)</label>
-    <div class="card-select-grid" id="postOfferGrid"></div>
-    <div id="postOfferSelected" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
-
-    <label class="field-label">Card I Want</label>
-    <input class="field-input" type="text" id="wantFile" placeholder="Card filename e.g. HarryBallardGB_r.png" style="margin-bottom:6px;">
-    <input class="field-input" type="text" id="wantPack" placeholder="Pack ID e.g. IFL2025" style="margin-bottom:6px;">
-    <select class="field-input" id="wantRarity">
-      <option value="c">Common</option>
-      <option value="u">Uncommon</option>
-      <option value="r">Rare</option>
-      <option value="sr">Secret Rare</option>
-    </select>
-    <input class="field-input" type="text" id="wantPackName" placeholder="Pack name e.g. IFL 2025 (optional)" style="margin-top:6px;">
-
-    <button class="btn-primary" onclick="submitPostTrade()">Post to Trade Board</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+      <!-- Offering side -->
+      <div>
+        <div class="field-label" style="margin-top:0;">I'm Offering (my collection)</div>
+        <div id="postOfferSelected" style="font-size:0.78rem;color:var(--green);min-height:18px;margin-bottom:6px;"></div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">Search: <input id="offerSearch" class="field-input" style="padding:3px 8px;font-size:0.75rem;display:inline-block;width:auto;" placeholder="name…" oninput="filterOfferGrid(this.value)"></div>
+        <div class="card-select-grid" id="postOfferGrid" style="max-height:340px;"></div>
+      </div>
+      <!-- Wanting side -->
+      <div>
+        <div class="field-label" style="margin-top:0;">I Want</div>
+        <div id="postWantSelected" style="font-size:0.78rem;color:var(--green);min-height:18px;margin-bottom:6px;"></div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-bottom:6px;">Search: <input id="wantSearch" class="field-input" style="padding:3px 8px;font-size:0.75rem;display:inline-block;width:auto;" placeholder="name…" oninput="filterWantGrid(this.value)"></div>
+        <div class="card-select-grid" id="postWantGrid" style="max-height:340px;"></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="submitPostTrade()" style="margin-top:1.25rem;">Post to Trade Board</button>
     <div id="postTradeMsg" style="margin-top:0.75rem;font-size:0.8rem;color:#f08080;display:none;"></div>
   </div>
 </div>
@@ -634,43 +634,88 @@ function closePostTradeModal(e) {
   if (!e || e.target === document.getElementById('postTradeModal')) document.getElementById('postTradeModal').classList.remove('open');
 }
 
+let selectedPostWantCard = null;
+let allCardsForWant = [];
+let myCardsForOffer = [];
+
+function buildCardGridItem(c, gridId, onSelect) {
+  const div = document.createElement('div');
+  div.className = 'card-select-item';
+  div.style.position = 'relative';
+  div.title = c.name || cardLabel(c.card_file || c.file || '');
+  const imgSrc = cardImgSrc(c.pack_id || c.packId, c.card_file || c.file);
+  const rar = c.card_rarity || c.rarity || 'c';
+  div.innerHTML = `<img src="${imgSrc}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
+    ${(rar === 'u' || rar === 'r') ? `<div style="position:absolute;inset:0;border-radius:4px;background-image:url('packs/overlays/${rar === 'u' ? 'uncommon' : 'rare'}.png');background-size:cover;background-position:center;mix-blend-mode:hue;opacity:1;pointer-events:none;"></div>` : ''}`;
+  div.onclick = () => {
+    document.querySelectorAll('#' + gridId + ' .card-select-item').forEach(x => x.classList.remove('selected'));
+    div.classList.add('selected');
+    onSelect(c);
+  };
+  return div;
+}
+
+function filterOfferGrid(q) {
+  q = (q || '').toLowerCase();
+  const grid = document.getElementById('postOfferGrid');
+  grid.innerHTML = '';
+  myCardsForOffer.filter(c => {
+    const name = (c.name || cardLabel(c.card_file)).toLowerCase();
+    return !q || name.includes(q);
+  }).forEach(c => {
+    grid.appendChild(buildCardGridItem(c, 'postOfferGrid', (card) => {
+      selectedPostOfferCard = card;
+      document.getElementById('postOfferSelected').textContent = (card.name || cardLabel(card.card_file)) + ' · ' + RARITY_LABELS[card.card_rarity];
+    }));
+  });
+}
+
+function filterWantGrid(q) {
+  q = (q || '').toLowerCase();
+  const grid = document.getElementById('postWantGrid');
+  grid.innerHTML = '';
+  allCardsForWant.filter(c => {
+    const name = (c.name || cardLabel(c.file)).toLowerCase();
+    return !q || name.includes(q);
+  }).forEach(c => {
+    grid.appendChild(buildCardGridItem(c, 'postWantGrid', (card) => {
+      selectedPostWantCard = card;
+      document.getElementById('postWantSelected').textContent = (card.name || cardLabel(card.file)) + ' · ' + RARITY_LABELS[card.rarity];
+    }));
+  });
+}
+
 async function loadMyCardsForPost() {
   const token = getToken();
   if (!token) return;
+  selectedPostOfferCard = null;
+  selectedPostWantCard = null;
+  document.getElementById('postOfferSelected').textContent = '';
+  document.getElementById('postWantSelected').textContent = '';
+  document.getElementById('offerSearch').value = '';
+  document.getElementById('wantSearch').value = '';
+
   try {
     const res = await fetch(MKT_API + '/api/collection', { headers: { 'Authorization': 'Bearer ' + token } });
-    if (!res.ok) return;
-    const d = await res.json();
-    myCollection = d.cards || [];
-    const grid = document.getElementById('postOfferGrid');
-    grid.innerHTML = '';
-    selectedPostOfferCard = null;
-    myCollection.forEach(c => {
-      const div = document.createElement('div');
-      div.className = 'card-select-item';
-      div.style.position = 'relative';
-      div.innerHTML = `<img src="${cardImgSrc(c.pack_id, c.card_file)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
-        ${(c.card_rarity === 'u' || c.card_rarity === 'r') ? `<div style="position:absolute;inset:0;border-radius:4px;background-image:url('packs/overlays/${c.card_rarity === 'u' ? 'uncommon' : 'rare'}.png');background-size:cover;background-position:center;mix-blend-mode:hue;opacity:1;pointer-events:none;"></div>` : ''}`;
-      div.onclick = () => {
-        document.querySelectorAll('#postOfferGrid .card-select-item').forEach(x => x.classList.remove('selected'));
-        div.classList.add('selected');
-        selectedPostOfferCard = c;
-        document.getElementById('postOfferSelected').textContent = cardLabel(c.card_file) + ' · ' + RARITY_LABELS[c.card_rarity];
-      };
-      grid.appendChild(div);
-    });
+    if (res.ok) { const d = await res.json(); myCardsForOffer = d.cards || []; filterOfferGrid(''); }
   } catch(e) {}
+
+  allCardsForWant = [];
+  (window.PACK_DATA || []).forEach(p => {
+    (p.cards || []).forEach(c => { allCardsForWant.push({ ...c, pack_id: p.id, pack_name: p.name }); });
+  });
+  filterWantGrid('');
 }
 
 async function submitPostTrade() {
   const token = getToken();
   if (!token) return;
   if (!selectedPostOfferCard) { showMsg('postTradeMsg', 'Select a card to offer.'); return; }
-  const wantFile = document.getElementById('wantFile').value.trim();
-  const wantPack = document.getElementById('wantPack').value.trim();
-  const wantRarity = document.getElementById('wantRarity').value;
-  const wantPackName = document.getElementById('wantPackName').value.trim();
-  if (!wantFile || !wantPack) { showMsg('postTradeMsg', 'Enter the card you want.'); return; }
+  if (!selectedPostWantCard) { showMsg('postTradeMsg', 'Select a card you want.'); return; }
+  const wantFile = selectedPostWantCard.file;
+  const wantPack = selectedPostWantCard.pack_id;
+  const wantRarity = selectedPostWantCard.rarity;
+  const wantPackName = selectedPostWantCard.pack_name || '';
   try {
     const res = await fetch(MKT_API + '/api/trades/post', {
       method: 'POST',
