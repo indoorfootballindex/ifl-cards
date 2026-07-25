@@ -19,15 +19,16 @@
 
   nav {
     background: var(--dark); border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; padding: 0 1.5rem;
-    position: sticky; top: 0; z-index: 100; gap: 0;
+    display: flex; align-items: center; padding: 0 1rem;
+    position: sticky; top: 0; z-index: 100; gap: 0; overflow-x: auto;
   }
-  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1.5rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
   .nav-tab {
-    padding: 1rem 0.9rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    padding: 1rem 0.65rem; font-size: 0.68rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--muted); text-decoration: none;
     border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap; flex-shrink: 0;
   }
   .nav-tab:hover { color: var(--text); }
   .nav-tab.active { color: var(--white); border-bottom-color: var(--green); }
@@ -185,8 +186,17 @@
 
   <!-- Trades -->
   <div class="tab-panel" id="tab-trades">
-    <button class="btn-primary" style="width:auto;margin-bottom:1.5rem;" onclick="openTradeModal()">+ Send Trade Offer</button>
-    <div id="tradesList"><div class="empty-state">No pending trades.</div></div>
+    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <button class="btn-primary" style="width:auto;" onclick="openPostTradeModal()">+ Post a Want</button>
+    </div>
+    <!-- Trade Board (public) -->
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Trade Board</div>
+    <div id="tradeBoard"><div class="empty-state">Loading…</div></div>
+    <!-- My Posts & Incoming Offers -->
+    <div id="myTradeSection" style="display:none;margin-top:2rem;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">My Posts & Offers</div>
+      <div id="myTradesList"></div>
+    </div>
   </div>
 
   <!-- Notifications -->
@@ -215,27 +225,29 @@
   </div>
 </div>
 
-<!-- Trade Modal -->
-<div class="modal-bg" id="tradeModal" onclick="closeTradeModal(event)">
-  <div class="modal" style="max-width:560px;">
-    <button class="modal-close" onclick="closeTradeModal()">&times;</button>
-    <div class="modal-title">Send Trade Offer</div>
+<!-- Post Want Modal -->
+<div class="modal-bg" id="postTradeModal" onclick="closePostTradeModal(event)">
+  <div class="modal" style="max-width:560px;" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closePostTradeModal()">&times;</button>
+    <div class="modal-title">Post a Want</div>
 
-    <label class="field-label">Their Username</label>
-    <input class="field-input" type="text" id="tradeUsername" placeholder="Username">
+    <label class="field-label">Card I'm Offering (from my collection)</label>
+    <div class="card-select-grid" id="postOfferGrid"></div>
+    <div id="postOfferSelected" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
 
-    <label class="field-label">Your Card (offering)</label>
-    <div class="card-select-grid" id="myCardGrid"></div>
-    <div id="selectedMyCard" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
+    <label class="field-label">Card I Want</label>
+    <input class="field-input" type="text" id="wantFile" placeholder="Card filename e.g. HarryBallardGB_r.png" style="margin-bottom:6px;">
+    <input class="field-input" type="text" id="wantPack" placeholder="Pack ID e.g. IFL2025" style="margin-bottom:6px;">
+    <select class="field-input" id="wantRarity">
+      <option value="c">Common</option>
+      <option value="u">Uncommon</option>
+      <option value="r">Rare</option>
+      <option value="sr">Secret Rare</option>
+    </select>
+    <input class="field-input" type="text" id="wantPackName" placeholder="Pack name e.g. IFL 2025 (optional)" style="margin-top:6px;">
 
-    <label class="field-label">Their Card (requesting)</label>
-    <input class="field-input" type="text" id="tradeTheirUsername" placeholder="Their username first" style="margin-bottom:8px;">
-    <button class="btn-secondary btn-primary" style="width:auto;padding:0.4rem 1rem;margin-top:0;" onclick="loadTheirCards()">Load Their Cards</button>
-    <div class="card-select-grid" id="theirCardGrid" style="margin-top:8px;"></div>
-    <div id="selectedTheirCard" style="margin-top:6px;font-size:0.78rem;color:var(--green);min-height:18px;"></div>
-
-    <button class="btn-primary" onclick="submitTrade()">Send Offer</button>
-    <div id="tradeMsg" style="margin-top:0.75rem;font-size:0.8rem;color:#f08080;display:none;"></div>
+    <button class="btn-primary" onclick="submitPostTrade()">Post to Trade Board</button>
+    <div id="postTradeMsg" style="margin-top:0.75rem;font-size:0.8rem;color:#f08080;display:none;"></div>
   </div>
 </div>
 
@@ -501,66 +513,128 @@ async function unlist(listingId) {
 }
 
 // ── TRADES ──
-async function loadTrades() {
-  const token = getToken();
-  if (!token) { document.getElementById('tradesList').innerHTML = '<div class="empty-state">Sign in to view trades.</div>'; return; }
+// ── TRADE BOARD ──
+let selectedPostOfferCard = null;
+
+async function loadTradeBoard() {
   try {
-    const res = await fetch(MKT_API + '/api/trades', { headers: { 'Authorization': 'Bearer ' + token } });
+    const res = await fetch(MKT_API + '/api/trades');
     if (!res.ok) return;
     const d = await res.json();
     const trades = d.trades || [];
     const myUsername = (() => { try { const u = localStorage.getItem('ifiUser'); return u ? JSON.parse(u).username : null; } catch(e) { return null; } })();
-    const el = document.getElementById('tradesList');
-    if (!trades.length) { el.innerHTML = '<div class="empty-state">No pending trades.</div>'; return; }
+    const el = document.getElementById('tradeBoard');
+    if (!trades.length) { el.innerHTML = '<div class="empty-state">No open trade posts yet.</div>'; return; }
     el.innerHTML = trades.map(t => {
-      const isReceiver = t.receiver_name === myUsername;
+      const isOwn = t.poster_name === myUsername;
       return `
         <div class="trade-row">
-          <div class="trade-header">${isReceiver ? t.sender_name + ' wants to trade with you' : 'Your offer to ' + t.receiver_name}</div>
+          <div class="trade-header">${t.poster_name} is looking to trade</div>
           <div class="trade-cards">
-            <span>You give:</span>
-            <span class="trade-card-chip">${isReceiver ? cardLabel(t.receiver_card_file) : cardLabel(t.sender_card_file)}</span>
-            <span>↔</span>
-            <span>You get:</span>
-            <span class="trade-card-chip">${isReceiver ? cardLabel(t.sender_card_file) : cardLabel(t.receiver_card_file)}</span>
+            <span>Offering:</span>
+            <span class="trade-card-chip">${cardLabel(t.offer_card_file)} <span class="rarity-badge ${t.offer_card_rarity}">${RARITY_LABELS[t.offer_card_rarity]}</span></span>
+            <span>→</span>
+            <span>Wants:</span>
+            <span class="trade-card-chip">${cardLabel(t.want_card_file)} <span class="rarity-badge ${t.want_card_rarity}">${RARITY_LABELS[t.want_card_rarity]}</span></span>
           </div>
-          ${isReceiver ? `
-          <div class="trade-actions">
-            <button class="btn-accept" onclick="respondTrade(${t.id}, true)">Accept</button>
-            <button class="btn-decline" onclick="respondTrade(${t.id}, false)">Decline</button>
-          </div>` : '<div style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Waiting for response…</div>'}
-        </div>
-      `;
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:4px;">${t.offer_count || 0} offer${t.offer_count !== 1 ? 's' : ''}</div>
+          ${!isOwn && getToken() ? `<div class="trade-actions"><button class="btn-accept" onclick="makeOffer(${t.id}, '${t.want_card_file}', '${t.want_pack_id}', '${t.want_card_rarity}')">Make Offer</button></div>` : ''}
+          ${isOwn ? `<div class="trade-actions"><button class="btn-decline" onclick="cancelTrade(${t.id})">Cancel</button></div>` : ''}
+        </div>`;
     }).join('');
+
+    // Load my posts and offers
+    if (getToken()) loadMyTrades();
   } catch(e) {}
 }
 
-async function respondTrade(tradeId, accept) {
+async function makeOffer(boardId, wantFile, wantPack, wantRarity) {
+  const token = getToken();
+  if (!token) { showToast('Sign in to make offers'); return; }
+  // Verify user owns the wanted card first
+  try {
+    const res = await fetch(MKT_API + '/api/trades/offer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ board_id: boardId })
+    });
+    const d = await res.json();
+    if (!res.ok) { showToast(d.error || 'Failed'); return; }
+    showToast('Offer sent! The poster will be notified.');
+    loadTradeBoard();
+  } catch(e) { showToast('Network error'); }
+}
+
+async function cancelTrade(boardId) {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/trades/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ board_id: boardId })
+    });
+    if (res.ok) { showToast('Trade post cancelled.'); loadTradeBoard(); }
+  } catch(e) {}
+}
+
+async function loadMyTrades() {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(MKT_API + '/api/trades/my', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) return;
+    const d = await res.json();
+    const section = document.getElementById('myTradeSection');
+    const list = document.getElementById('myTradesList');
+    if (!d.my_trades?.length && !d.offers?.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    let html = '';
+    // My posts with incoming offers
+    (d.my_trades || []).forEach(t => {
+      const myOffers = (d.offers || []).filter(o => o.board_id === t.id);
+      html += `<div class="trade-row">
+        <div class="trade-header">Your post: ${cardLabel(t.offer_card_file)} → ${cardLabel(t.want_card_file)}</div>
+        ${myOffers.length ? myOffers.map(o => `
+          <div class="trade-cards" style="margin-top:0.5rem;">
+            <span style="color:var(--white);">${o.offerer_name} can fulfill this trade</span>
+          </div>
+          <div class="trade-actions">
+            <button class="btn-accept" onclick="respondOffer(${o.id}, true)">Accept</button>
+            <button class="btn-decline" onclick="respondOffer(${o.id}, false)">Decline</button>
+          </div>`).join('') : '<div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">No offers yet.</div>'}
+      </div>`;
+    });
+    list.innerHTML = html;
+  } catch(e) {}
+}
+
+async function respondOffer(offerId, accept) {
   const token = getToken();
   if (!token) return;
   try {
     const res = await fetch(MKT_API + '/api/trades/respond', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ trade_id: tradeId, accept })
+      body: JSON.stringify({ offer_id: offerId, accept })
     });
     const d = await res.json();
-    if (res.ok) { showToast(accept ? 'Trade accepted!' : 'Trade declined.'); loadTrades(); }
+    if (res.ok) { showToast(accept ? 'Trade accepted! Cards swapped.' : 'Offer declined.'); loadTradeBoard(); }
     else showToast(d.error || 'Error');
-  } catch(e) {}
+  } catch(e) { showToast('Network error'); }
 }
 
-function openTradeModal() {
+function openPostTradeModal() {
   const token = getToken();
-  if (!token) { showToast('Sign in to send trades'); return; }
-  document.getElementById('tradeModal').classList.add('open');
-  loadMyCardsForTrade();
+  if (!token) { showToast('Sign in to post trades'); return; }
+  document.getElementById('postTradeModal').classList.add('open');
+  loadMyCardsForPost();
 }
-function closeTradeModal(e) {
-  if (!e || e.target === document.getElementById('tradeModal')) document.getElementById('tradeModal').classList.remove('open');
+function closePostTradeModal(e) {
+  if (!e || e.target === document.getElementById('postTradeModal')) document.getElementById('postTradeModal').classList.remove('open');
 }
 
-async function loadMyCardsForTrade() {
+async function loadMyCardsForPost() {
   const token = getToken();
   if (!token) return;
   try {
@@ -568,8 +642,9 @@ async function loadMyCardsForTrade() {
     if (!res.ok) return;
     const d = await res.json();
     myCollection = d.cards || [];
-    const grid = document.getElementById('myCardGrid');
+    const grid = document.getElementById('postOfferGrid');
     grid.innerHTML = '';
+    selectedPostOfferCard = null;
     myCollection.forEach(c => {
       const div = document.createElement('div');
       div.className = 'card-select-item';
@@ -577,63 +652,46 @@ async function loadMyCardsForTrade() {
       div.innerHTML = `<img src="${cardImgSrc(c.pack_id, c.card_file)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
         ${(c.card_rarity === 'u' || c.card_rarity === 'r') ? `<div style="position:absolute;inset:0;border-radius:4px;background-image:url('packs/overlays/${c.card_rarity === 'u' ? 'uncommon' : 'rare'}.png');background-size:cover;background-position:center;mix-blend-mode:hue;opacity:1;pointer-events:none;"></div>` : ''}`;
       div.onclick = () => {
-        document.querySelectorAll('#myCardGrid .card-select-item').forEach(x => x.classList.remove('selected'));
+        document.querySelectorAll('#postOfferGrid .card-select-item').forEach(x => x.classList.remove('selected'));
         div.classList.add('selected');
-        selectedMyCard = c;
-        document.getElementById('selectedMyCard').textContent = cardLabel(c.card_file) + ' · ' + RARITY_LABELS[c.card_rarity];
+        selectedPostOfferCard = c;
+        document.getElementById('postOfferSelected').textContent = cardLabel(c.card_file) + ' · ' + RARITY_LABELS[c.card_rarity];
       };
       grid.appendChild(div);
     });
   } catch(e) {}
 }
 
-async function loadTheirCards() {
-  const username = document.getElementById('tradeTheirUsername').value.trim();
-  if (!username) return;
-  // We don't have a public collection endpoint by username yet — show message
-  document.getElementById('theirCardGrid').innerHTML = '<div style="color:var(--muted);font-size:0.78rem;grid-column:1/-1;">Enter their card name manually below.</div>';
-  // Fallback: manual card input
-  const grid = document.getElementById('theirCardGrid');
-  grid.innerHTML = `<input class="field-input" id="theirCardManual" placeholder="Card filename e.g. HarryBallardGB_r.png" style="grid-column:1/-1;margin-top:4px;">
-  <input class="field-input" id="theirPackManual" placeholder="Pack ID e.g. IFL2025" style="grid-column:1/-1;margin-top:4px;">
-  <select class="field-input" id="theirRarityManual" style="grid-column:1/-1;margin-top:4px;">
-    <option value="c">Common</option><option value="u">Uncommon</option><option value="r">Rare</option><option value="sr">Secret Rare</option>
-  </select>`;
-  selectedTheirCard = { username };
-}
-
-async function submitTrade() {
+async function submitPostTrade() {
   const token = getToken();
   if (!token) return;
-  if (!selectedMyCard) { showMsg('tradeMsg','Select your card.'); return; }
-  const receiverUsername = document.getElementById('tradeUsername').value.trim();
-  if (!receiverUsername) { showMsg('tradeMsg','Enter their username.'); return; }
-
-  // Get their card details
-  const theirFile = document.getElementById('theirCardManual')?.value?.trim();
-  const theirPack = document.getElementById('theirPackManual')?.value?.trim();
-  const theirRarity = document.getElementById('theirRarityManual')?.value || 'c';
-  if (!theirFile || !theirPack) { showMsg('tradeMsg','Enter their card details.'); return; }
-
+  if (!selectedPostOfferCard) { showMsg('postTradeMsg', 'Select a card to offer.'); return; }
+  const wantFile = document.getElementById('wantFile').value.trim();
+  const wantPack = document.getElementById('wantPack').value.trim();
+  const wantRarity = document.getElementById('wantRarity').value;
+  const wantPackName = document.getElementById('wantPackName').value.trim();
+  if (!wantFile || !wantPack) { showMsg('postTradeMsg', 'Enter the card you want.'); return; }
   try {
-    const res = await fetch(MKT_API + '/api/trades/offer', {
+    const res = await fetch(MKT_API + '/api/trades/post', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
-        receiver_username: receiverUsername,
-        sender_card_file: selectedMyCard.card_file,
-        sender_pack_id: selectedMyCard.pack_id,
-        sender_card_rarity: selectedMyCard.card_rarity,
-        receiver_card_file: theirFile,
-        receiver_pack_id: theirPack,
-        receiver_card_rarity: theirRarity,
+        offer_card_file: selectedPostOfferCard.card_file,
+        offer_pack_id: selectedPostOfferCard.pack_id,
+        offer_pack_name: selectedPostOfferCard.pack_name || '',
+        offer_card_rarity: selectedPostOfferCard.card_rarity,
+        want_card_file: wantFile,
+        want_pack_id: wantPack,
+        want_pack_name: wantPackName,
+        want_card_rarity: wantRarity,
       })
     });
     const d = await res.json();
-    if (!res.ok) { showMsg('tradeMsg', d.error || 'Failed.'); return; }
-    showToast('Trade offer sent!');
-    document.getElementById('tradeModal').classList.remove('open');
-  } catch(e) { showMsg('tradeMsg','Network error.'); }
+    if (!res.ok) { showMsg('postTradeMsg', d.error || 'Failed.'); return; }
+    showToast('Trade posted to board!');
+    document.getElementById('postTradeModal').classList.remove('open');
+    loadTradeBoard();
+  } catch(e) { showMsg('postTradeMsg', 'Network error.'); }
 }
 
 function showMsg(id, msg) {
@@ -646,7 +704,7 @@ function switchTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
-  if (name === 'trades') loadTrades();
+  if (name === 'trades') loadTradeBoard();
   if (name === 'notifs') { fetchNotifications(); markNotifsRead(); }
 }
 

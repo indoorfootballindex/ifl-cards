@@ -773,61 +773,165 @@ export default {
 
     // ── GET /api/trades ──
     if (path === '/api/trades' && request.method === 'GET') {
-      const user = await getUserFromToken(getToken(request), env.DB);
-      if (!user) return err('Not logged in', 401, origin);
       const { results } = await env.DB.prepare(`
-        SELECT t.*, s.username as sender_name, r.username as receiver_name
-        FROM trade_offers t
-        JOIN users s ON t.sender_id = s.id
-        JOIN users r ON t.receiver_id = r.id
-        WHERE (t.sender_id = ? OR t.receiver_id = ?) AND t.status = 'pending'
-        ORDER BY t.created_at DESC
-      `).bind(user.user_id, user.user_id).all();
+        SELECT tb.id, tb.poster_id, tb.offer_card_file, tb.offer_pack_id, tb.offer_pack_name, tb.offer_card_rarity,
+               tb.want_card_file, tb.want_pack_id, tb.want_pack_name, tb.want_card_rarity,
+               tb.status, tb.created_at, u.username as poster_name,
+               COUNT(CASE WHEN to2.status = 'pending' THEN 1 END) as offer_count
+        FROM trade_board tb
+        JOIN users u ON tb.poster_id = u.id
+        LEFT JOIN trade_offers to2 ON to2.board_id = tb.id
+        WHERE tb.status = 'open'
+        GROUP BY tb.id
+        ORDER BY tb.created_at DESC
+        LIMIT 100
+      `).all();
       return json({ trades: results }, 200, origin);
     }
 
-    // ── POST /api/trades/offer ──
-    if (path === '/api/trades/offer' && request.method === 'POST') {
+    // ── POST /api/trades/post ── Post a want to the trade board
+    if (path === '/api/trades/post' && request.method === 'POST') {
       const user = await getUserFromToken(getToken(request), env.DB);
       if (!user) return err('Not logged in', 401, origin);
-      const { receiver_username, sender_card_file, sender_pack_id, sender_card_rarity, receiver_card_file, receiver_pack_id, receiver_card_rarity } = await request.json();
-      const receiver = await env.DB.prepare('SELECT id, username FROM users WHERE username = ?').bind(receiver_username).first();
-      if (!receiver) return err('User not found', 404, origin);
-      if (receiver.id === user.user_id) return err('Cannot trade with yourself', 400, origin);
-      const senderOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, sender_card_file, sender_pack_id, sender_card_rarity).first();
-      if (!senderOwns) return err('You do not own that card', 400, origin);
-      const receiverOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(receiver.id, receiver_card_file, receiver_pack_id, receiver_card_rarity).first();
-      if (!receiverOwns) return err('That user does not own that card', 400, origin);
-      const senderRow = await env.DB.prepare('SELECT username FROM users WHERE id = ?').bind(user.user_id).first();
-      await env.DB.prepare('INSERT INTO trade_offers (sender_id, receiver_id, sender_card_file, sender_pack_id, sender_card_rarity, receiver_card_file, receiver_pack_id, receiver_card_rarity, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
-        .bind(user.user_id, receiver.id, sender_card_file, sender_pack_id, sender_card_rarity, receiver_card_file, receiver_pack_id, receiver_card_rarity, new Date().toISOString()).run();
-      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)')
-        .bind(receiver.id, `${senderRow?.username} sent you a trade offer! Check the Marketplace.`, new Date().toISOString()).run();
+      const { offer_card_file, offer_pack_id, offer_pack_name, offer_card_rarity,
+              want_card_file, want_pack_id, want_pack_name, want_card_rarity } = await request.json();
+      if (!offer_card_file || !want_card_file) return err('Missing fields', 400, origin);
+
+      // Verify user owns offer card
+      const owned = await env.DB.prepare(
+        'SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(user.user_id, offer_card_file, offer_pack_id, offer_card_rarity).first();
+      if (!owned) return err('You do not own that card', 400, origin);
+
+      await env.DB.prepare(`
+        INSERT INTO trade_board (poster_id, offer_card_file, offer_pack_id, offer_pack_name, offer_card_rarity,
+          want_card_file, want_pack_id, want_pack_name, want_card_rarity, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(user.user_id, offer_card_file, offer_pack_id, offer_pack_name || '', offer_card_rarity,
+              want_card_file, want_pack_id, want_pack_name || '', want_card_rarity, new Date().toISOString()).run();
+
       return json({ ok: true }, 200, origin);
     }
 
-    // ── POST /api/trades/respond ──
+    // ── POST /api/trades/offer ── Make an offer on a trade board post
+    if (path === '/api/trades/offer' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { board_id } = await request.json();
+
+      const trade = await env.DB.prepare("SELECT * FROM trade_board WHERE id = ? AND status = 'open'").bind(board_id).first();
+      if (!trade) return err('Trade not found', 404, origin);
+      if (trade.poster_id === user.user_id) return err('Cannot offer on your own trade', 400, origin);
+
+      // Verify offerer owns the wanted card
+      const owned = await env.DB.prepare(
+        'SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(user.user_id, trade.want_card_file, trade.want_pack_id, trade.want_card_rarity).first();
+      if (!owned) return err('You do not own the requested card', 400, origin);
+
+      // Check not already offered
+      const existing = await env.DB.prepare(
+        "SELECT id FROM trade_offers WHERE board_id = ? AND offerer_id = ? AND status = 'pending'"
+      ).bind(board_id, user.user_id).first();
+      if (existing) return err('You already have a pending offer on this trade', 400, origin);
+
+      await env.DB.prepare(
+        'INSERT INTO trade_offers (board_id, offerer_id, created_at) VALUES (?, ?, ?)'
+      ).bind(board_id, user.user_id, new Date().toISOString()).run();
+
+      // Notify poster
+      const offererRow = await env.DB.prepare('SELECT username FROM users WHERE id = ?').bind(user.user_id).first();
+      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)')
+        .bind(trade.poster_id, `${offererRow?.username} made an offer on your trade! Check the Trade Board.`, new Date().toISOString()).run();
+
+      return json({ ok: true }, 200, origin);
+    }
+
+    // ── GET /api/trades/my ── Get poster's own trade posts and their offers
+    if (path === '/api/trades/my' && request.method === 'GET') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+
+      const { results: myTrades } = await env.DB.prepare(`
+        SELECT tb.*, COUNT(CASE WHEN to2.status = 'pending' THEN 1 END) as offer_count
+        FROM trade_board tb
+        LEFT JOIN trade_offers to2 ON to2.board_id = tb.id
+        WHERE tb.poster_id = ? AND tb.status = 'open'
+        GROUP BY tb.id ORDER BY tb.created_at DESC
+      `).bind(user.user_id).all();
+
+      const { results: myOffers } = await env.DB.prepare(`
+        SELECT to2.*, tb.offer_card_file, tb.offer_pack_id, tb.offer_card_rarity,
+               tb.want_card_file, tb.want_pack_id, tb.want_card_rarity,
+               u.username as offerer_name
+        FROM trade_offers to2
+        JOIN trade_board tb ON to2.board_id = tb.id
+        JOIN users u ON to2.offerer_id = u.id
+        WHERE tb.poster_id = ? AND to2.status = 'pending'
+        ORDER BY to2.created_at DESC
+      `).bind(user.user_id).all();
+
+      return json({ my_trades: myTrades, offers: myOffers }, 200, origin);
+    }
+
+    // ── POST /api/trades/respond ── Accept or decline an offer
     if (path === '/api/trades/respond' && request.method === 'POST') {
       const user = await getUserFromToken(getToken(request), env.DB);
       if (!user) return err('Not logged in', 401, origin);
-      const { trade_id, accept } = await request.json();
-      const trade = await env.DB.prepare("SELECT * FROM trade_offers WHERE id = ? AND receiver_id = ? AND status = 'pending'").bind(trade_id, user.user_id).first();
-      if (!trade) return err('Trade not found', 404, origin);
+      const { offer_id, accept } = await request.json();
+
+      const offer = await env.DB.prepare(`
+        SELECT to2.*, tb.poster_id, tb.offer_card_file, tb.offer_pack_id, tb.offer_pack_name, tb.offer_card_rarity,
+               tb.want_card_file, tb.want_pack_id, tb.want_pack_name, tb.want_card_rarity
+        FROM trade_offers to2 JOIN trade_board tb ON to2.board_id = tb.id
+        WHERE to2.id = ? AND tb.poster_id = ? AND to2.status = 'pending'
+      `).bind(offer_id, user.user_id).first();
+      if (!offer) return err('Offer not found', 404, origin);
+
       if (!accept) {
-        await env.DB.prepare("UPDATE trade_offers SET status = 'declined' WHERE id = ?").bind(trade_id).run();
+        await env.DB.prepare("UPDATE trade_offers SET status = 'declined' WHERE id = ?").bind(offer_id).run();
         return json({ ok: true, accepted: false }, 200, origin);
       }
-      const senderOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(trade.sender_id, trade.sender_card_file, trade.sender_pack_id, trade.sender_card_rarity).first();
-      const receiverOwns = await env.DB.prepare('SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1').bind(user.user_id, trade.receiver_card_file, trade.receiver_pack_id, trade.receiver_card_rarity).first();
-      if (!senderOwns || !receiverOwns) return err('One or both cards are no longer available', 400, origin);
-      await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(senderOwns.id).run();
-      await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(receiverOwns.id).run();
-      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)').bind(user.user_id, trade.sender_card_file, trade.sender_pack_id, '', trade.sender_card_rarity).run();
-      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)').bind(trade.sender_id, trade.receiver_card_file, trade.receiver_pack_id, '', trade.receiver_card_rarity).run();
-      await env.DB.prepare("UPDATE trade_offers SET status = 'accepted' WHERE id = ?").bind(trade_id).run();
-      const receiverRow = await env.DB.prepare('SELECT username FROM users WHERE id = ?').bind(user.user_id).first();
-      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)').bind(trade.sender_id, `${receiverRow?.username} accepted your trade offer!`, new Date().toISOString()).run();
+
+      // Verify both parties still own their cards
+      const posterOwns = await env.DB.prepare(
+        'SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(user.user_id, offer.offer_card_file, offer.offer_pack_id, offer.offer_card_rarity).first();
+      const offererOwns = await env.DB.prepare(
+        'SELECT id FROM collections WHERE user_id = ? AND card_file = ? AND pack_id = ? AND card_rarity = ? LIMIT 1'
+      ).bind(offer.offerer_id, offer.want_card_file, offer.want_pack_id, offer.want_card_rarity).first();
+      if (!posterOwns || !offererOwns) return err('One or both cards are no longer available', 400, origin);
+
+      // Swap cards
+      await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(posterOwns.id).run();
+      await env.DB.prepare('DELETE FROM collections WHERE id = ?').bind(offererOwns.id).run();
+      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)')
+        .bind(user.user_id, offer.want_card_file, offer.want_pack_id, offer.want_pack_name, offer.want_card_rarity).run();
+      await env.DB.prepare('INSERT INTO collections (user_id, card_file, pack_id, pack_name, card_rarity) VALUES (?, ?, ?, ?, ?)')
+        .bind(offer.offerer_id, offer.offer_card_file, offer.offer_pack_id, offer.offer_pack_name, offer.offer_card_rarity).run();
+
+      // Close trade and decline all other offers
+      await env.DB.prepare("UPDATE trade_board SET status = 'closed' WHERE id = ?").bind(offer.board_id).run();
+      await env.DB.prepare("UPDATE trade_offers SET status = 'declined' WHERE board_id = ? AND id != ?").bind(offer.board_id, offer_id).run();
+      await env.DB.prepare("UPDATE trade_offers SET status = 'accepted' WHERE id = ?").bind(offer_id).run();
+
+      // Notify offerer
+      const posterRow = await env.DB.prepare('SELECT username FROM users WHERE id = ?').bind(user.user_id).first();
+      await env.DB.prepare('INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, ?)')
+        .bind(offer.offerer_id, `${posterRow?.username} accepted your trade offer!`, new Date().toISOString()).run();
+
       return json({ ok: true, accepted: true }, 200, origin);
+    }
+
+    // ── POST /api/trades/cancel ── Cancel own trade board post
+    if (path === '/api/trades/cancel' && request.method === 'POST') {
+      const user = await getUserFromToken(getToken(request), env.DB);
+      if (!user) return err('Not logged in', 401, origin);
+      const { board_id } = await request.json();
+      const trade = await env.DB.prepare("SELECT * FROM trade_board WHERE id = ? AND poster_id = ? AND status = 'open'").bind(board_id, user.user_id).first();
+      if (!trade) return err('Trade not found', 404, origin);
+      await env.DB.prepare("UPDATE trade_board SET status = 'cancelled' WHERE id = ?").bind(board_id).run();
+      return json({ ok: true }, 200, origin);
     }
 
     return err('Not found', 404, origin);
