@@ -162,6 +162,8 @@
   .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
   footer { border-top:1px solid var(--border); text-align:center; padding:1.25rem; font-size:0.7rem; color:var(--muted); margin-top:3rem; }
+  footer a { color: var(--muted); text-decoration: underline; }
+  footer a:hover { color: var(--text); }
 
   /* Lock viewport, prevent double-tap zoom, fix width */
   html { overflow-x: hidden; touch-action: pan-x pan-y; }
@@ -287,7 +289,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
-<footer>50 Yard Cards &copy; 2025 · IFL Cards</footer>
+<footer>50 Yard Cards &copy; 2025 · IFL Cards · <a href="privacy.html">Privacy Policy</a></footer>
 
 <script>
 const MKT_API = 'https://api.cards.indoorfootballindex.com';
