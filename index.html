@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+  // Redirect to landing page unless coming from within the app
+  try {
+    const visited = sessionStorage.getItem('ifi_visited');
+    if (!visited) {
+      sessionStorage.setItem('ifi_visited', '1');
+      // Only redirect if navigating directly to index (not from another page)
+      if (!document.referrer || document.referrer.includes(location.hostname) === false) {
+        window.location.replace('landing.html');
+      }
+    }
+  } catch(e) {}
+</script>
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
