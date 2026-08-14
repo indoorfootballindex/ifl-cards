@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>50 Yard Cards – Trivia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
@@ -20,15 +20,16 @@
 
   nav {
     background: var(--dark); border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; padding: 0 1.5rem;
-    position: sticky; top: 0; z-index: 100; gap: 0;
+    display: flex; align-items: center; padding: 0 1rem;
+    position: sticky; top: 0; z-index: 100; gap: 0; overflow-x: auto;
   }
-  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1.5rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-logo { display: flex; align-items: center; height: 80px; margin-right: 1rem; padding: 1rem 0; text-decoration: none; flex-shrink: 0; }
   .nav-tab {
-    padding: 1rem 0.9rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    padding: 1rem 0.65rem; font-size: 0.68rem; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--muted); text-decoration: none;
     border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
-    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; white-space: nowrap; flex-shrink: 0;
   }
   .nav-tab:hover { color: var(--text); }
   .nav-tab.active { color: var(--white); border-bottom-color: var(--green); }
@@ -162,6 +163,12 @@
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
   footer { border-top: 1px solid var(--border); text-align: center; padding: 1.25rem; font-size: 0.7rem; color: var(--muted); }
+
+  /* Lock viewport, prevent double-tap zoom, fix width */
+  html { overflow-x: hidden; touch-action: pan-x pan-y; }
+  body { max-width: 100vw; overflow-x: hidden; }
+  button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
 </style>
 </head>
 <body>
@@ -246,13 +253,24 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+function parseCSVLine(line) {
+  const result = []; let current = ''; let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current);
+  return result;
+}
 function parseCSV(text) {
   // Strip BOM and normalize line endings
   text = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map(h => h.trim());
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
   return lines.slice(1).filter(l => l.trim()).map(l => {
-    const vals = l.split(',').map(v => v.trim());
+    const vals = parseCSVLine(l).map(v => v.trim());
     return Object.fromEntries(headers.map((h, i) => [h, vals[i] || '']));
   });
 }

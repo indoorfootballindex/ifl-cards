@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>50 Yard Cards</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0d0a; --dark: #111410; --panel: #181c16;
+    --border: #2a2e24; --green: #6b7c3f; --gold: #c8980a;
+    --muted: #5a6650; --text: #e8ece4; --white: #f0f0ee;
+  }
+  html, body {
+    background: var(--black); color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+    touch-action: pan-x pan-y;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem 1.5rem;
+    background: radial-gradient(ellipse at 50% 30%, rgba(107,124,63,0.12) 0%, transparent 70%);
+    text-align: center;
+  }
+
+  .logo-wrap { margin-bottom: 2rem; }
+  .logo-wrap img { width: min(280px, 72vw); filter: brightness(0) invert(1); }
+
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(2.4rem, 10vw, 4.5rem); text-transform: uppercase;
+    letter-spacing: 0.04em; line-height: 0.95;
+    color: var(--white); margin-bottom: 0.5rem;
+  }
+  .hero-title span { color: var(--green); }
+
+  .hero-sub {
+    font-size: clamp(0.85rem, 2.5vw, 1.05rem); color: var(--muted);
+    max-width: 340px; line-height: 1.5; margin-bottom: 2.5rem;
+  }
+
+  .cta-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 300px; }
+
+  .btn-main {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 1.1rem; letter-spacing: 0.16em; text-transform: uppercase;
+    background: var(--green); color: var(--white);
+    border: none; border-radius: 8px; padding: 0.9rem 2rem;
+    text-decoration: none; display: block; text-align: center;
+    transition: background 0.12s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .btn-main:hover { background: #7a8f4a; transform: translateY(-2px); }
+  .btn-main:active { transform: translateY(0); }
+
+  .btn-secondary {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 0.95rem; letter-spacing: 0.12em; text-transform: uppercase;
+    background: transparent; color: var(--muted);
+    border: 1.5px solid var(--border); border-radius: 8px; padding: 0.8rem 2rem;
+    text-decoration: none; display: block; text-align: center;
+    transition: border-color 0.12s, color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .btn-secondary:hover { border-color: var(--green); color: var(--white); }
+
+  .features {
+    display: flex; gap: 1.5rem; margin: 2.5rem 0 0;
+    flex-wrap: wrap; justify-content: center; max-width: 480px;
+  }
+  .feature { text-align: center; }
+  .feature-icon { font-size: 1.4rem; margin-bottom: 4px; }
+  .feature-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+  .already-signed-in {
+    position: absolute; top: 1rem; right: 1.25rem;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none;
+  }
+  .already-signed-in:hover { color: var(--white); }
+
+  .divider { width: 40px; height: 1px; background: var(--border); margin: 0.75rem auto; }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="already-signed-in" id="alreadyIn" style="display:none;">Go to App →</a>
+
+<div class="hero">
+  <div class="logo-wrap">
+    <img src="50ydcards.png" alt="50 Yard Cards">
+  </div>
+
+  <div class="hero-title">Indoor Football<br><span>Trading Cards</span></div>
+  <div class="hero-sub">Open packs, collect cards, trade with others, and compete on the leaderboard.</div>
+
+  <div class="cta-group">
+    <a href="login.html" class="btn-main">Get Started</a>
+    <div class="divider"></div>
+    <a href="index.html" class="btn-secondary">Browse as Guest</a>
+  </div>
+
+  <div class="features">
+    <div class="feature"><div class="feature-icon">📦</div><div class="feature-label">Open Packs</div></div>
+    <div class="feature"><div class="feature-icon">🃏</div><div class="feature-label">Collect Cards</div></div>
+    <div class="feature"><div class="feature-icon">🔄</div><div class="feature-label">Trade</div></div>
+    <div class="feature"><div class="feature-icon">🏆</div><div class="feature-label">Leaderboard</div></div>
+    <div class="feature"><div class="feature-icon">🧠</div><div class="feature-label">Trivia</div></div>
+  </div>
+</div>
+
+<script>
+// If already logged in, skip to app
+try {
+  const token = localStorage.getItem('ifiToken');
+  if (token) {
+    const link = document.getElementById('alreadyIn');
+    link.style.display = 'block';
+  }
+} catch(e) {}
+</script>
+</body>
+</html>
